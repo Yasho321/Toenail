@@ -49,9 +49,14 @@ export const verifyPayment = async (req, res) => {
 
     console.log({ expectedSignature, razorpay_signature })
 
-    if(razorpay_signature === expectedSignature){
+    if(razorpay_signature !== expectedSignature){
+        res.status(400).json({
+            success: false,
+            message : "Signature did not match"
+        })      
+    }
 
-        const payment = await Payment.create({
+    const payment = await Payment.create({
            
             userId,
             amount: parseInt(amount),
@@ -63,7 +68,7 @@ export const verifyPayment = async (req, res) => {
 
        const user = await User.findByIdAndUpdate(
             userId,
-            { $inc: { tokens: tokens } }, 
+            { $inc: { tokenBalance: tokens } }, 
             { new: true } 
         );
 
@@ -73,13 +78,7 @@ export const verifyPayment = async (req, res) => {
             message : "Payment verified successfully" 
          });
 
-        
-    }
-
-    res.status(400).json({
-      success: false,
-      message : "Signature did not match"
-    })
+    
 
     
     

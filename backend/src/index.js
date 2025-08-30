@@ -3,8 +3,12 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/user.routes.js'
-
+import chatRoutes from './routes/chat.routes.js'
+import paymentRoutes from './routes/payment.routes.js'
+import downloadRoutes from './routes/download.routes.js'
+import thumbnailRoutes from './routes/thumbnailChat.routes.js'
 import mongoose from "mongoose";
+
 
 
 
@@ -32,6 +36,10 @@ app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1/auth", authRoutes)
+app.use("/api/v1/chat",chatRoutes)
+app.use("/api/v1/payment",paymentRoutes)
+app.use("/api/v1/thumbnail",thumbnailRoutes)
+app.use("/api/v1/download",downloadRoutes)
 
 
 
