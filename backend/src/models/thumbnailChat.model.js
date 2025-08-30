@@ -7,6 +7,7 @@ const messageSchema = new mongoose.Schema(
       enum: ["user", "assistant"], 
       required: true,
     },
+   
     text: {
       type: String,
       required: true,
@@ -30,6 +31,12 @@ const thumbnailChatSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User", // Reference to User schema
       required: true,
+    },
+     chatId : {
+      type:mongoose.Schema.ObjectId,
+      ref : "Chat",
+      required:true
+      
     },
     messages: {
       type: [messageSchema], // Embedding messages inside the chat
