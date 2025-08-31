@@ -118,6 +118,7 @@ export const createChat = async (req , res)=>{
             - make it realistic 
             - do not make it cartooni 
             - choose right fonts 
+            - use image given by user
 
 
             IMPORTANT : -
@@ -159,6 +160,7 @@ export const createChat = async (req , res)=>{
              - make it realistic 
             - do not make it cartooni 
             - choose right fonts 
+             - use image given by user
 
              IMPORTANT : -
             -  given image should strictly be in given resolution
@@ -200,6 +202,7 @@ export const createChat = async (req , res)=>{
             - make it realistic 
             - do not make it cartooni 
             - choose right fonts 
+             - use image given by user
 
             IMPORTANT : -
             -  given image should strictly be in given resolution
