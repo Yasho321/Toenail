@@ -1,5 +1,5 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+
+import { Toaster  } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -30,7 +30,7 @@ const App = () => {
       <TooltipProvider>
         <div className="dark">
           <Toaster />
-          <Sonner />
+          
           <HotToaster 
             position="top-right"
             toastOptions={{
@@ -47,12 +47,12 @@ const App = () => {
               <Route path="/" element={<Landing />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/pricing" element={<Pricing />} />
-              <Route path="/cancellation-refunds" element={<CancellationRefunds />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+               <Route path="/cancellation-refunds" element={<CancellationRefunds />} />
               <Route path="/terms-conditions" element={<TermsConditions />} />
               <Route path="/shipping" element={<Shipping />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/contact" element={<Contact />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
