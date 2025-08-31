@@ -182,7 +182,7 @@ const Pricing = () => {
             </div>
             <div className="flex items-center space-x-2">
               <Youtube className="h-8 w-8 text-red-600" />
-              <span className="text-2xl font-bold text-foreground">ThumbnailAI</span>
+              <span className="text-2xl font-bold text-foreground">ToeNail AI</span>
             </div>
           </div>
         </div>

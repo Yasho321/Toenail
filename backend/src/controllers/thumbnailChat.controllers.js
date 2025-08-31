@@ -6,6 +6,7 @@ import fs from 'fs'
 import OpenAI from 'openai';
 import { GoogleGenAI, Modality } from "@google/genai";
 import Chat from "../models/chat.model.js";
+import sharp from "sharp";
 import User from "../models/user.model.js";
 const client = new OpenAI();
  const ai = new GoogleGenAI({});
@@ -23,6 +24,18 @@ export const createChat = async (req , res)=>{
         const token = req.user.tokenBalance;
         const {genre , title , mood ,resolution, prompt} = req.body;
         const file = req.file;
+        let width ; 
+        let height; 
+        console.log(resolution)
+        console.log(resolution.includes('video'));
+        
+        if(resolution.includes('video')){
+            width = 1280
+            height = 720
+        }else{
+            width = 1080 
+            height = 1920
+        }
         let images=[];
         let chatTitle ;
        if(token <= 0){
@@ -100,12 +113,21 @@ export const createChat = async (req , res)=>{
             - Never alter user's request , and add anything on your own . 
             - Give prompts such that it makes professional level thumbnails.
             - Include prompts which makes it look more real , and less ai generated
-            
+            - given image should strictly be in given resolution
+            - font in the thumbnail should look good
+            - make it realistic 
+            - do not make it cartooni 
+            - choose right fonts 
+
+
+            IMPORTANT : -
+            -  given image should strictly be in given resolution
+
 
             Prompt :- 
             ${prompt}
             Resolution:-
-            ${resolution}
+            ${resolution} (Image produced should be strictly in this resolution)
             Mood of the video:-
             ${mood}
             Genre of the video :-
@@ -132,12 +154,19 @@ export const createChat = async (req , res)=>{
             - Never alter user's request , and add anything on your own . 
             - Give prompts such that it makes professional level thumbnails.
             - Include prompts which makes it look more real , and less ai generated
-            
+            - given image should strictly be in given resolution
+             - font in the thumbnail should look good
+             - make it realistic 
+            - do not make it cartooni 
+            - choose right fonts 
+
+             IMPORTANT : -
+            -  given image should strictly be in given resolution
 
             Prompt :- 
             ${prompt}
             Resolution:-
-            ${resolution}
+            ${resolution} (Image produced should be strictly in this resolution)
             Mood of the video:-
             ${mood}
             Genre of the video :-
@@ -166,12 +195,19 @@ export const createChat = async (req , res)=>{
             - Never alter user's request , and add anything on your own . 
             - Give prompts such that it makes professional level thumbnails.
             - Include prompts which makes it look more real , and less ai generated
-            
+            - given image should strictly be in given resolution
+            - font in the thumbnail should look good
+            - make it realistic 
+            - do not make it cartooni 
+            - choose right fonts 
+
+            IMPORTANT : -
+            -  given image should strictly be in given resolution
 
             Prompt :- 
             ${prompt}
             Resolution:-
-            ${resolution}
+            ${resolution} (Image produced should be strictly in this resolution)
             Mood of the video:-
             ${mood}
             Genre of the video :-
@@ -214,10 +250,22 @@ export const createChat = async (req , res)=>{
                 messageResponse.text = part.text;         
             } else if (part.inlineData) {
                 const imageData = part.inlineData.data;
+                const imageBuffer = Buffer.from(imageData, "base64");
+                const resizedBuffer = await sharp(imageBuffer)
+                .resize(width, height, {
+                    fit: "inside",
+                    withoutEnlargement: true 
+                })
+                .toFormat("png") // Keep PNG format
+                .toBuffer();
+
+                const resizedBase64 = resizedBuffer.toString("base64");
+
                 const uploadedImage= await imagekit.upload({
-                    file: `data:image/png;base64,${imageData}`,
+                    file: `data:image/png;base64,${resizedBase64}`,
                     fileName: `${chatTitle}-thumbnail1.png`,
                     folder: "/thumbnail-img",
+                    
                 });
                
                 images2.push(uploadedImage.url)
@@ -241,11 +289,24 @@ export const createChat = async (req , res)=>{
         for (const part of response5.candidates[0].content.parts) {
            if (part.inlineData) {
                 const imageData = part.inlineData.data;
+                const imageBuffer = Buffer.from(imageData, "base64");
+                const resizedBuffer = await sharp(imageBuffer)
+                .resize(width, height, {
+                    fit: "inside",
+                    withoutEnlargement: true 
+                })
+                .toFormat("png") // Keep PNG format
+                .toBuffer();
+
+                const resizedBase64 = resizedBuffer.toString("base64");
+
                 const uploadedImage= await imagekit.upload({
-                    file: `data:image/png;base64,${imageData}`,
+                    file: `data:image/png;base64,${resizedBase64}`,
                     fileName: `${chatTitle}-thumbnail1.png`,
                     folder: "/thumbnail-img",
+                    
                 });
+               
                 images2.push(uploadedImage.url)
             }
         }
@@ -266,11 +327,24 @@ export const createChat = async (req , res)=>{
         for (const part of response6.candidates[0].content.parts) {
            if (part.inlineData) {
                 const imageData = part.inlineData.data;
+                const imageBuffer = Buffer.from(imageData, "base64");
+                const resizedBuffer = await sharp(imageBuffer)
+                .resize(width, height, {
+                    fit: "inside",
+                    withoutEnlargement: true 
+                })
+                .toFormat("png") // Keep PNG format
+                .toBuffer();
+
+                const resizedBase64 = resizedBuffer.toString("base64");
+
                 const uploadedImage= await imagekit.upload({
-                    file: `data:image/png;base64,${imageData}`,
+                    file: `data:image/png;base64,${resizedBase64}`,
                     fileName: `${chatTitle}-thumbnail1.png`,
                     folder: "/thumbnail-img",
+                    
                 });
+               
                 images2.push(uploadedImage.url)
             }
         }
