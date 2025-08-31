@@ -6,6 +6,7 @@ import fs from 'fs'
 import OpenAI from 'openai';
 import { GoogleGenAI, Modality } from "@google/genai";
 import Chat from "../models/chat.model.js";
+import User from "../models/user.model.js";
 const client = new OpenAI();
  const ai = new GoogleGenAI({});
 
@@ -97,6 +98,9 @@ export const createChat = async (req , res)=>{
             and as per the user's request . 
             Rules :- 
             - Never alter user's request , and add anything on your own . 
+            - Give prompts such that it makes professional level thumbnails.
+            - Include prompts which makes it look more real , and less ai generated
+            
 
             Prompt :- 
             ${prompt}
@@ -126,6 +130,9 @@ export const createChat = async (req , res)=>{
             and as per the user's request . 
             Rules :- 
             - Never alter user's request , and add anything on your own . 
+            - Give prompts such that it makes professional level thumbnails.
+            - Include prompts which makes it look more real , and less ai generated
+            
 
             Prompt :- 
             ${prompt}
@@ -157,6 +164,9 @@ export const createChat = async (req , res)=>{
             and as per the user's request . 
             Rules :- 
             - Never alter user's request , and add anything on your own . 
+            - Give prompts such that it makes professional level thumbnails.
+            - Include prompts which makes it look more real , and less ai generated
+            
 
             Prompt :- 
             ${prompt}
@@ -209,6 +219,7 @@ export const createChat = async (req , res)=>{
                     fileName: `${chatTitle}-thumbnail1.png`,
                     folder: "/thumbnail-img",
                 });
+               
                 images2.push(uploadedImage.url)
                 
             }
