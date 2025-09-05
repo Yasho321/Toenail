@@ -4,6 +4,8 @@ import 'dotenv/config'
 import ImageKit from 'imagekit';
 import fs from 'fs'
 import OpenAI from 'openai';
+import { Memory } from 'mem0ai/oss';
+
 import { GoogleGenAI, Modality } from "@google/genai";
 import Chat from "../models/chat.model.js";
 import sharp from "sharp";
@@ -11,18 +13,51 @@ import User from "../models/user.model.js";
 const client = new OpenAI();
  const ai = new GoogleGenAI({});
 
+ 
+
+
 const imagekit = new ImageKit({
     publicKey : process.env.IMAGEKIT_PUBLICKEY,
     privateKey : process.env.IMAGEKIT_PRIVATEKEY,
     urlEndpoint : process.env.IMAGEKIT_URL
 });
 
+const mem = new Memory({
+  version: 'v1.1',
+  enableGraph: true,
+  graphStore: {
+    provider: 'neo4j',
+    config: {
+      url: process.env.NEO4J_URI,
+      username: process.env.NEO4J_USERNAME,
+      password: process.env.NEO4J_PASSWORD,
+    },
+  },
+  vectorStore: {
+    provider: 'qdrant',
+    config: {
+      collectionName: 'memories',
+      embeddingModelDims: 1536,
+      url: process.env.QDRANT_URL,
+      apiKey: process.env.QDRANT_API_KEY, 
+      https: true,
+    },
+  },
+});
+
 export const createChat = async (req , res)=>{
     try {
+        
         const userId = req.user._id;
         const {chatId} = req.params; 
         const token = req.user.tokenBalance;
         const {genre , title , mood ,resolution, prompt} = req.body;
+        const memories = await mem.search(prompt, { userId: 'piyush' });
+        const memStr = memories.results.map((e) => e.memory).join('\n');
+        const CONTEXT = `
+            Important Context About User according to the previous conversations:
+             ${memStr}
+        `
         const file = req.file;
         let width ; 
         let height; 
@@ -90,7 +125,13 @@ export const createChat = async (req , res)=>{
 
 
         }
-        let messages = chatMessages.messages;
+        let messages = chatMessages?.messages || [];
+        let previousChats ;
+        if (messages.length >50){
+            previousChats  = messages.splice(-50);
+        }
+        previousChats = messages ;
+
         messages.push({
             role: 'user',
             text:prompt,
@@ -232,7 +273,8 @@ export const createChat = async (req , res)=>{
 
         const refinedPrompt3=response3.choices[0].message.content ;
          const promptForBanana = [
-            { text: refinedPrompt },
+            { text: `refined description :${refinedPrompt} , previous messages: ${previousChats}  ,user original query : ${prompt} ,
+             Important context about user : ${CONTEXT}` },
             {
             inlineData: {
                 mimeType: "image/png",
@@ -276,7 +318,9 @@ export const createChat = async (req , res)=>{
             }
         }
         const promptForBanana2 = [
-            { text: refinedPrompt2 },
+            { text: `refined description :${refinedPrompt2} , previous messages: ${previousChats}  ,user original query : ${prompt}
+                Important context about user : ${CONTEXT}
+            ` },
             {
             inlineData: {
                 mimeType: "image/png",
@@ -314,7 +358,9 @@ export const createChat = async (req , res)=>{
             }
         }
         const promptForBanana3 = [
-            { text: refinedPrompt3 },
+            { text: `refined description :${refinedPrompt3} , previous messages: ${previousChats}  ,user original query : ${prompt} 
+                Important context about user : ${CONTEXT}
+            ` },
             {
             inlineData: {
                 mimeType: "image/png",
@@ -355,6 +401,20 @@ export const createChat = async (req , res)=>{
         messages.push(messageResponse);
         chatMessages.messages=messages;
         fs.unlinkSync(imgpath);
+       const assistantMemory = `
+        Thumbnail Description: ${messageResponse.text || "No description"}
+        Thumbnail Images: ${Array.isArray(messageResponse.images) ? messageResponse.images.join(", ") : "None"}
+        `;
+
+        // Save safe data to mem0
+        await mem.add(
+        [
+            { role: "user", content: prompt },
+            { role: "assistant", content: assistantMemory.trim() },
+        ],
+        { userId }
+        );
+        
 
         await chatMessages.save();
         await User.findByIdAndUpdate(
