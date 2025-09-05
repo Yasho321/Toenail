@@ -31,6 +31,7 @@ const mem = new Memory({
       url: process.env.NEO4J_URI,
       username: process.env.NEO4J_USERNAME,
       password: process.env.NEO4J_PASSWORD,
+      storeEmbeddings: false,
     },
   },
   vectorStore: {
@@ -401,18 +402,15 @@ export const createChat = async (req , res)=>{
         messages.push(messageResponse);
         chatMessages.messages=messages;
         fs.unlinkSync(imgpath);
-       const assistantMemory = `
-        Thumbnail Description: ${messageResponse.text || "No description"}
-        Thumbnail Images: ${Array.isArray(messageResponse.images) ? messageResponse.images.join(", ") : "None"}
-        `;
+       
 
         // Save safe data to mem0
         await mem.add(
         [
             { role: "user", content: prompt },
-            { role: "assistant", content: assistantMemory.trim() },
+            { role: "assistant", content: messageResponse.text },
         ],
-        { userId }
+        { userId : String(userId) }
         );
         
 
