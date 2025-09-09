@@ -1,6 +1,6 @@
 
 import { verifyWebhook } from '@clerk/express/webhooks'
-import User from "../models/user.model";
+import User from "../models/user.model.js";
 import {   getAuth } from '@clerk/express'
 
 
