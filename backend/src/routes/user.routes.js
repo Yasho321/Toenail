@@ -1,14 +1,14 @@
 import {Router } from 'express';
-import { isLoggedIn } from '../middlewares/auth.middlewares.js';
-import {getMe, login, logout, register } from '../controllers/user.controllers.js';
+import express from 'express'
+import {  requireAuth } from '@clerk/express'
+import {webhookHandler } from '../controllers/user.controllers.js';
 
 const router = Router();
 
-router.post("/register",  register)
-router.post("/login",  login)
-router.get("/logout", isLoggedIn, logout)
 
-router.get("/me" , isLoggedIn, getMe)
+
+router.get("/me" , requireAuth(), getMe)
+router.post("/clerk", express.raw({ type: 'application/json' }),webhookHandler)
 
 
 

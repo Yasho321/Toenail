@@ -1,15 +1,15 @@
 import {Router } from 'express';
-import { isLoggedIn } from '../middlewares/auth.middlewares.js';
+import {  requireAuth } from '@clerk/express'
 import { createChat, getChat } from '../controllers/thumbnailChat.controllers.js';
 import { uploadOne } from '../libs/multer.js';
 
 
 const router = Router();
 
-router.post("/:chatId",isLoggedIn,uploadOne,  createChat)
+router.post("/:chatId",requireAuth(),uploadOne,  createChat)
 
 
-router.get("/:chatId" , isLoggedIn, getChat)
+router.get("/:chatId" , requireAuth(), getChat)
 
 
 

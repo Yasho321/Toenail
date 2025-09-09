@@ -1,14 +1,14 @@
 import {Router } from 'express';
-import { isLoggedIn } from '../middlewares/auth.middlewares.js';
+import {  requireAuth } from '@clerk/express'
 import { createChat, getChat } from '../controllers/chat.controllers.js';
 
 
 const router = Router();
 
-router.post("/",isLoggedIn,  createChat)
+router.post("/",requireAuth(),  createChat)
 
 
-router.get("/" , isLoggedIn, getChat)
+router.get("/" , requireAuth(), getChat)
 
 
 

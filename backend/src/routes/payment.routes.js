@@ -1,11 +1,17 @@
 import express from "express";
-import { isLoggedIn } from "../middlewares/auth.middlewares.js";
-import { createOrder, verifyPayment } from "../controllers/payment.controllers.js";
+import {  requireAuth } from '@clerk/express'
+import { createOrder, razorpayWebhook, verifyPayment } from "../controllers/payment.controllers.js";
 
 const router = express.Router();
 
-router.post("/create-order",isLoggedIn,createOrder);
-router.post("/verify-payment",isLoggedIn,verifyPayment);
+router.post("/create-order",requireAuth(),createOrder);
+router.post("/verify-payment",requireAuth(),verifyPayment);
+router.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  razorpayWebhook
+);
+
 
 
 

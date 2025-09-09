@@ -2,10 +2,11 @@ import { razorpayInstance } from "../libs/razorpay.js";
 import crypto from "crypto";
 import Payment from "../models/payment.model.js";
 import User from "../models/user.model.js";
-
+import {   getAuth } from '@clerk/express'
 export const createOrder = async (req, res) => {
   try {
     const { planName } = req.body;
+     const { userId } = getAuth(req)
     const plans = {
         standard: { amount: 250, tokens: 10 },
         premium: { amount: 600, tokens: 25 },
@@ -17,20 +18,24 @@ export const createOrder = async (req, res) => {
     if (!selected) return res.status(400).json({ message: "Invalid plan" });
 
     const options = {
-        amount: selected.amount * 100, // in paise
+        amount: selected.amount * 100,
         currency: "INR",
         receipt: `receipt_${Date.now()}`,
+        notes: {
+          userId: userId.toString(), 
+          tokens: selected.tokens.toString(),
+        },
     };
 
     const order = await razorpayInstance.orders.create(options);
 
     
 
-    res.status(200).json({ orderId: order.id, amount: selected.amount, tokens: selected.tokens });
+    res.status(200).json({ success : true , orderId: order.id, amount: selected.amount, tokens: selected.tokens });
     
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal Server Error while creating order" });
+    res.status(500).json({success:false , message: "Internal Server Error while creating order" });
     
   }
 };
@@ -38,8 +43,8 @@ export const createOrder = async (req, res) => {
 // controllers/payment.js
 export const verifyPayment = async (req, res) => {
   try {
-    const { razorpay_payment_id, tokens ,amount , razorpay_order_id,razorpay_signature} = req.body;
-    const userId = req.user._id;
+    const { razorpay_payment_id, razorpay_order_id,razorpay_signature} = req.body;
+    
 
     
 
@@ -50,27 +55,16 @@ export const verifyPayment = async (req, res) => {
     console.log({ expectedSignature, razorpay_signature })
 
     if(razorpay_signature !== expectedSignature){
-        res.status(400).json({
+        return res.status(400).json({
             success: false,
             message : "Signature did not match"
         })      
     }
 
-    const payment = await Payment.create({
-           
-            userId,
-            amount: parseInt(amount),
-            tokens,
-            razorpayId: razorpay_payment_id,
-            razorpayOrderId: razorpay_order_id
-            },
-        );
-
-       const user = await User.findByIdAndUpdate(
-            userId,
-            { $inc: { tokenBalance: tokens } }, 
-            { new: true } 
-        );
+     const paymentDetails = await razorpayInstance.payments.fetch(razorpay_payment_id);
+    if (paymentDetails.status !== "captured") {
+      return res.status(400).json({ success: false, message: "Payment not captured yet" });
+    }
 
         
 
@@ -86,5 +80,56 @@ export const verifyPayment = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error while verifying payment" });
     
+  }
+};
+
+export const razorpayWebhook = async (req, res) => {
+  try {
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+
+    const signature = req.headers["x-razorpay-signature"];
+    const shasum = crypto
+      .createHmac("sha256", webhookSecret)
+      .update(req.rawBody)
+      .digest("hex");
+
+    if (shasum !== signature) {
+      return res.status(400).json({ success: false, message: "Invalid webhook signature" });
+    }
+
+    const event = req.body.event;
+
+    if (event === "payment.captured") {
+      const payment = req.body.payload.payment.entity;
+
+      
+      const existingPayment = await Payment.findOne({ razorpayId: payment.id });
+      if (existingPayment) {
+        return res.status(200).json({ success: true, message: "Payment already processed" });
+      }
+
+      
+      const userId = payment.notes.userId;
+      const tokens = parseInt(payment.notes.tokens);
+
+     
+      await Payment.create({
+        userId,
+        amount: payment.amount / 100,
+        tokens,
+        razorpayId: payment.id,
+        razorpayOrderId: payment.order_id,
+        
+      });
+
+      await User.findByIdAndUpdate(userId, { $inc: { tokenBalance: tokens } });
+
+      console.log(`✅ Webhook: Tokens credited to user ${userId}`);
+    }
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Webhook error:", error);
+    res.status(500).json({ success: false });
   }
 };

@@ -7,6 +7,7 @@ import chatRoutes from './routes/chat.routes.js'
 import paymentRoutes from './routes/payment.routes.js'
 import downloadRoutes from './routes/download.routes.js'
 import thumbnailRoutes from './routes/thumbnailChat.routes.js'
+import { clerkMiddleware } from '@clerk/express'
 import mongoose from "mongoose";
 
 
@@ -31,6 +32,7 @@ app.use(cors({
 }));
 
 
+app.use(clerkMiddleware());
 
 app.use(cookieParser())
 app.use(express.json());

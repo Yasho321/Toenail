@@ -1,9 +1,10 @@
 import Chat from "../models/chat.model.js";
+import {   getAuth } from '@clerk/express'
 
 export const createChat = async (req , res)=>{
     try {
-        const user = req.user._id; 
-        if(!user) {
+         const { userId } = getAuth(req)
+        if(!userId) {
             return res.status(400).json({
                 success: false , 
                 message : "Unauthorized"
@@ -11,7 +12,7 @@ export const createChat = async (req , res)=>{
         }
 
         const chat = await Chat.create({
-            userId : user 
+            userId : userId
         })
 
         return res.status(200).json({
@@ -34,8 +35,8 @@ export const createChat = async (req , res)=>{
 }
 export const getChat = async (req , res)=>{
     try {
-        const user = req.user._id; 
-        if(!user) {
+         const { userId } = getAuth(req) 
+        if(!userId) {
             return res.status(400).json({
                 success: false , 
                 message : "Unauthorized"
@@ -43,7 +44,7 @@ export const getChat = async (req , res)=>{
         }
 
         const chat = await Chat.find({
-            userId : user 
+            userId : userId
         }).sort({ createdAt: -1 })
 
         return res.status(200).json({

@@ -1,6 +1,7 @@
 import mongoose, {Schema} from "mongoose";
 
 const userSchema = new Schema({
+    clerkId: { type: String, required: true, unique: true },
     name : {
         type : String,
         required : true
@@ -9,10 +10,6 @@ const userSchema = new Schema({
         type : String,
         required : true,
         unique : true
-    },
-    password : {
-        type : String,
-        required : true
     },
     tokenBalance: {
       type: Number,

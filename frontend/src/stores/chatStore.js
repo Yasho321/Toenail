@@ -4,58 +4,57 @@ import toast from 'react-hot-toast';
 
 export const useChatStore = create((set, get) => ({
   chats: [],
-  currentChatId: null,
+  currentChat: null,
+  isLoading: false,
   isCreatingChat: false,
-  isLoadingChats: false,
+
+  fetchChats: async () => {
+    try {
+      set({ isLoading: true });
+      const response = await axiosInstance.get('/chat/');
+      set({ chats: response.data.chat || [] });
+    } catch (error) {
+      console.error("Error fetching chats:", error);
+      toast.error("Failed to fetch chats");
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 
   createChat: async () => {
-    set({ isCreatingChat: true });
     try {
-      const res = await axiosInstance.post("/chat/");
-      const newChat = res.data.chat;
-      set((state) => ({ 
+      set({ isCreatingChat: true });
+      const response = await axiosInstance.post('/chat/');
+      const newChat = response.data.chat;
+      
+      set((state) => ({
         chats: [newChat, ...state.chats],
-        currentChatId: newChat._id
+        currentChat: newChat
       }));
+      
       toast.success("New chat created");
-      return newChat._id;
+      return newChat;
     } catch (error) {
-      console.log("Error creating chat", error);
-      toast.error("Error creating chat");
+      console.error("Error creating chat:", error);
+      toast.error("Failed to create chat");
       return null;
     } finally {
       set({ isCreatingChat: false });
     }
   },
 
-  fetchChats: async () => {
-    set({ isLoadingChats: true });
-    try {
-      const res = await axiosInstance.get("/chat/");
-      const chats = res.data.chat || [];
-      set({ chats });
-      
-      // Set current chat to first chat if none selected
-      if (chats.length > 0 && !get().currentChatId) {
-        set({ currentChatId: chats[0]._id });
-      }
-    } catch (error) {
-      console.log("Error fetching chats", error);
-      toast.error("Error fetching chats");
-    } finally {
-      set({ isLoadingChats: false });
-    }
-  },
-
-  setCurrentChat: (chatId) => {
-    set({ currentChatId: chatId });
+  setCurrentChat: (chat) => {
+    set({ currentChat: chat });
   },
 
   updateChatTitle: (chatId, title) => {
     set((state) => ({
-      chats: state.chats.map(chat => 
+      chats: state.chats.map((chat) =>
         chat._id === chatId ? { ...chat, title } : chat
-      )
+      ),
+      currentChat: state.currentChat?._id === chatId 
+        ? { ...state.currentChat, title } 
+        : state.currentChat
     }));
   }
 }));

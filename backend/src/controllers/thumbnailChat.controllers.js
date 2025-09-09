@@ -5,7 +5,7 @@ import ImageKit from 'imagekit';
 import fs from 'fs'
 import OpenAI from 'openai';
 import { Memory } from 'mem0ai/oss';
-
+import {   getAuth } from '@clerk/express'
 import { GoogleGenAI, Modality } from "@google/genai";
 import Chat from "../models/chat.model.js";
 import sharp from "sharp";
@@ -49,7 +49,7 @@ const mem = new Memory({
 export const createChat = async (req , res)=>{
     try {
         
-        const userId = req.user._id;
+        const { userId } = getAuth(req)
         const {chatId} = req.params; 
         const token = req.user.tokenBalance;
         const {genre , title , mood ,resolution, prompt} = req.body;
@@ -443,16 +443,16 @@ export const createChat = async (req , res)=>{
 }
 export const getChat = async (req , res)=>{
     try {
-        const user = req.user._id;
+       const { userId } = getAuth(req)
         const {chatId} = req.params;
-        if(!user || ! chatId){
+        if(!userId || ! chatId){
             return res.status(400).json({
                 success : false , 
                 message : "Unautharized or chat does not exist"
             })
         }
         const messages = await ThumbnailChat.find({
-            userId : user ,
+            userId : userId ,
             chatId
         })
         if (!messages){

@@ -4,77 +4,40 @@ import toast from 'react-hot-toast';
 
 export const useThumbnailStore = create((set, get) => ({
   messages: [],
-  isLoadingMessages: false,
-  isCreatingThumbnail: false,
-  isDownloading: false,
+  isLoading: false,
+  isGenerating: false,
 
   fetchMessages: async (chatId) => {
-    if (!chatId) return;
-    
-    set({ isLoadingMessages: true });
     try {
-      const res = await axiosInstance.get(`/thumbnail/${chatId}`);
-      const messages = res.data.chatMessages?.[0]?.messages || [];
-      set({ messages });
+      set({ isLoading: true });
+      const response = await axiosInstance.get(`/thumbnail/${chatId}`);
+      set({ messages: response.data.chatMessages || [] });
     } catch (error) {
-      console.log("Error fetching messages", error);
-      if (error.response?.status !== 404) {
-        toast.error("Error fetching messages");
-      }
-      set({ messages: [] });
+      console.error("Error fetching messages:", error);
+      toast.error("Failed to fetch messages");
     } finally {
-      set({ isLoadingMessages: false });
+      set({ isLoading: false });
     }
   },
 
-  createThumbnail: async (chatId, formData) => {
-    set({ isCreatingThumbnail: true });
+  generateThumbnail: async (chatId, formData) => {
     try {
-      const res = await axiosInstance.post(`/thumbnail/${chatId}`, formData, {
+      set({ isGenerating: true });
+      const response = await axiosInstance.post(`/thumbnail/${chatId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
       
-      const newMessage = res.data.response;
-      const allMessages = res.data.chatMessages.messages;
-      
-      set({ messages: allMessages });
-      toast.success("Thumbnail created successfully!");
-      
-      return newMessage;
+      set({ messages: [response.data.chatMessages] });
+      toast.success("Thumbnail generated successfully!");
+      return response.data.response;
     } catch (error) {
-      console.log("Error creating thumbnail", error);
-      toast.error(error.response?.data?.message || "Error creating thumbnail");
+      console.error("Error generating thumbnail:", error);
+      toast.error(error.response?.data?.message || "Failed to generate thumbnail");
       return null;
     } finally {
-      set({ isCreatingThumbnail: false });
-    }
-  },
-
-  downloadImages: async (imageUrls) => {
-    set({ isDownloading: true });
-    try {
-      const res = await axiosInstance.post('/download/download-zip', {
-        imageUrls
-      }, {
-        responseType: 'blob'
-      });
-      
-      const url = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'thumbnails.zip');
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      
-      toast.success("Images downloaded successfully!");
-    } catch (error) {
-      console.log("Error downloading images", error);
-      toast.error("Error downloading images");
-    } finally {
-      set({ isDownloading: false });
+      set({ isGenerating: false });
     }
   },
 
