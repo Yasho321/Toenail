@@ -1,7 +1,7 @@
 import {Router } from 'express';
 import express from 'express'
 import {  requireAuth } from '@clerk/express'
-import {webhookHandler } from '../controllers/user.controllers.js';
+import {getMe, webhookHandler } from '../controllers/user.controllers.js';
 
 const router = Router();
 
