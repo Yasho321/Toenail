@@ -23,7 +23,7 @@ const port= process.env.PORT || 8080;
 
 
 app.use(cors({
-    origin: ['http://localhost:5173','https://www.toenail.in','https://toenail-seven.vercel.app'] ,
+    origin: 'https://www.toenail.in',
     credentials: true,               
      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
        allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
