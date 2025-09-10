@@ -8,7 +8,11 @@ import {   getAuth } from '@clerk/express'
 // Parse Clerk webhook payloads
 export const webhookHandler = async (req, res) => {
   try {
-    const evt = await verifyWebhook(req)
+    const evt = await verifyWebhook({
+      payload: req.body,
+      secret: process.env.CLERK_WEBHOOK_SIGNING_SECRET,
+      headers: req.headers,
+    });
     const data = evt.data;
 
     const { id } = evt.data
@@ -36,7 +40,13 @@ export const webhookHandler = async (req, res) => {
 export const getMe = async (req,res)=>{
     try {
         const { userId } = getAuth(req);
-        const user = await User.findOne(userId);
+        if (!userId) {
+          return res.status(401).json({
+            success: false,
+            message: "Unauthorized - No Clerk session found",
+          });
+        }
+        const user = await User.findOne({ clerkId: userId });
         if(!user){
             return res.status(404).json({
                 success: false , 
