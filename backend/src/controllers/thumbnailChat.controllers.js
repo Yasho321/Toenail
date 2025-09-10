@@ -302,6 +302,11 @@ export const createChat = async (req , res)=>{
             if (part.text) {
                 messageResponse.text = part.text;         
             } else if (part.inlineData) {
+                if (part.text) {
+                    messageResponse.text = part.text;
+                } else {
+                    messageResponse.text = ""; 
+                }
                 const imageData = part.inlineData.data;
                 const imageBuffer = Buffer.from(imageData, "base64");
                 const resizedBuffer = await sharp(imageBuffer)
