@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { axiosInstance } from '../lib/axios.js';
 import toast from 'react-hot-toast';
+import { useAuth } from "@clerk/clerk-react";
  const { getToken } = useAuth();
 
 export const useAuthStore = create((set) => ({
