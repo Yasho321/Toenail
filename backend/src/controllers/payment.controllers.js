@@ -3,6 +3,7 @@ import crypto from "crypto";
 import Payment from "../models/payment.model.js";
 import User from "../models/user.model.js";
 import {   getAuth } from '@clerk/express'
+import { validateWebhookSignature } from "razorpay/dist/utils/razorpay-utils.js";
 export const createOrder = async (req, res) => {
   try {
     const { planName } = req.body;
@@ -90,24 +91,16 @@ export const verifyPayment = async (req, res) => {
 
 export const razorpayWebhook = async (req, res) => {
   try {
-    console.log("Webhook received:", req.body);
-    
-    console.log(req.headers);
-    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
-
     const signature = req.headers["x-razorpay-signature"];
-     const body = req.body;
+    
+    const isValid = await validateWebhookSignature(
+      JSON.stringify(req.body),
+      signature,
+      process.env.RAZORPAY_WEBHOOK_SECRET
+    );
 
-    const shasum = crypto
-      .createHmac("sha256", webhookSecret)
-      .update(body)
-      .digest("hex");
-
-    if (shasum !== signature) {
-      return res.status(400).json({ success: false,shasum ,signature, message: "Invalid webhook signature" });
-    }
-
-    const event = req.body.event;
+    if(isValid){
+      const event = req.body.event;
 
     if (event === "payment.captured") {
       const payment = req.body.payload.payment.entity;
@@ -136,6 +129,11 @@ export const razorpayWebhook = async (req, res) => {
 
       console.log(`✅ Webhook: Tokens credited to user ${userId}`);
     }
+
+    }
+
+
+    
 
     res.status(200).json({ success: true });
   } catch (error) {
