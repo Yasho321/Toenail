@@ -23,10 +23,13 @@ const port= process.env.PORT || 8080;
 
 
 app.use(cors({
-      origin: 'https://toenail.in', // Replace with your actual frontend domain
-      methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
-      credentials: true // Allow sending cookies/authorization headers
-    }));
+    origin: 'https://www.toenail.in',
+    credentials: true,               
+     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+       allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    exposedHeaders: ["Set-Cookie"],
+    optionsSuccessStatus: 200,
+}));
 
 
 app.use(clerkMiddleware());
