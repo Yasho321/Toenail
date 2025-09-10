@@ -31,7 +31,9 @@ export const useChatStore = create((set, get) => ({
       const token = await getToken();
       const response = await axiosInstance.post('/chat/',{
         headers: {
-          Authorization: `Bearer ${token}`, // Attach token
+          Authorization: `Bearer ${token}`, 
+           'Content-Type': 'application/json',
+          // Attach token
         },});
       const newChat = response.data.chat;
       
