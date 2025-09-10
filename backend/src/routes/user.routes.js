@@ -7,7 +7,7 @@ const router = Router();
 
 
 
-router.get("/me" , requireAuth(), getMe)
+router.get("/me" ,  getMe)
 router.post(
   "/clerk",
   express.raw({ type: 'application/json' }),

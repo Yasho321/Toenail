@@ -11,7 +11,7 @@ export const webhookHandler = async (req, res) => {
     const { id } = evt.data
     const eventType = evt.type
 
-    console.log("data",data);
+    
 
     if (eventType === "user.created") {
       const newUser = await User.create({
@@ -31,26 +31,26 @@ export const webhookHandler = async (req, res) => {
 
 export const getMe = async (req, res) => {
   try {
-    const { userId } = getAuth(req)
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized - No Clerk session found",
-      })
-    }
+    // const { userId } = getAuth(req)
+    // if (!userId) {
+    //   return res.status(401).json({
+    //     success: false,
+    //     message: "Unauthorized - No Clerk session found",
+    //   })
+    // }
 
-    const user = await User.findOne({ clerkId: userId })
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "Unable to fetch user",
-      })
-    }
+    // const user = await User.findOne({ clerkId: userId })
+    // if (!user) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: "Unable to fetch user",
+    //   })
+    // }
 
     return res.status(200).json({
       success: true,
       message: "User Fetched successfully",
-      user,
+      // user,
     })
   } catch (error) {
     return res.status(500).json({
