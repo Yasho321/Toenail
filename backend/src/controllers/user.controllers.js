@@ -5,11 +5,7 @@ import { getAuth } from "@clerk/express"
 // Parse Clerk webhook payloads
 export const webhookHandler = async (req, res) => {
   try {
-    const evt = await verifyWebhook({
-      payload: req.rawBody, // Use raw body buffer
-      secret: process.env.CLERK_WEBHOOK_SIGNING_SECRET,
-      headers: req.headers,
-    })
+    const evt = await verifyWebhook(req);
 
     const data = evt.data
     const { id } = evt.data
