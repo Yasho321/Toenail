@@ -11,6 +11,8 @@ export const webhookHandler = async (req, res) => {
     const { id } = evt.data
     const eventType = evt.type
 
+    console.log("data",data);
+
     if (eventType === "user.created") {
       const newUser = await User.create({
         clerkId: id,
