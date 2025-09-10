@@ -90,6 +90,9 @@ export const verifyPayment = async (req, res) => {
 
 export const razorpayWebhook = async (req, res) => {
   try {
+    console.log("Webhook received:", req.body);
+    
+    console.log(req.headers);
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
 
     const signature = req.headers["x-razorpay-signature"];

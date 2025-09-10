@@ -9,7 +9,7 @@ router.post("/create-order", createOrder);
 router.post("/verify", verifyPayment);
 router.post(
   "/webhook",
-  express.raw({ type: "application/json" }),
+  
   razorpayWebhook
 );
 
