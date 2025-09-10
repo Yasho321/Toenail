@@ -8,7 +8,16 @@ const router = Router();
 
 
 router.get("/me" , requireAuth(), getMe)
-router.post("/clerk", express.json(),webhookHandler)
+router.post(
+  "/clerk",
+  express.raw({ type: "application/json" }),
+  (req, res, next) => {
+    // Store raw body for webhook verification
+    req.rawBody = req.body
+    next()
+  },
+  webhookHandler,
+)
 
 
 
