@@ -3,7 +3,7 @@ import {   getAuth } from '@clerk/express'
 
 export const createChat = async (req , res)=>{
     try {
-         const { userId } = getAuth(req)
+         const { userId } = getAuth(req, { acceptsToken: 'any' })
         if(!userId) {
             return res.status(400).json({
                 success: false , 
@@ -35,7 +35,7 @@ export const createChat = async (req , res)=>{
 }
 export const getChat = async (req , res)=>{
     try {
-         const { userId } = getAuth(req) 
+         const { userId } = getAuth(req, { acceptsToken: 'any' }) 
         if(!userId) {
             return res.status(400).json({
                 success: false , 

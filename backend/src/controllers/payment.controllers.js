@@ -6,7 +6,7 @@ import {   getAuth } from '@clerk/express'
 export const createOrder = async (req, res) => {
   try {
     const { planName } = req.body;
-     const { userId } = getAuth(req)
+     const { userId } = getAuth(req, { acceptsToken: 'any' })
     const plans = {
         standard: { amount: 250, tokens: 10 },
         premium: { amount: 600, tokens: 25 },

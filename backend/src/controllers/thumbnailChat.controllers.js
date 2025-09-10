@@ -49,7 +49,7 @@ const mem = new Memory({
 export const createChat = async (req , res)=>{
     try {
         
-        const { userId } = getAuth(req)
+        const { userId } = getAuth(req, { acceptsToken: 'any' })
         const {chatId} = req.params; 
         const token = req.user.tokenBalance;
         const {genre , title , mood ,resolution, prompt} = req.body;
@@ -443,7 +443,7 @@ export const createChat = async (req , res)=>{
 }
 export const getChat = async (req , res)=>{
     try {
-       const { userId } = getAuth(req)
+       const { userId } = getAuth(req, { acceptsToken: 'any' })
         const {chatId} = req.params;
         if(!userId || ! chatId){
             return res.status(400).json({
