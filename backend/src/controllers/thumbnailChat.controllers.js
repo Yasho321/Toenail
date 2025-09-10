@@ -53,9 +53,13 @@ export const createChat = async (req , res)=>{
         const user = await User.findOne({clerkId : userId});
         userId = user._id
 
+        
+
         const {chatId} = req.params; 
-        const token = req.user.tokenBalance;
+        console.log('here user Id', userId , 'user', user ,'chatId', chatId);
+        const token = user.tokenBalance;
         const {genre , title , mood ,resolution, prompt} = req.body;
+        
         const memories = await mem.search(prompt, { userId: 'piyush' });
         const memStr = memories.results.map((e) => e.memory).join('\n');
         const CONTEXT = `
