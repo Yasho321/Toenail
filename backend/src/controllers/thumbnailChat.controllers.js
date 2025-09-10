@@ -291,7 +291,8 @@ export const createChat = async (req , res)=>{
             },
         ];
         let messageResponse={
-            role:"assistant"
+            role:"assistant",
+            text:"Thumbnails",
         };
         let images2=[]
         const response4 = await ai.models.generateContent({
@@ -302,11 +303,7 @@ export const createChat = async (req , res)=>{
             if (part.text) {
                 messageResponse.text = part.text;         
             } else if (part.inlineData) {
-                if (part.text) {
-                    messageResponse.text = part.text;
-                } else {
-                    messageResponse.text = ""; 
-                }
+                
                 const imageData = part.inlineData.data;
                 const imageBuffer = Buffer.from(imageData, "base64");
                 const resizedBuffer = await sharp(imageBuffer)
