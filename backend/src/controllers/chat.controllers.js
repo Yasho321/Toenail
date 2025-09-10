@@ -1,5 +1,6 @@
 import Chat from "../models/chat.model.js";
 import {   getAuth } from '@clerk/express'
+import User from "../models/user.model.js";
 
 export const createChat = async (req , res)=>{
     try {
@@ -10,9 +11,9 @@ export const createChat = async (req , res)=>{
                 message : "Unauthorized"
             })
         }
-
+        const user = await User.findOne({clerkId : userId});
         const chat = await Chat.create({
-            userId : userId
+            userId : user._id
         })
 
         return res.status(200).json({
@@ -43,8 +44,10 @@ export const getChat = async (req , res)=>{
             })
         }
 
+        const user = await User.findOne({clerkId : userId});
+
         const chat = await Chat.find({
-            userId : userId
+            userId : user._id
         }).sort({ createdAt: -1 })
 
         return res.status(200).json({

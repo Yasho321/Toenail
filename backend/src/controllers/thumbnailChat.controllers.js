@@ -49,7 +49,10 @@ const mem = new Memory({
 export const createChat = async (req , res)=>{
     try {
         
-        const { userId } = getAuth(req, { acceptsToken: 'any' })
+        let { userId } = getAuth(req, { acceptsToken: 'any' })
+        const user = await User.findOne({clerkId : userId});
+        userId = user._id
+
         const {chatId} = req.params; 
         const token = req.user.tokenBalance;
         const {genre , title , mood ,resolution, prompt} = req.body;
@@ -444,15 +447,16 @@ export const createChat = async (req , res)=>{
 export const getChat = async (req , res)=>{
     try {
        const { userId } = getAuth(req, { acceptsToken: 'any' })
+       const user = await User.findOne({clerkId : userId});
         const {chatId} = req.params;
-        if(!userId || ! chatId){
+        if(!userId || ! chatId || user){
             return res.status(400).json({
                 success : false , 
                 message : "Unautharized or chat does not exist"
             })
         }
         const messages = await ThumbnailChat.find({
-            userId : userId ,
+            userId : user._id ,
             chatId
         })
         if (!messages){

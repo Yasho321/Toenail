@@ -7,6 +7,7 @@ export const createOrder = async (req, res) => {
   try {
     const { planName } = req.body;
      const { userId } = getAuth(req, { acceptsToken: 'any' })
+     const user = await User.findOne({clerkId : userId});
     const plans = {
         standard: { amount: 250, tokens: 10 },
         premium: { amount: 600, tokens: 25 },
@@ -22,7 +23,7 @@ export const createOrder = async (req, res) => {
         currency: "INR",
         receipt: `receipt_${Date.now()}`,
         notes: {
-          userId: userId.toString(), 
+          userId: user._id, 
           tokens: selected.tokens.toString(),
         },
     };
