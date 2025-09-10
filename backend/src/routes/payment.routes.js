@@ -6,7 +6,7 @@ import { createOrder, razorpayWebhook, verifyPayment } from "../controllers/paym
 const router = express.Router();
 
 router.post("/create-order", createOrder);
-router.post("/verify-payment", verifyPayment);
+router.post("/verify", verifyPayment);
 router.post(
   "/webhook",
   express.raw({ type: "application/json" }),
