@@ -1,15 +1,15 @@
 import {Router } from 'express';
 
 import { createChat, getChat } from '../controllers/chat.controllers.js';
-import { clerkMiddleware } from '@clerk/express';
+
 
 
 const router = Router();
 
-router.post("/",clerkMiddleware(), createChat)
+router.post("/", createChat)
 
 
-router.get("/" ,clerkMiddleware(), getChat)
+router.get("/" , getChat)
 
 
 

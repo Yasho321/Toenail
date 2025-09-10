@@ -32,7 +32,7 @@ app.use(cors({
 }));
 
 
-app.use(clerkMiddleware());
+app.use(clerkMiddleware({debug : true}));
 
 app.use(cookieParser())
 app.use(express.json());
