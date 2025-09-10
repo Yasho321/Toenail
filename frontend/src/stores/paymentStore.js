@@ -34,7 +34,7 @@ export const usePaymentStore = create((set) => ({
   verifyPayment: async (paymentData,getToken) => {
     try {
       set({ isProcessingPayment: true });
-      const token = getToken();
+      const token =await getToken();
       const response = await axiosInstance.post('/payment/verify', paymentData,{
          headers: {
           Authorization: `Bearer ${token}`,

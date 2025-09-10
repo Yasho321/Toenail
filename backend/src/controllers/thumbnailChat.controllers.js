@@ -10,6 +10,7 @@ import { GoogleGenAI, Modality } from "@google/genai";
 import Chat from "../models/chat.model.js";
 import sharp from "sharp";
 import User from "../models/user.model.js";
+import 'dotenv/config'
 const client = new OpenAI();
  const ai = new GoogleGenAI({});
 

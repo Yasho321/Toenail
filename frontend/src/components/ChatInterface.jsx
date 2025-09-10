@@ -104,7 +104,7 @@ export default function ChatInterface({ chatId }) {
 
   const handleDownloadAll = async (images) => {
     try {
-      const token = getToken();
+      const token =await getToken();
       const response = await fetch('/api/v1/download/download-zip', {
         method: 'POST',
         headers: {
