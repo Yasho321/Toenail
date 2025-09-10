@@ -449,7 +449,7 @@ export const getChat = async (req , res)=>{
        const { userId } = getAuth(req, { acceptsToken: 'any' })
        const user = await User.findOne({clerkId : userId});
         const {chatId} = req.params;
-        if(!userId || ! chatId || user){
+        if(!userId || ! chatId || !user){
             return res.status(400).json({
                 success : false , 
                 message : "Unautharized or chat does not exist"

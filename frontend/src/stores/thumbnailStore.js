@@ -27,7 +27,7 @@ export const useThumbnailStore = create((set, get) => ({
   generateThumbnail: async (chatId, formData,getToken) => {
     try {
       set({ isGenerating: true });
-      const token = getToken();
+      const token = await  getToken();
       const response = await axiosInstance.post(`/thumbnail/${chatId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
