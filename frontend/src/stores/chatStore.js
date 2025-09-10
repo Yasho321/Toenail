@@ -29,7 +29,7 @@ export const useChatStore = create((set, get) => ({
     try {
       set({ isCreatingChat: true });
       const token = await getToken();
-      const response = await axiosInstance.post('/chat/',{
+      const response = await axiosInstance.post('/chat/', {},{
         headers: {
           Authorization: `Bearer ${token}`, 
            'Content-Type': 'application/json',

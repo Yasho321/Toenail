@@ -10,6 +10,7 @@ export const useThumbnailStore = create((set, get) => ({
   fetchMessages: async (chatId,getToken) => {
     try {
       set({ isLoading: true });
+      const token = await getToken();
       const response = await axiosInstance.get(`/thumbnail/${chatId}`,{
         headers: {
           Authorization: `Bearer ${token}`, // Attach token
