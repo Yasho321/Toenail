@@ -46,7 +46,8 @@ export const verifyPayment = async (req, res) => {
   try {
     const { razorpay_payment_id, razorpay_order_id,razorpay_signature} = req.body;
     
-
+    console.log('rpi',razorpay_payment_id,'roi',razorpay_order_id,'rs',razorpay_signature);
+    
     
 
     const verifyingToken = razorpay_order_id + "|" + razorpay_payment_id;
@@ -61,9 +62,12 @@ export const verifyPayment = async (req, res) => {
             message : "Signature did not match"
         })      
     }
-
+    console.log('here');
+    
      const paymentDetails = await razorpayInstance.payments.fetch(razorpay_payment_id);
+     console.log('here2');
     if (paymentDetails.status !== "captured") {
+      console.log('here3');
       return res.status(400).json({ success: false, message: "Payment not captured yet" });
     }
 
