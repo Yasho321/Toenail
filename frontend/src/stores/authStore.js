@@ -1,8 +1,7 @@
 import { create } from 'zustand';
 import { axiosInstance } from '../lib/axios.js';
 import toast from 'react-hot-toast';
-import { useAuth } from "@clerk/clerk-react";
- const { getToken } = useAuth();
+
 
 export const useAuthStore = create((set) => ({
   authUser: null,
@@ -10,12 +9,15 @@ export const useAuthStore = create((set) => ({
   isLoggedOut: false,
   token: 0,
 
-  checkAuth: async () => {
+  checkAuth: async (getToken) => {
     try {
       set({ isCheckingAuth: true });
+      
+      const token = await getToken();
+
       const response = await axiosInstance.get('/auth/me',{
         headers: {
-          Authorization: `Bearer ${await getToken()}`, // Attach token
+          Authorization: `Bearer ${token}`, // Attach token
         },});
       set({ 
         authUser: response.data.user,

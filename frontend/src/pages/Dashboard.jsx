@@ -7,8 +7,11 @@ import { Card } from '../components/ui/card';
 import { Plus, MessageSquare, Coins, Sparkles } from 'lucide-react';
 import ChatInterface from '../components/ChatInterface';
 import { Link } from 'react-router-dom';
+import { useAuth } from "@clerk/clerk-react";
+
 
 export default function Dashboard() {
+   const { getToken } = useAuth();
   const { user } = useUser();
   const { chats, currentChat, fetchChats, createChat, setCurrentChat, isCreatingChat } = useChatStore();
   const { token, checkAuth, isCheckingAuth } = useAuthStore();
@@ -16,7 +19,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (user) {
-      checkAuth();
+      checkAuth(getToken);
       fetchChats();
     }
   }, [user]);
