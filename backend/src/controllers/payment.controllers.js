@@ -101,7 +101,7 @@ export const razorpayWebhook = async (req, res) => {
       .digest("hex");
 
     if (shasum !== signature) {
-      return res.status(400).json({ success: false, message: "Invalid webhook signature" });
+      return res.status(400).json({ success: false,shasum ,signature, message: "Invalid webhook signature" });
     }
 
     const event = req.body.event;
