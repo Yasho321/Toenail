@@ -11,12 +11,16 @@ export const usePaymentStore = create((set) => ({
     pro: { amount: 1100, tokens: 50, name: 'Pro' },
   },
 
-  createOrder: async (planName) => {
+  createOrder: async (planName ,getToken) => {
     try {
       set({ isProcessingPayment: true });
+      const token = await getToken();
       const response = await axiosInstance.post('/payment/create-order', {
         planName
-      });
+      },{
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token
+        },});
       return response.data;
     } catch (error) {
       console.error("Error creating order:", error);
@@ -27,10 +31,15 @@ export const usePaymentStore = create((set) => ({
     }
   },
 
-  verifyPayment: async (paymentData) => {
+  verifyPayment: async (paymentData,getToken) => {
     try {
       set({ isProcessingPayment: true });
-      const response = await axiosInstance.post('/payment/verify', paymentData);
+      const token = getToken();
+      const response = await axiosInstance.post('/payment/verify', paymentData,{
+         headers: {
+          Authorization: `Bearer ${token}`, // Attach token
+        },
+      });
       
       if (response.data.success) {
         toast.success("Payment verified successfully!");

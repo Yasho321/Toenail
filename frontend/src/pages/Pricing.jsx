@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useUser, SignInButton } from '@clerk/clerk-react';
+import { useUser, SignInButton, useAuth } from '@clerk/clerk-react';
 import { usePaymentStore } from '../stores/paymentStore';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 
 export default function Pricing() {
   const { user } = useUser();
+  const {getToken}= useAuth();
   const { plans, createOrder, verifyPayment, isProcessingPayment } = usePaymentStore();
   const [selectedPlan, setSelectedPlan] = useState(null);
 
@@ -21,7 +22,7 @@ export default function Pricing() {
     setSelectedPlan(planName);
     
     try {
-      const orderData = await createOrder(planName);
+      const orderData = await createOrder(planName ,getToken);
       if (!orderData) return;
 
       // Load Razorpay script
@@ -45,7 +46,7 @@ export default function Pricing() {
               razorpay_signature: response.razorpay_signature,
             };
 
-            const isVerified = await verifyPayment(paymentData);
+            const isVerified = await verifyPayment(paymentData,getToken);
             if (isVerified) {
               toast.success(`Payment successful! ${plans[planName].tokens} tokens added to your account.`);
               // Redirect to dashboard

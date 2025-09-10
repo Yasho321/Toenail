@@ -9,8 +9,10 @@ import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Send, Upload, Download, Loader2, Image as ImageIcon, Bot, User } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useAuth } from '@clerk/clerk-react';
 
 export default function ChatInterface({ chatId }) {
+  const {getToken} = useAuth();
   const { messages, isLoading, isGenerating, fetchMessages, generateThumbnail } = useThumbnailStore();
   const { updateTokens } = useAuthStore();
   const messagesEndRef = useRef(null);
@@ -28,7 +30,7 @@ export default function ChatInterface({ chatId }) {
 
   useEffect(() => {
     if (chatId) {
-      fetchMessages(chatId);
+      fetchMessages(chatId,getToken);
     }
   }, [chatId]);
 
@@ -83,7 +85,7 @@ export default function ChatInterface({ chatId }) {
     submitData.append('resolution', formData.resolution);
     submitData.append('file', formData.file);
 
-    const result = await generateThumbnail(chatId, submitData);
+    const result = await generateThumbnail(chatId, submitData, getToken);
     
     if (result) {
       updateTokens(); // Deduct one token
@@ -102,10 +104,12 @@ export default function ChatInterface({ chatId }) {
 
   const handleDownloadAll = async (images) => {
     try {
+      const token = getToken();
       const response = await fetch('/api/v1/download/download-zip', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Attach token
         },
         body: JSON.stringify({ imageUrls: images }),
       });

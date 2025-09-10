@@ -20,7 +20,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (user) {
       checkAuth(getToken);
-      fetchChats();
+      fetchChats(getToken);
     }
   }, [user]);
 
@@ -28,7 +28,7 @@ export default function Dashboard() {
     if (token <= 0) {
       return;
     }
-    const newChat = await createChat();
+    const newChat = await createChat(getToken);
     if (newChat) {
       setSelectedChatId(newChat._id);
       setCurrentChat(newChat);

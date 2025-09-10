@@ -8,10 +8,14 @@ export const useChatStore = create((set, get) => ({
   isLoading: false,
   isCreatingChat: false,
 
-  fetchChats: async () => {
+  fetchChats: async (getToken) => {
     try {
       set({ isLoading: true });
-      const response = await axiosInstance.get('/chat/');
+      const token = await getToken();
+      const response = await axiosInstance.get('/chat/',{
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token
+        },});
       set({ chats: response.data.chat || [] });
     } catch (error) {
       console.error("Error fetching chats:", error);
@@ -21,10 +25,14 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  createChat: async () => {
+  createChat: async (getToken) => {
     try {
       set({ isCreatingChat: true });
-      const response = await axiosInstance.post('/chat/');
+      const token = await getToken();
+      const response = await axiosInstance.post('/chat/',{
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token
+        },});
       const newChat = response.data.chat;
       
       set((state) => ({

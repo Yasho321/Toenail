@@ -7,10 +7,13 @@ export const useThumbnailStore = create((set, get) => ({
   isLoading: false,
   isGenerating: false,
 
-  fetchMessages: async (chatId) => {
+  fetchMessages: async (chatId,getToken) => {
     try {
       set({ isLoading: true });
-      const response = await axiosInstance.get(`/thumbnail/${chatId}`);
+      const response = await axiosInstance.get(`/thumbnail/${chatId}`,{
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token
+        },});
       set({ messages: response.data.chatMessages || [] });
     } catch (error) {
       console.error("Error fetching messages:", error);
@@ -20,12 +23,15 @@ export const useThumbnailStore = create((set, get) => ({
     }
   },
 
-  generateThumbnail: async (chatId, formData) => {
+  generateThumbnail: async (chatId, formData,getToken) => {
     try {
       set({ isGenerating: true });
+      const token = getToken();
       const response = await axiosInstance.post(`/thumbnail/${chatId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`
+
         },
       });
       
