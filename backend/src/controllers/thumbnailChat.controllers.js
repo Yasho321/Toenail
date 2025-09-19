@@ -47,6 +47,20 @@ const mem = new Memory({
   },
 });
 
+
+async function resizeBase64(base64Image, width, height) {
+  const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, "");
+  const imgBuffer = Buffer.from(base64Data, "base64");
+
+  const resizedBuffer = await sharp(imgBuffer)
+    .resize(width, height, {
+      fit: "contain",      
+      background: { r: 0, g: 0, b: 0, alpha: 0 } 
+    })
+    .toBuffer();
+
+  return `data:image/png;base64,${resizedBuffer.toString("base64")}`;
+}
 export const createChat = async (req , res)=>{
     try {
         
@@ -60,6 +74,38 @@ export const createChat = async (req , res)=>{
         console.log('here user Id', userId , 'user', user ,'chatId', chatId);
         const token = user.tokenBalance;
         const {genre , title , mood ,resolution, prompt} = req.body;
+        const file = req.file;
+        const imgpath = file.path;
+        const imageData = fs.readFileSync(imgpath);
+        const base64Image = imageData.toString("base64");
+        const uploadedImage=await imagekit.upload({
+            file: base64Image,
+            fileName: file.originalname,
+            folder: "/user-img",
+        });
+        const imagekitFileId= uploadedImage.fileId
+        const moderation = await client.moderations.create({
+            model: "omni-moderation-latest",
+            input: [
+                { type: "text", text: prompt },
+                {
+                    type: "image_url",
+                    image_url: {
+                        url: uploadedImage.url
+                        
+                    }
+                }
+            ],
+        });
+        const moderationRes = moderation.results[0];
+        const flag = moderationRes.flagged ; 
+        if(flag){
+            const response = await imagekit.deleteFile(imagekitFileId);
+            return res.status(400).json({
+                success:false , 
+                messages : "Improper Content Can't process"
+            })
+        }
         
         const memories = await mem.search(prompt, { userId: 'piyush' });
         const memStr = memories.results.map((e) => e.memory).join('\n');
@@ -67,19 +113,25 @@ export const createChat = async (req , res)=>{
             Important Context About User according to the previous conversations:
              ${memStr}
         `
-        const file = req.file;
+        
         let width ; 
         let height; 
         console.log(resolution)
-        console.log(resolution.includes('video'));
+        console.log(resolution.includes('1280 x 720'));
         
-        if(resolution.includes('video')){
+        if(resolution.includes('1280 x 720')){
             width = 1280
             height = 720
+        }else if('1920 x 1080'){
+            width=1920
+            height=1080
         }else{
             width = 1080 
             height = 1920
+
         }
+
+        const resizedInput = await resizeBase64(base64Image,width,height)
         let images=[];
         let chatTitle ;
        if(token <= 0){
@@ -89,14 +141,7 @@ export const createChat = async (req , res)=>{
         })
        }
            
-        const imgpath = file.path;
-        const imageData = fs.readFileSync(imgpath);
-        const base64Image = imageData.toString("base64");
-        const uploadedImage=await imagekit.upload({
-            file: base64Image,
-            fileName: file.originalname,
-            folder: "/user-img",
-        });
+        
         
         images.push(uploadedImage.url);     
         let chatMessages= await ThumbnailChat.findOne({
@@ -166,16 +211,61 @@ export const createChat = async (req , res)=>{
             - given image should strictly be in given resolution
             - font in the thumbnail should look good
             - make it realistic 
-            - do not make it cartooni 
+            - do not make it cartoonish 
             - choose right fonts 
             - use image given by user
 
+            Here are some few shot examples of some good prompts :-
 
-            IMPORTANT : -
-            -  given image should strictly be in given resolution
+            gaming prompt :- 
+            Create a high-impact YouTube gaming thumbnail featuring the provided creator’s face photo in the foreground.
+            Make the face large, expressive, and dramatic (shocked, scared, hyped, or excited).
+            Place the creator slightly off-center, outlined with a subtle neon glow for contrast.
+            Add game-specific background scenes (e.g., monsters for horror, battlegrounds for shooters, mystical landscapes for fantasy).
+            Include key game elements or characters near the creator for context (zombies, NPCs, enemies, weapons, symbols).
+            Use cinematic lighting and effects (fog, sparks, fire, glowing eyes, motion blur) to enhance tension and excitement.
+            Add the game title or short text in bold, eye-catching fonts that match the game’s aesthetic (horror = distressed font, action = metallic, fantasy = glowing runes, etc.).
+            Style: hyper-realistic, cinematic, oversaturated colors, optimized for YouTube CTR.
 
+            music prompt :- 
+            "A cinematic, eye-catching thumbnail for a music video featuring the main artist or central figure in focus. Background can adapt to the mood — warm golden tones for romance, dark dramatic spotlight for intense themes, or bright colorful lights for festive/energetic vibes. The scene should feel like a film poster: expressive poses, cinematic lighting, and professional composition. Add large bold stylish title text (the song name) at the top or center, glowing or metallic for strong visibility. Include optional supporting text like ‘Official Video’ or view counts. Overall look should be high-quality, dramatic, and trending on YouTube, instantly grabbing attention."
 
-            Prompt :- 
+            vlogs and lifestyle :- 
+            A natural, aesthetic vlog thumbnail featuring the video creator in focus. Background shows an everyday lifestyle scene — such as a cozy home interior, a city street, or an outdoor setting. Lighting should be soft and cinematic but realistic (warm indoor lights or natural daylight). The style should be minimal and relatable, like a lifestyle photo. Add large, clean white serif text overlay with the video title (e.g., 'a cozy day', 'NYC vlog', 'a day in my life'). The overall feel should be simple, authentic, and eye-catching, similar to trending YouTube vlog thumbnails.
+
+            Tech and Review :- 
+            Create a vibrant, eye-catching YouTube thumbnail for a tech/review video. Place the video creator prominently in the foreground using the provided image, with a strong facial expression (surprised, excited, intrigued, or shocked). Use a bright solid or gradient background that contrasts with the subject. Include large, sharp, realistic images of the product, gadget, or software being reviewed, positioned clearly and angled toward the viewer. Add bold, minimal text if necessary (e.g., short phrases like 'This is Crazy!' or 'New Tech!'). Ensure the design is modern, high-definition, with saturated colors, strong lighting, and clear separation between the creator, background, and objects.
+
+            Education & How-To :-
+            Create a bold and eye-catching YouTube thumbnail for an educational or how-to video. Place a large, clear, close-up photo of the video creator on one side with good lighting and a confident or friendly expression. On the other side, add bright, relevant icons, diagrams, or illustrations related to the video topic (e.g., app logos, formulas, science symbols, finance icons). Use big, bold, easy-to-read text in uppercase with high contrast (like yellow, white, or blue) showing the main topic keywords (e.g., 'HOW IT WORKS', 'BUILD CHAT APP', 'LAWS OF MOTION'). Add highlights, glow, or banners to make the text pop. Use a clean, modern background with gradients or abstract patterns, ensuring the overall look is professional, vibrant, and clickable, optimized for YouTube education content.
+
+            Comedy & Entertainment:-
+            Create a bold and eye-catching YouTube thumbnail for a comedy or entertainment video. Place a large, expressive photo of the video creator (or group of creators) in the foreground, showing funny, exaggerated, or playful facial expressions. Add thematic props, costumes, or graphic effects (like hats, halos, devil horns, funny signs, or posters) to enhance the humor. Use large, bold, easy-to-read text in uppercase with bright, high-contrast colors (yellow, red, white, etc.), often with quotation marks or playful phrases that match the comedic theme. Keep the background simple but thematic (e.g., stage curtain, dark comedy set, dramatic backdrop) so the faces and text pop. Ensure the overall look is fun, vibrant, and clickable, optimized for YouTube comedy & entertainment content.
+
+            Fitness & Health:-
+            YouTube thumbnail style, photorealistic, high detail, dynamic fitness photo of a [male/female] fitness creator, [describe their action, e.g., flexing confidently, holding healthy food, performing a stretch]. They are looking at the camera with a motivated expression.
+            The image is dominated by large, bold, impactful text that reads: "[MAIN HEADLINE]". Below it, smaller but still bold text shows a contrast: "[NEGATIVE/WRONG WAY]" vs "[POSITIVE/RIGHT WAY]". The text has a strong outline or shadow for maximum readability.
+            The background is a clean, modern, blurred gym or kitchen background with vibrant color gradients. The overall style is professional, high-energy, and optimized for YouTube thumbnails with high contrast and saturation.
+
+            Beauty and Fashion :- 
+            YouTube thumbnail style, photorealistic, soft lighting, a beautiful [male/female] creator, [describe their pose and expression, e.g., smiling confidently at the camera, looking over their shoulder]. They are stylishly dressed in [describe outfit aesthetic, e.g., a formal blazer, a casual chic outfit].
+            The image features large, elegant text that reads: "[MAIN HEADLINE: e.g., MY GLOWUP ROUTINE]". Additional text like "[AFFORDABLE LUXURY]" or "[DAYS] TO [GOAL]" is placed stylishly around the composition. The text uses a modern, stylish font with a slight glow or shadow for readability.
+            The background is a soft-focus, aesthetic environment like a modern bedroom, a plain pastel wall, or an elegant coffee shop. The color palette is cohesive and pleasing, with a slight warm filter. The overall style is aspirational, clean, and optimized for YouTube with high clarity.
+
+            Food & Cooking:-
+            YouTube thumbnail style, photorealistic, extreme close-up shot of a delicious [dish name], steaming hot and freshly cooked. The food looks juicy, textured, and glistening, garnished with fresh cilantro/coriander leaves. A person's hands are in the frame, [describe interaction, e.g., holding the bowl, pouring gravy, breaking a piece of bread].
+            Large, bold, white or yellow text with a black outline is overlaid on the image, clearly readable, that says: "[DISH NAME IN CAPS]". Smaller text above or below adds context like "[REGION]'s Famous" or "[DESCRIPTOR, e.g., RESTAURANT STYLE, HOMEMADE]".
+            The background is a soft-focus, blurred kitchen environment. The style is highly saturated, high contrast, and cinematic food photography, designed to make the food look incredibly appetizing. Shot on a DSLR with a macro lens.
+
+            Travel & Adventure:-
+            YouTube thumbnail style, cinematic wide-angle photograph of a [male/female] travel creator from behind, looking out over a stunning view of [famous landmark or landscape, e.g., mountain range, city skyline, beach]. The scene is captured during golden hour with warm, dramatic lighting.
+            Large, bold, white text with a black outline is overlaid on the sky or a dark part of the image. The text reads: "[INTRODUCTORY PHRASE: e.g., SECRETS OF, I CAN'T BELIEVE, EXPLORING]" followed by "[LOCATION NAME IN CAPS]". The style is epic, aspirational, and makes the viewer want to click to experience the journey.
+                    
+                        
+        `
+
+        const USER_PROMPT =`
+            User Prompt :- 
             ${prompt}
             Resolution:-
             ${resolution} (Image produced should be strictly in this resolution)
@@ -185,13 +275,17 @@ export const createChat = async (req , res)=>{
             ${genre}
             Title of the video:-
             ${title}
+
         `
 
         const response = await client.chat.completions.create({
             model: 'gpt-4.1-mini',
             messages: [{
-                role : 'user',
+                role : 'system',
                 content : SYSTEM_PROMPT
+            },{
+                role: 'user',
+                content: USER_PROMPT
             }],
         }); 
 
@@ -238,56 +332,17 @@ export const createChat = async (req , res)=>{
         }); 
          const refinedPrompt2=response2.choices[0].message.content ;
 
-         const SYSTEM_PROMPT3 = `
-            You are an expert query rewritting assistant . You work is to refine the prompt along with other data given to make a prompt such 
-            that it makes the best thumbnail for youtube . 
-            You have to make the prompt such that it describe the thumbnail in more elaborate way so that accuracy of thumbnail should be max 
-            and as per the user's request . 
-            Rules :- 
-            - Never alter user's request , and add anything on your own . 
-            - Give prompts such that it makes professional level thumbnails.
-            - Include prompts which makes it look more real , and less ai generated
-            - given image should strictly be in given resolution
-            - font in the thumbnail should look good
-            - make it realistic 
-            - do not make it cartooni 
-            - choose right fonts 
-             - use image given by user
-
-            IMPORTANT : -
-            -  given image should strictly be in given resolution
-
-            Prompt :- 
-            ${prompt}
-            Resolution:-
-            ${resolution} (Image produced should be strictly in this resolution)
-            Mood of the video:-
-            ${mood}
-            Genre of the video :-
-            ${genre}
-            Title of the video:-
-            ${title}
-
-            And the prompt should be different from this :-
-            - ${refinedPrompt}
-            - ${refinedPrompt2}
-        `
-         const response3 = await client.chat.completions.create({
-            model: 'gpt-4.1-mini',
-            messages: [{
-                role : 'user',
-                content : SYSTEM_PROMPT3
-            }],
-        }); 
-
-        const refinedPrompt3=response3.choices[0].message.content ;
+        
          const promptForBanana = [
-            { text: `refined description :${refinedPrompt} , previous messages: ${previousChats}  ,user original query : ${prompt} ,
-             Important context about user : ${CONTEXT}` },
+            { text: `
+                Thumbnail description :${refinedPrompt} , 
+                previous messages: ${previousChats}  ,
+                user original query (original demand(priority)) : ${prompt} ,
+                Important context about user : ${CONTEXT}` },
             {
             inlineData: {
                 mimeType: "image/png",
-                data: base64Image,
+                data: resizedInput,
             },
             },
         ];
