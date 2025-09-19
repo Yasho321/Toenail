@@ -423,46 +423,7 @@ export const createChat = async (req , res)=>{
                 images2.push(uploadedImage.url)
             }
         }
-        const promptForBanana3 = [
-            { text: `refined description :${refinedPrompt3} , previous messages: ${previousChats}  ,user original query : ${prompt} 
-                Important context about user : ${CONTEXT}
-            ` },
-            {
-            inlineData: {
-                mimeType: "image/png",
-                data: base64Image,
-            },
-            },
-        ];
        
-        const response6 = await ai.models.generateContent({
-            model: "gemini-2.5-flash-image-preview",
-            contents: promptForBanana3,
-        });
-        for (const part of response6.candidates[0].content.parts) {
-           if (part.inlineData) {
-                const imageData = part.inlineData.data;
-                const imageBuffer = Buffer.from(imageData, "base64");
-                const resizedBuffer = await sharp(imageBuffer)
-                .resize(width, height, {
-                    fit: "inside",
-                    withoutEnlargement: true 
-                })
-                .toFormat("png") // Keep PNG format
-                .toBuffer();
-
-                const resizedBase64 = resizedBuffer.toString("base64");
-
-                const uploadedImage= await imagekit.upload({
-                    file: `data:image/png;base64,${resizedBase64}`,
-                    fileName: `${chatTitle}-thumbnail1.png`,
-                    folder: "/thumbnail-img",
-                    
-                });
-               
-                images2.push(uploadedImage.url)
-            }
-        }
         messageResponse.images=images2;
         messages.push(messageResponse);
         chatMessages.messages=messages;
