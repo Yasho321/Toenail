@@ -145,7 +145,7 @@ export default function ChatInterface({ chatId }) {
             
             {message.images && message.images.length > 0 && (
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                   {message.images.map((image, imgIndex) => (
                     <div key={imgIndex} className="group relative">
                       <img
@@ -231,11 +231,15 @@ export default function ChatInterface({ chatId }) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="gaming">Gaming</SelectItem>
-                  <SelectItem value="cooking">Cooking</SelectItem>
-                  <SelectItem value="tech">Technology</SelectItem>
-                  <SelectItem value="lifestyle">Lifestyle</SelectItem>
+                  <SelectItem value="music">Music</SelectItem>
+                  <SelectItem value="vlogs">Vlogs</SelectItem>
+                  <SelectItem value="tech">tech</SelectItem>
                   <SelectItem value="education">Education</SelectItem>
                   <SelectItem value="entertainment">Entertainment</SelectItem>
+                  <SelectItem value="fitness">Fitness</SelectItem>
+                  <SelectItem value="fashion">Fashion</SelectItem>
+                  <SelectItem value="cooking">Cooking</SelectItem>
+                  <SelectItem value="travel">Travel</SelectItem>
                 </SelectContent>
               </Select>
             </div>

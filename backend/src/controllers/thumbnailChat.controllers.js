@@ -219,7 +219,7 @@ export const createChat = async (req , res)=>{
 
             gaming prompt :- 
             Create a high-impact YouTube gaming thumbnail featuring the provided creator’s face photo in the foreground.
-            Make the face large but not extra large, expressive, and dramatic (shocked, scared, hyped, or excited) with a gaming setup (eg:- headphones ).
+            Make the face large but not extra large, expressive, and dramatic (shocked, scared, hyped, or excited) with a gaming setup (eg:- headphones must ).
             Place the creator off-center.
             Add game-specific background scenes (e.g., monsters for horror, battlegrounds for shooters, mystical landscapes for fantasy).
             Include key game elements or characters near the creator for context (zombies, NPCs, enemies, weapons, symbols).
