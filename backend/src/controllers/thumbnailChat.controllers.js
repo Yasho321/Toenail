@@ -59,7 +59,7 @@ async function resizeBase64(base64Image, width, height) {
     })
     .toBuffer();
 
-  return `data:image/png;base64,${resizedBuffer.toString("base64")}`;
+  return `${resizedBuffer.toString("base64")}`;
 }
 export const createChat = async (req , res)=>{
     try {
