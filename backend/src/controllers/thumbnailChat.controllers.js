@@ -7,6 +7,7 @@ import OpenAI from 'openai';
 import { Memory } from 'mem0ai/oss';
 import {   getAuth } from '@clerk/express'
 import { GoogleGenAI, Modality } from "@google/genai";
+import {gaming , music , vlog , tech , education , comedy , fitness , fashion , cooking , travel} from "../referenceImages.js"
 import Chat from "../models/chat.model.js";
 import sharp from "sharp";
 import User from "../models/user.model.js";
@@ -164,6 +165,9 @@ export const createChat = async (req , res)=>{
 
                         video title :- 
                         ${title}
+
+                        IMPORTANT :- 
+                        Output should be single string with only title no filler prefix
                     `
                 }],
             }); 
@@ -179,6 +183,19 @@ export const createChat = async (req , res)=>{
 
 
         }
+        const referenceImages = {
+            gaming : gaming ,
+            music , 
+            vlogs : vlog , 
+            tech,
+            education,
+            entertainment : comedy,
+            fitness ,
+            fashion,
+            cooking,
+            travel
+        }
+        const resizedRefrenceImages = resizeBase64(referenceImages[genre], width , height)
         let messages = chatMessages?.messages || [];
         let previousChats ;
         if (messages.length >50){
@@ -386,12 +403,22 @@ export const createChat = async (req , res)=>{
                 Thumbnail description :${refinedPrompt} , 
                 previous messages: ${previousChats}  ,
                 user original query : ${prompt} ,
-                Important context about user : ${CONTEXT}` },
+                Important context about user : ${CONTEXT}
+                Reference Image is also attached take that as a reference to edit the user image given , 
+                User Image is also attached 
+                ` },
+                
             {
             inlineData: {
                 mimeType: "image/png",
                 data: resizedInput,
             },
+            },
+            {
+                inlineData:{
+                    mimeType : "image/png",
+                    data : resizedRefrenceImages ,
+                },
             },
         ];
         let messageResponse={
@@ -437,12 +464,20 @@ export const createChat = async (req , res)=>{
                 previous messages: ${previousChats}  ,
                 user original query : ${prompt} ,
                 Important context about user : ${CONTEXT}
+                Reference Image is also attached take that as a reference to edit the user image given , 
+                User Image is also attached 
             ` },
             {
             inlineData: {
                 mimeType: "image/png",
                 data: resizedInput,
             },
+            },
+            {
+                inlineData:{
+                    mimeType : "image/png",
+                    data : resizedRefrenceImages ,
+                },
             },
         ];
         
