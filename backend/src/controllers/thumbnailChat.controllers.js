@@ -107,7 +107,7 @@ export const createChat = async (req , res)=>{
             })
         }
         
-        const memories = await mem.search(prompt, { userId: 'piyush' });
+        const memories = await mem.search(prompt, { userId: String(userId) });
         const memStr = memories.results.map((e) => e.memory).join('\n');
         const CONTEXT = `
             Important Context About User according to the previous conversations:
@@ -521,6 +521,105 @@ export const createChat = async (req , res)=>{
     }
 
 }
+
+export const continueChat = async(req,res)=>{
+    try {
+        const { userId } = getAuth(req, {acceptsToken :'any'})
+        const user= await user.findOne({clerkId : userId})
+        const {chatId} =req.params 
+        const {url , prompt} = req.body ; 
+        const response = await axios.get(url, { responseType: "arraybuffer" });
+        const base64 = Buffer.from(response.data, "binary").toString("base64");
+         const memories = await mem.search(prompt, { userId: String(user._id) });
+        const memStr = memories.results.map((e) => e.memory).join('\n');
+        const CONTEXT = `
+            Important Context About User according to the previous conversations:
+             ${memStr}
+        `
+
+        const chat = await ThumbnailChat.findOne({chatId});
+        if(!chat){
+            return res.status(400).json({
+                success:false , 
+                message : "No such chat exists"
+            })
+        }
+        let chatMessages = chat.messages ; 
+        chatMessages.push({
+            role: 'user',
+            text: prompt,
+            images : [url]
+        })
+
+        const promptForBanana = [
+            { text: prompt },
+            {
+            inlineData: {
+                mimeType: "image/png",
+                data: base64,
+            },
+            },
+        ];
+
+        let messageResponse = {role : "assistant"} ; 
+        let images = [];
+
+        const response2 = await ai.models.generateContent({
+            model: "gemini-2.5-flash-image-preview",
+            contents: promptForBanana,
+        });
+        for (const part of response2.candidates[0].content.parts) {
+            if (part.text) {
+                messageResponse.text = part.text;         
+            } else if (part.inlineData) {
+                
+                const imageData = part.inlineData.data;
+                const uploadedImage= await imagekit.upload({
+                    file: `data:image/png;base64,${imageData}`,
+                    fileName: `${chatTitle}-thumbnail1.png`,
+                    folder: "/thumbnail-img",
+                    
+                });
+               
+                images.push(uploadedImage.url)
+                
+            }
+        }
+       messageResponse.images = images;
+        chatMessages.push(messageResponse) ; 
+        chat.messages = chatMessages ; 
+        await chat.save(); 
+        user.tokenBalance -= 1 ; 
+        await user.save(); 
+
+         await mem.add(
+        [
+            { role: "user", content: prompt },
+            { role: "assistant", content: messageResponse.text },
+        ],
+        { userId : String(user._id) }
+        );
+
+        return res.status(200).json({
+            success : true , 
+            message : "Thumbnail chat continued successfully",
+            chat, 
+            updatedTokens : user.tokenBalance ,
+            response : messageResponse
+        })
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success:false , 
+            message : "Internal server while continuing Chat"
+        })
+        
+        
+    }
+        
+}
+
 export const getChat = async (req , res)=>{
     try {
        const { userId } = getAuth(req, { acceptsToken: 'any' })
