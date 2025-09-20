@@ -415,10 +415,10 @@ export const createChat = async (req , res)=>{
             },
             },
             {
-                inlineData:{
-                    mimeType : "image/png",
-                    data : resizedRefrenceImages ,
-                },
+            inlineData: {
+                mimeType: "image/png",
+                data: resizedRefrenceImages,
+            },
             },
         ];
         let messageResponse={
@@ -474,10 +474,10 @@ export const createChat = async (req , res)=>{
             },
             },
             {
-                inlineData:{
-                    mimeType : "image/png",
-                    data : resizedRefrenceImages ,
-                },
+            inlineData: {
+                mimeType: "image/png",
+                data: resizedRefrenceImages,
+            },
             },
         ];
         
