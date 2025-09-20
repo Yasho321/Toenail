@@ -196,6 +196,10 @@ export const createChat = async (req , res)=>{
             travel
         }
         const resizedRefrenceImages = resizeBase64(referenceImages[genre], width , height)
+        console.log(typeof resizedRefrenceImages)
+        console.log(typeof resizedInput)
+        console.log( resizedRefrenceImages.slice(0,30))
+        console.log(resizedInput.slice(0,30))
         let messages = chatMessages?.messages || [];
         let previousChats ;
         if (messages.length >50){
