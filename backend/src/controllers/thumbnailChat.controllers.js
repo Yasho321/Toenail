@@ -195,11 +195,13 @@ export const createChat = async (req , res)=>{
             cooking,
             travel
         }
-        const resizedRefrenceImages = resizeBase64(referenceImages[genre], width , height)
+        const resizedRefrenceImages =await  resizeBase64(referenceImages[genre], width , height);
         console.log(typeof resizedRefrenceImages)
         console.log(typeof resizedInput)
         console.log( resizedRefrenceImages.slice(0,30))
         console.log(resizedInput.slice(0,30))
+        console.log(resizedRefrenceImages);
+        
         let messages = chatMessages?.messages || [];
         let previousChats ;
         if (messages.length >50){
