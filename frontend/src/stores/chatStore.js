@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { axiosInstance } from '../lib/axios';
+import { axiosInstance } from '../lib/axios.js';
 import toast from 'react-hot-toast';
 
 export const useChatStore = create((set, get) => ({
@@ -8,10 +8,14 @@ export const useChatStore = create((set, get) => ({
   isLoading: false,
   isCreatingChat: false,
 
-  fetchChats: async () => {
+  fetchChats: async (getToken) => {
     try {
       set({ isLoading: true });
-      const response = await axiosInstance.get('/chat/');
+      const token = await getToken();
+      const response = await axiosInstance.get('/chat/',{
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token
+        },});
       set({ chats: response.data.chat || [] });
     } catch (error) {
       console.error("Error fetching chats:", error);
@@ -21,10 +25,16 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  createChat: async () => {
+  createChat: async (getToken) => {
     try {
       set({ isCreatingChat: true });
-      const response = await axiosInstance.post('/chat/');
+      const token = await getToken();
+      const response = await axiosInstance.post('/chat/', {},{
+        headers: {
+          Authorization: `Bearer ${token}`, 
+           'Content-Type': 'application/json',
+          // Attach token
+        },});
       const newChat = response.data.chat;
       
       set((state) => ({
@@ -60,9 +70,15 @@ export const useChatStore = create((set, get) => ({
 
   renameChat: async (chatId, newTitle) => {
     try {
+      const token = await getToken();
       const response = await axiosInstance.put(`/chat/${chatId}`, {
         rename: newTitle
-      });
+      },{
+        headers: {
+          Authorization: `Bearer ${token}`, 
+           'Content-Type': 'application/json',
+          // Attach token
+        },});
       
       set((state) => ({
         chats: state.chats.map((chat) =>
@@ -84,7 +100,11 @@ export const useChatStore = create((set, get) => ({
 
   deleteChat: async (chatId) => {
     try {
-      await axiosInstance.delete(`/chat/${chatId}`);
+      const token = await getToken();
+      await axiosInstance.delete(`/chat/${chatId}`,{
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token
+        },});
       
       set((state) => ({
         chats: state.chats.filter((chat) => chat._id !== chatId),
