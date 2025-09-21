@@ -55,7 +55,7 @@ export const useThumbnailStore = create((set, get) => ({
     try {
       set({ isGenerating: true });
       const token = await getToken();
-      const response = await axiosInstance.post(`/thumbnail/${chatId}`, {
+      const response = await axiosInstance.put(`/thumbnail/${chatId}`, {
         url: imageUrl,
         prompt: prompt
       }, {

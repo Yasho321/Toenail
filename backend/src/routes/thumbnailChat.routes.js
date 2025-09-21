@@ -8,7 +8,7 @@ import { uploadOne } from '../libs/multer.js';
 const router = Router();
 
 router.post("/:chatId", uploadOne,  createChat)
-router.post("/:chatId", continueChat)
+router.put("/:chatId", continueChat)
 
 router.get("/:chatId" ,  getChat)
 
