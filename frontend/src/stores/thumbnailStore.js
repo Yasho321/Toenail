@@ -51,10 +51,10 @@ export const useThumbnailStore = create((set, get) => ({
   clearMessages: () => {
     set({ messages: [] });
   },
-  continueChat: async (chatId, imageUrl, prompt) => {
+  continueChat: async (chatId, imageUrl, prompt,getToken) => {
     try {
       set({ isGenerating: true });
-      const token = await  getToken();
+      const token = await getToken();
       const response = await axiosInstance.post(`/thumbnail/${chatId}`, {
         url: imageUrl,
         prompt: prompt

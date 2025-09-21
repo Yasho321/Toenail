@@ -6,8 +6,9 @@ import { ScrollArea } from './ui/scroll-area';
 import { Send, Image as ImageIcon } from 'lucide-react';
 import { useThumbnailStore } from '../stores/thumbnailStore';
 import { useAuthStore } from '../stores/authStore';
-
+import { useAuth } from '@clerk/clerk-react';
 export default function ContinueChatModal({ isOpen, onClose, chatId, selectedImage }) {
+    const {getToken} = useAuth();
   const [prompt, setPrompt] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const { continueChat, isGenerating } = useThumbnailStore();
@@ -26,7 +27,7 @@ export default function ContinueChatModal({ isOpen, onClose, chatId, selectedIma
     setChatHistory(prev => [...prev, userMessage]);
     setPrompt('');
 
-    const result = await continueChat(chatId, selectedImage, prompt);
+    const result = await continueChat(chatId, selectedImage, prompt,getToken);
     
     if (result.success) {
       setChatHistory(prev => [...prev, {

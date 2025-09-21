@@ -68,7 +68,7 @@ export const useChatStore = create((set, get) => ({
     }));
   },
 
-  renameChat: async (chatId, newTitle) => {
+  renameChat: async (chatId, newTitle,getToken) => {
     try {
       const token = await getToken();
       const response = await axiosInstance.put(`/chat/${chatId}`, {
@@ -98,7 +98,7 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  deleteChat: async (chatId) => {
+  deleteChat: async (chatId,getToken) => {
     try {
       const token = await getToken();
       await axiosInstance.delete(`/chat/${chatId}`,{

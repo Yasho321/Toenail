@@ -4,15 +4,16 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Sparkles, Edit3, Trash2, Check, X } from 'lucide-react';
 import { useChatStore } from '../stores/chatStore';
-
+import { useAuth } from '@clerk/clerk-react';
 export default function ChatCard({ chat, isSelected, onSelect }) {
+    const {getToken} = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(chat.title || 'Untitled Chat');
   const { renameChat, deleteChat } = useChatStore();
 
   const handleRename = async () => {
     if (editTitle.trim() && editTitle !== chat.title) {
-      const success = await renameChat(chat._id, editTitle.trim());
+      const success = await renameChat(chat._id, editTitle.trim(),getToken);
       if (success) {
         setIsEditing(false);
       }
@@ -24,7 +25,7 @@ export default function ChatCard({ chat, isSelected, onSelect }) {
   const handleDelete = async (e) => {
     e.stopPropagation();
     if (window.confirm('Are you sure you want to delete this chat?')) {
-      await deleteChat(chat._id);
+      await deleteChat(chat._id,getToken);
     }
   };
 
