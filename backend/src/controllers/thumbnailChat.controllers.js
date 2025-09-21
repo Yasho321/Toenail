@@ -525,7 +525,7 @@ export const createChat = async (req , res)=>{
 export const continueChat = async(req,res)=>{
     try {
         const { userId } = getAuth(req, {acceptsToken :'any'})
-        const user= await user.findOne({clerkId : userId})
+        const user= await User.findOne({clerkId : userId})
         const {chatId} =req.params 
         const {url , prompt} = req.body ; 
         const response = await axios.get(url, { responseType: "arraybuffer" });
