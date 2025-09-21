@@ -4,6 +4,7 @@ import 'dotenv/config'
 import ImageKit from 'imagekit';
 import fs from 'fs'
 import OpenAI from 'openai';
+import axios from 'axios'
 import { Memory } from 'mem0ai/oss';
 import {   getAuth } from '@clerk/express'
 import { GoogleGenAI, Modality } from "@google/genai";
