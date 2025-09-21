@@ -564,6 +564,7 @@ export const continueChat = async(req,res)=>{
             },
             },
         ];
+        const date = Date.now()
 
         let messageResponse = {role : "assistant"} ; 
         let images = [];
@@ -580,7 +581,7 @@ export const continueChat = async(req,res)=>{
                 const imageData = part.inlineData.data;
                 const uploadedImage= await imagekit.upload({
                     file: `data:image/png;base64,${imageData}`,
-                    fileName: `${chatTitle}-thumbnail1.png`,
+                    fileName: `${chatTitle}-thumbnail${date}.png`,
                     folder: "/thumbnail-img",
                     
                 });
