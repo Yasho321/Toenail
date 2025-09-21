@@ -552,6 +552,8 @@ export const continueChat = async(req,res)=>{
             images : [url]
         })
 
+        const chat2 = await Chat.findById(chatId)
+        const chatTitle = chat2.title
         const promptForBanana = [
             { text: `
                 Prompt :- ${prompt}
