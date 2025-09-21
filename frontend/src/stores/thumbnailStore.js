@@ -7,14 +7,10 @@ export const useThumbnailStore = create((set, get) => ({
   isLoading: false,
   isGenerating: false,
 
-  fetchMessages: async (chatId,getToken) => {
+  fetchMessages: async (chatId) => {
     try {
       set({ isLoading: true });
-      const token = await getToken();
-      const response = await axiosInstance.get(`/thumbnail/${chatId}`,{
-        headers: {
-          Authorization: `Bearer ${token}`, // Attach token
-        },});
+      const response = await axiosInstance.get(`/thumbnail/${chatId}`);
       set({ messages: response.data.chatMessages || [] });
     } catch (error) {
       console.error("Error fetching messages:", error);
@@ -24,15 +20,12 @@ export const useThumbnailStore = create((set, get) => ({
     }
   },
 
-  generateThumbnail: async (chatId, formData,getToken) => {
+  generateThumbnail: async (chatId, formData) => {
     try {
       set({ isGenerating: true });
-      const token = await  getToken();
       const response = await axiosInstance.post(`/thumbnail/${chatId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`
-
         },
       });
       
@@ -50,5 +43,29 @@ export const useThumbnailStore = create((set, get) => ({
 
   clearMessages: () => {
     set({ messages: [] });
+  },
+
+  continueChat: async (chatId, imageUrl, prompt) => {
+    try {
+      set({ isGenerating: true });
+      const response = await axiosInstance.post(`/thumbnail/${chatId}`, {
+        url: imageUrl,
+        prompt: prompt
+      });
+      
+      set({ messages: [response.data.chat] });
+      toast.success("Chat continued successfully!");
+      return {
+        success: true,
+        response: response.data.response,
+        updatedTokens: response.data.updatedTokens
+      };
+    } catch (error) {
+      console.error("Error continuing chat:", error);
+      toast.error(error.response?.data?.message || "Failed to continue chat");
+      return { success: false };
+    } finally {
+      set({ isGenerating: false });
+    }
   }
 }));

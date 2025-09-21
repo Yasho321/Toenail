@@ -552,7 +552,10 @@ export const continueChat = async(req,res)=>{
         })
 
         const promptForBanana = [
-            { text: prompt },
+            { text: `
+                Prompt :- ${prompt}
+                Context about user :- ${CONTEXT}
+                ` },
             {
             inlineData: {
                 mimeType: "image/png",

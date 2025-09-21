@@ -4,8 +4,10 @@ import { useChatStore } from '../stores/chatStore';
 import { useAuthStore } from '../stores/authStore';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
+import { ScrollArea } from '../components/ui/scroll-area';
 import { Plus, MessageSquare, Coins, Sparkles } from 'lucide-react';
 import ChatInterface from '../components/ChatInterface';
+import ChatCard from '../components/ChatCard';
 import { Link } from 'react-router-dom';
 import { useAuth } from "@clerk/clerk-react";
 
@@ -64,9 +66,9 @@ export default function Dashboard() {
   return (
     <div className="h-screen bg-background flex">
       {/* Sidebar */}
-      <div className="w-80 border-r border-border flex flex-col">
-        {/* Header */}
-        <div className="p-4 border-b border-border">
+     <div className="w-80 border-r border-border flex flex-col h-full">
+        {/* Header - Fixed */}
+        <div className="p-4 border-b border-border flex-shrink-0">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-xl font-bold">ThumbnailAI</h1>
             <UserButton />
@@ -90,7 +92,7 @@ export default function Dashboard() {
         </div>
 
         {/* New Chat Button */}
-        <div className="p-4">
+        <div className="p-4 flex-shrink-0">
           <Button
             onClick={handleCreateChat}
             disabled={isCreatingChat || token <= 0}
@@ -103,43 +105,30 @@ export default function Dashboard() {
         </div>
 
         {/* Chat List */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-2">
-          {chats.length === 0 ? (
-            <div className="text-center py-8">
-              <MessageSquare className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">No chats yet</p>
-              <p className="text-sm text-muted-foreground">Create your first thumbnail!</p>
-            </div>
-          ) : (
-            chats.map((chat) => (
-              <Card
-                key={chat._id}
-                className={`p-3 cursor-pointer transition-all duration-200 hover:bg-accent ${
-                  selectedChatId === chat._id ? 'bg-accent border-primary/50' : ''
-                }`}
-                onClick={() => handleSelectChat(chat)}
-              >
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center flex-shrink-0">
-                    <Sparkles className="w-4 h-4 text-primary-foreground" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-medium truncate">
-                      {chat.title || 'Untitled Chat'}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {new Date(chat.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-            ))
-          )}
-        </div>
+        <ScrollArea className="flex-1">
+          <div className="p-4 space-y-2">
+            {chats.length === 0 ? (
+              <div className="text-center py-8">
+                <MessageSquare className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">No chats yet</p>
+                <p className="text-sm text-muted-foreground">Create your first thumbnail!</p>
+              </div>
+            ) : (
+              chats.map((chat) => (
+                <ChatCard
+                  key={chat._id}
+                  chat={chat}
+                  isSelected={selectedChatId === chat._id}
+                  onSelect={handleSelectChat}
+                />
+              ))
+            )}
+          </div>
+        </ScrollArea>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col h-full">
         {selectedChatId ? (
           <ChatInterface chatId={selectedChatId} />
         ) : (

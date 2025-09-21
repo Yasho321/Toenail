@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { axiosInstance } from '../lib/axios.js';
+import { axiosInstance } from '../lib/axios';
 import toast from 'react-hot-toast';
 
 export const useChatStore = create((set, get) => ({
@@ -8,14 +8,10 @@ export const useChatStore = create((set, get) => ({
   isLoading: false,
   isCreatingChat: false,
 
-  fetchChats: async (getToken) => {
+  fetchChats: async () => {
     try {
       set({ isLoading: true });
-      const token = await getToken();
-      const response = await axiosInstance.get('/chat/',{
-        headers: {
-          Authorization: `Bearer ${token}`, // Attach token
-        },});
+      const response = await axiosInstance.get('/chat/');
       set({ chats: response.data.chat || [] });
     } catch (error) {
       console.error("Error fetching chats:", error);
@@ -25,16 +21,10 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  createChat: async (getToken) => {
+  createChat: async () => {
     try {
       set({ isCreatingChat: true });
-      const token = await getToken();
-      const response = await axiosInstance.post('/chat/', {},{
-        headers: {
-          Authorization: `Bearer ${token}`, 
-           'Content-Type': 'application/json',
-          // Attach token
-        },});
+      const response = await axiosInstance.post('/chat/');
       const newChat = response.data.chat;
       
       set((state) => ({
@@ -66,5 +56,47 @@ export const useChatStore = create((set, get) => ({
         ? { ...state.currentChat, title } 
         : state.currentChat
     }));
+  },
+
+  renameChat: async (chatId, newTitle) => {
+    try {
+      const response = await axiosInstance.put(`/chat/${chatId}`, {
+        rename: newTitle
+      });
+      
+      set((state) => ({
+        chats: state.chats.map((chat) =>
+          chat._id === chatId ? { ...chat, title: newTitle } : chat
+        ),
+        currentChat: state.currentChat?._id === chatId 
+          ? { ...state.currentChat, title: newTitle } 
+          : state.currentChat
+      }));
+      
+      toast.success("Chat renamed successfully");
+      return true;
+    } catch (error) {
+      console.error("Error renaming chat:", error);
+      toast.error("Failed to rename chat");
+      return false;
+    }
+  },
+
+  deleteChat: async (chatId) => {
+    try {
+      await axiosInstance.delete(`/chat/${chatId}`);
+      
+      set((state) => ({
+        chats: state.chats.filter((chat) => chat._id !== chatId),
+        currentChat: state.currentChat?._id === chatId ? null : state.currentChat
+      }));
+      
+      toast.success("Chat deleted successfully");
+      return true;
+    } catch (error) {
+      console.error("Error deleting chat:", error);
+      toast.error("Failed to delete chat");
+      return false;
+    }
   }
 }));
