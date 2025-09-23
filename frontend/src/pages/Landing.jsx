@@ -32,7 +32,7 @@ export default function Landing() {
             <div className="flex justify-between items-center py-3 sm:py-4">
               <div className="flex items-center space-x-1 sm:space-x-2">
                 <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center">
-                  <img src="../../public/logo.png"/>
+                  <img src="./logo.png"/>
                 </div>
                 <span className="text-lg sm:text-xl font-bold text-white">Toenail <span className="text-red-600">AI</span></span>
               </div>
