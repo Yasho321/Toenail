@@ -8,14 +8,16 @@ import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { ScrollArea } from './ui/scroll-area';
-import { Send, Upload, Download, Loader2, Image as ImageIcon, Bot, User, MessageCircle } from 'lucide-react';
+import { Send, Upload, Download, Loader2, Image as ImageIcon, Bot, User, MessageCircle, X } from 'lucide-react';
 import ContinueChatModal from './ContinueChatModal';
 import toast from 'react-hot-toast';
 import { useAuth } from '@clerk/clerk-react';
+import FileInput from './ui/file-input';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 export default function ChatInterface({ chatId }) {
   const {getToken} = useAuth();
-  const { messages, isLoading, isGenerating, fetchMessages, generateThumbnail } = useThumbnailStore();
+  const { messages, isLoading, isGenerating, fetchMessages, generateThumbnail ,continueChat} = useThumbnailStore();
   const { updateTokens } = useAuthStore();
   const messagesEndRef = useRef(null);
   
@@ -107,6 +109,33 @@ export default function ChatInterface({ chatId }) {
     }
   };
 
+  const [prompt , setPrompt]= useState("");
+
+  const[isDownloading , setIsDownloading]=useState(false);
+
+  const handleDownloadSingle = async (image) => {
+    try {
+      setIsDownloading(true);
+      const response = await fetch(image);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "thumbnail.jpg";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Clean up the URL object
+      window.URL.revokeObjectURL(url);
+      setIsDownloading(false)
+    } catch (error) {
+      setIsDownloading(false)
+      console.error("Error downloading file:", error);
+    }
+  };
+
   const handleDownloadAll = async (images) => {
     try {
       const token =await getToken();
@@ -136,20 +165,62 @@ export default function ChatInterface({ chatId }) {
     setSelectedImageForChat(imageUrl);
     setContinueChatOpen(true);
   };
+  const handleSelectImage = () => {
+    setSelectedImageForChat(null);
+    
+  };
+
+   const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const handleSendMessage = async () => {
+    console.log('here ');
+    console.log(prompt,selectedImageForChat);
+    if (!prompt.trim() || !selectedImageForChat) return;
+    
+    
+    console.log('here 2');
+    
+    // const userMessage = {
+    //   role: 'user',
+    //   text: prompt,
+    //   images: [selectedImage],
+    //   createdAt: new Date().toISOString()
+    // };
+
+    // setChatHistory(prev => [...prev, userMessage]);
+    setPrompt('');
+
+    const result = await continueChat(chatId, selectedImageForChat, prompt,getToken);
+    
+    if (result.success) {
+      // setChatHistory(prev => [...prev, {
+      //   role: 'assistant',
+      //   text: result.response.text,
+      //   images: result.response.images || [],
+      //   createdAt: new Date().toISOString()
+      // }]);
+      updateTokens();
+    }
+  };
   const renderMessage = (message, index) => {
     const isUser = message.role === 'user';
     
     return (
       <div key={index} className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
         {!isUser && (
-          <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center flex-shrink-0">
-            <Bot className="w-4 h-4 text-primary-foreground" />
+          <div className="w-8 h-8 backdrop-blur-sm bg-white/5 hover:border-red-600 border-red-600/50 shadow-xl flex items-center justify-center flex-shrink-0">
+            <Bot className="w-4 h-4 text-white" />
           </div>
         )}
         
         <div className={`max-w-2xl ${isUser ? 'order-first' : ''}`}>
-          <Card className={`p-4 ${isUser ? 'bg-primary text-primary-foreground' : 'bg-card'}`}>
-            <p className="mb-3">{message.text}</p>
+          <Card className={`p-4 backdrop-blur-sm bg-white/5 hover:border-red-600 border-red-600/50 shadow-xl text-white `}>
+            <p className="mb-3 ">{message.text}</p>
             
             {message.images && message.images.length > 0 && (
               <div className="space-y-4">
@@ -159,24 +230,48 @@ export default function ChatInterface({ chatId }) {
                       <img
                         src={image}
                         alt={`Generated thumbnail ${imgIndex + 1}`}
-                        className="w-full aspect-video object-cover rounded-lg border border-border"
+                        className={` w-full aspect-video object-cover  rounded-lg  ${image===selectedImageForChat ? " border border-red-700 hover:border-red-700 shadow-lg shadow-red-500/40 scale-105 ": "border border-border"}`}
                       />
                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
+                        {image===selectedImageForChat ? (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleSelectImage()}
+                            className="bg-white/10 hover:bg-black/90 text-white"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        ):(
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                onClick={() => handleContinueChat(image)}
+                                className="bg-white/10 hover:bg-black/90 text-white"
+                              >
+                                <MessageCircle className="w-4 h-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Select to chat</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
                         <Button
-                          variant="secondary"
                           size="sm"
-                          onClick={() => handleContinueChat(image)}
-                          className="bg-black/70 hover:bg-black/90 text-white"
+                          variant="secondary"
+                          className="bg-white/10 text-white px-3 py-1 rounded-md text-sm font-medium hover:bg-black/90 "
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDownloadSingle(image);
+                          }}
+                          disabled={isDownloading}
                         >
-                          <MessageCircle className="w-4 h-4" />
+                          <Download  />
+                          
                         </Button>
-                        <a
-                          href={image}
-                          download
-                          className="bg-primary text-primary-foreground px-3 py-1 rounded-md text-sm font-medium hover:bg-primary/90"
-                        >
-                          Download
-                        </a>
                       </div>
                     </div>
                   ))}
@@ -187,7 +282,7 @@ export default function ChatInterface({ chatId }) {
                     onClick={() => handleDownloadAll(message.images)}
                     variant="outline"
                     size="sm"
-                    className="w-full"
+                    className="w-full bg-white/10 hover:bg-black hover:text-white"
                   >
                     <Download className="w-4 h-4" />
                     Download All as ZIP
@@ -199,8 +294,8 @@ export default function ChatInterface({ chatId }) {
         </div>
         
         {isUser && (
-          <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center flex-shrink-0">
-            <User className="w-4 h-4 text-secondary-foreground" />
+          <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center flex-shrink-0">
+            <User className="w-4 h-4 text-white" />
           </div>
         )}
       </div>
@@ -210,7 +305,7 @@ export default function ChatInterface({ chatId }) {
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <Loader2 className="w-8 h-8 mt-30 animate-spin text-white" />
       </div>
     );
   }
@@ -219,19 +314,19 @@ export default function ChatInterface({ chatId }) {
      <div className="flex-1 flex flex-col h-full">
       {/* Header */}
       <div className="p-4 border-b border-border flex-shrink-0">
-        <h2 className="text-lg font-semibold">AI Thumbnail Generator</h2>
-        <p className="text-sm text-muted-foreground">Create amazing YouTube thumbnails with AI</p>
+        <h2 className="text-lg text-white font-semibold">AI Thumbnail Generator</h2>
+        <p className="text-sm text-white">Create amazing YouTube thumbnails with AI</p>
       </div>
 
       {/* Messages Area - Scrollable */}
       <ScrollArea className="flex-1">
         <div className="p-6 space-y-6">
           {messages.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center">
+            <div className="flex-1 flex items-center justify-center my-15">
               <div className="text-center">
-                <ImageIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No messages yet</h3>
-                <p className="text-muted-foreground">Upload an image and describe your thumbnail to get started!</p>
+                <ImageIcon className="w-12 h-12 text-white mx-auto mb-4" />
+                <h3 className="text-lg text-white font-semibold mb-2">No messages yet</h3>
+                <p className="text-white">Upload an image and describe your thumbnail to get started!</p>
               </div>
             </div>
           ) : (
@@ -244,11 +339,13 @@ export default function ChatInterface({ chatId }) {
       </ScrollArea>
 
       {/* Input Form - Fixed */}
-      <div className="border-t border-border p-6 flex-shrink-0">
+      {
+        messages.length === 0 ? (
+          <div className="border-t border-border p-6 flex-shrink-0">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 text-white md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <Label htmlFor="genre">Genre</Label>
+              <Label htmlFor="genre" className="mb-2">Genre</Label>
               <Select value={formData.genre} onValueChange={(value) => setFormData({ ...formData, genre: value })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select genre" />
@@ -269,7 +366,7 @@ export default function ChatInterface({ chatId }) {
             </div>
 
             <div>
-              <Label htmlFor="mood">Mood</Label>
+              <Label htmlFor="mood" className="mb-2">Mood</Label>
               <Select value={formData.mood} onValueChange={(value) => setFormData({ ...formData, mood: value })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select mood" />
@@ -286,7 +383,7 @@ export default function ChatInterface({ chatId }) {
             </div>
 
             <div>
-              <Label htmlFor="resolution">Resolution</Label>
+              <Label htmlFor="resolution" className="mb-2">Resolution</Label>
               <Select value={formData.resolution} onValueChange={(value) => setFormData({ ...formData, resolution: value })}>
                 <SelectTrigger>
                   <SelectValue />
@@ -299,7 +396,7 @@ export default function ChatInterface({ chatId }) {
             </div>
 
             <div>
-              <Label htmlFor="title">Video Title</Label>
+              <Label htmlFor="title" className="mb-2">Video Title</Label>
               <Input
                 id="title"
                 placeholder="Enter video title"
@@ -311,33 +408,14 @@ export default function ChatInterface({ chatId }) {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="file">Upload Image</Label>
-              <div className="border-2 border-dashed border-border rounded-lg p-4">
-                <input
-                  type="file"
-                  id="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-                <label
-                  htmlFor="file"
-                  className="cursor-pointer flex flex-col items-center justify-center space-y-2"
-                >
-                  {previewUrl ? (
-                    <img src={previewUrl} alt="Preview" className="max-h-32 rounded-lg" />
-                  ) : (
-                    <>
-                      <Upload className="w-8 h-8 text-muted-foreground" />
-                      <span className="text-muted-foreground">Click to upload image</span>
-                    </>
-                  )}
-                </label>
+              <Label htmlFor="file" className="mb-2 text-white">Upload Image</Label>
+              <div className="w-[200%]">
+                <FileInput  allowMultiple onFileChange={(files) => console.log(files)} />
               </div>
             </div>
 
             <div>
-              <Label htmlFor="prompt">Describe your thumbnail</Label>
+              <Label htmlFor="prompt" className="mb-2 text-white">Describe your thumbnail</Label>
               <Textarea
                 id="prompt"
                 placeholder="Describe what you want in your YouTube thumbnail..."
@@ -352,7 +430,7 @@ export default function ChatInterface({ chatId }) {
             type="submit"
             disabled={isGenerating || !formData.prompt.trim() || !formData.file}
             variant="hero"
-            className="w-full"
+            className="w-full text-white"
           >
             {isGenerating ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -363,12 +441,31 @@ export default function ChatInterface({ chatId }) {
           </Button>
         </form>
       </div>
-       <ContinueChatModal
-        isOpen={continueChatOpen}
-        onClose={() => setContinueChatOpen(false)}
-        chatId={chatId}
-        selectedImage={selectedImageForChat}
-      />
+        ) : (
+           <div className=" fixed bottom-0 right-0 w-300 bg-black border-t border-border p-6 flex gap-2 text-white ">
+              <Input
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Continue the conversation about your thumbnail..."
+                disabled={isGenerating || !selectedImageForChat}
+                className="flex-1"
+              />
+              <Button
+                onClick={handleSendMessage}
+                disabled={!prompt.trim() || isGenerating}
+                variant="hero"
+              >
+               {isGenerating ? (
+              <Loader2 className="w-4 h-4 animate-spin text-white" />
+            ) : (
+              <Send className="w-4 h-4 text-white" />
+            )}
+              </Button>
+            </div>
+        )
+      }
+       
     </div>
   );
 }

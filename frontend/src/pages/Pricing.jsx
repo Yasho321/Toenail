@@ -79,7 +79,7 @@ export default function Pricing() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black text-white">
       {/* Navigation */}
       <nav className="border-b border-border/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -89,8 +89,8 @@ export default function Pricing() {
               <span>Back to Dashboard</span>
             </Link>
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
-                <Coins className="w-5 h-5 text-primary-foreground" />
+              <div className="w-8 h-8 bg-gradient-to-r from-red-600 to-red-700 rounded-lg flex items-center justify-center">
+                <Coins className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold">ThumbnailAI</span>
             </div>
@@ -103,11 +103,11 @@ export default function Pricing() {
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl lg:text-5xl font-bold mb-6">
             Choose Your
-            <span className="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-red-600 to-red-700 rounded-lg bg-clip-text text-transparent">
               {' '}Token Package
             </span>
           </h1>
-          <p className="text-xl text-muted-foreground mb-8">
+          <p className="text-xl text-white/70 mb-8">
             Pay only for what you use. No monthly subscriptions, no hidden fees.
           </p>
         </div>
@@ -118,9 +118,9 @@ export default function Pricing() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-8">
             {/* Standard Plan */}
-            <Card className="p-8 bg-card border-border/50 hover:border-primary/20 transition-all duration-300 relative">
+            <Card className="p-8 bg-black text-white border-border/50 hover:border-primary/20 transition-all duration-300 relative">
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-red-600 to-red-700 rounded-lg flex items-center justify-center mx-auto mb-6">
                   <Zap className="w-8 h-8 text-white" />
                 </div>
                 
@@ -165,7 +165,7 @@ export default function Pricing() {
                     onClick={() => handlePurchase('standard')}
                     disabled={isProcessingPayment || selectedPlan === 'standard'}
                     variant="outline"
-                    className="w-full"
+                    className="w-full bg-black text-white"
                   >
                     {selectedPlan === 'standard' ? 'Processing...' : 'Choose Standard'}
                   </Button>
@@ -180,16 +180,16 @@ export default function Pricing() {
             </Card>
 
             {/* Premium Plan */}
-            <Card className="p-8 bg-card border-primary/50 hover:border-primary transition-all duration-300 relative scale-105">
+            <Card className="p-8 bg-black text-white border-primary/50 hover:border-primary transition-all duration-300 relative scale-105">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <div className="bg-gradient-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-semibold">
+                <div className="bg-gradient-to-r from-red-600 to-red-700 rounded-lg px-4 py-2 rounded-full text-sm font-semibold">
                   Most Popular
                 </div>
               </div>
               
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <Crown className="w-8 h-8 text-primary-foreground" />
+                <div className="w-16 h-16 bg-gradient-to-r from-red-600 to-red-700 rounded-lg flex items-center justify-center mx-auto mb-6">
+                  <Crown className="w-8 h-8 text-white" />
                 </div>
                 
                 <h3 className="text-2xl font-bold mb-2">Premium</h3>
@@ -239,7 +239,7 @@ export default function Pricing() {
                     onClick={() => handlePurchase('premium')}
                     disabled={isProcessingPayment || selectedPlan === 'premium'}
                     variant="hero"
-                    className="w-full"
+                    className="w-full bg-black text-white"
                   >
                     {selectedPlan === 'premium' ? 'Processing...' : 'Choose Premium'}
                   </Button>
@@ -254,9 +254,9 @@ export default function Pricing() {
             </Card>
 
             {/* Pro Plan */}
-            <Card className="p-8 bg-card border-border/50 hover:border-primary/20 transition-all duration-300 relative">
+            <Card className="p-8 bg-black text-white border-border/50 hover:border-primary/20 transition-all duration-300 relative">
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-red-600 to-red-700 rounded-lg flex items-center justify-center mx-auto mb-6">
                   <Star className="w-8 h-8 text-white" />
                 </div>
                 
@@ -307,7 +307,7 @@ export default function Pricing() {
                     onClick={() => handlePurchase('pro')}
                     disabled={isProcessingPayment || selectedPlan === 'pro'}
                     variant="outline"
-                    className="w-full"
+                    className="w-full bg-black text-white"
                   >
                     {selectedPlan === 'pro' ? 'Processing...' : 'Choose Pro'}
                   </Button>

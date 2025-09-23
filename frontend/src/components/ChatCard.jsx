@@ -37,19 +37,19 @@ export default function ChatCard({ chat, isSelected, onSelect }) {
 
   return (
     <Card
-      className={`p-3 cursor-pointer transition-all duration-200 hover:bg-accent group ${
-        isSelected ? 'bg-accent border-primary/50' : ''
+      className={`p-3 cursor-pointer backdrop-blur-sm bg-white/5 hover:border-red-600 border-red-600/50 shadow-xl transition-all w-[68%]  duration-200 hover:bg-white/10 group ${
+        isSelected ? 'bg-white/20 border-red-700 ' : ''
       }`}
       onClick={handleCardClick}
     >
       <div className="flex items-start gap-3">
         <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center flex-shrink-0">
-          <Sparkles className="w-4 h-4 text-primary-foreground" />
+          <Sparkles className="w-4 h-4 text-white" />
         </div>
         
         <div className="min-w-0 flex-1">
           {isEditing ? (
-            <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+            <div className="flex text-white bg-black items-center gap-2" onClick={(e) => e.stopPropagation()}>
               <Input
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
@@ -79,10 +79,10 @@ export default function ChatCard({ chat, isSelected, onSelect }) {
             </div>
           ) : (
             <>
-              <h3 className="font-medium truncate">
+              <h3 className="font-medium truncate text-white">
                 {chat.title || 'Untitled Chat'}
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-white">
                 {new Date(chat.createdAt).toLocaleDateString()}
               </p>
             </>
@@ -90,7 +90,7 @@ export default function ChatCard({ chat, isSelected, onSelect }) {
         </div>
 
         {!isEditing && (
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center bg-white/10 hover:bg-black hover:bg-black/10 gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <Button
               variant="ghost"
               size="sm"
@@ -98,17 +98,17 @@ export default function ChatCard({ chat, isSelected, onSelect }) {
                 e.stopPropagation();
                 setIsEditing(true);
               }}
-              className="h-8 w-8 p-0"
+              className="h-8 w-8 p-0 text-white hover:text-black"
             >
-              <Edit3 className="w-4 h-4" />
+              <Edit3 className="w-4 h-4 hover:text-black" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={handleDelete}
-              className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+              className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:text-black"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-4 h-4 text-red-500 hover:text-red-600" />
             </Button>
           </div>
         )}

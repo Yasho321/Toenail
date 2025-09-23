@@ -19,6 +19,8 @@ export const useAuthStore = create((set) => ({
         headers: {
           Authorization: `Bearer ${token}`, // Attach token
         },});
+        
+        
       set({ 
         authUser: response.data.user,
         token: response.data.user.tokenBalance,
