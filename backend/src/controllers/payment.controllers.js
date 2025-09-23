@@ -10,9 +10,9 @@ export const createOrder = async (req, res) => {
      const { userId } = getAuth(req, { acceptsToken: 'any' })
      const user = await User.findOne({clerkId : userId});
     const plans = {
-        standard: { amount: 250, tokens: 10 },
-        premium: { amount: 600, tokens: 25 },
-        pro: { amount: 1100, tokens: 50 },
+        standard: { amount: 800, tokens: 10 },
+        premium: { amount: 1400, tokens: 25 },
+        pro: { amount: 2450, tokens: 50 },
     };
      
     const selected = plans[planName];

@@ -6,9 +6,9 @@ export const usePaymentStore = create((set) => ({
   isProcessingPayment: false,
   
   plans: {
-    standard: { amount: 250, tokens: 10, name: 'Standard' },
-    premium: { amount: 600, tokens: 25, name: 'Premium' },
-    pro: { amount: 1100, tokens: 50, name: 'Pro' },
+    standard: { amount: 800, tokens: 10, name: 'Standard' },
+    premium: { amount: 1400, tokens: 25, name: 'Premium' },
+    pro: { amount: 2450, tokens: 50, name: 'Pro' },
   },
 
   createOrder: async (planName ,getToken) => {

@@ -67,6 +67,12 @@ export const createChat = async (req , res)=>{
         
         let { userId } = getAuth(req, { acceptsToken: 'any' })
         const user = await User.findOne({clerkId : userId});
+        if(user.tokenBalance<=0){
+            return res.status(400).json({
+                success : false , 
+                message : "Not enough tokens to continue"
+            })
+        }
         userId = user._id
 
         
@@ -527,6 +533,12 @@ export const continueChat = async(req,res)=>{
     try {
         const { userId } = getAuth(req, {acceptsToken :'any'})
         const user= await User.findOne({clerkId : userId})
+        if(user.tokenBalance<=0){
+            return res.status(400).json({
+                success : false , 
+                message : "Not enough tokens to continue"
+            })
+        }
         const {chatId} =req.params 
         const {url , prompt} = req.body ; 
         const response = await axios.get(url, { responseType: "arraybuffer" });

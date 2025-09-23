@@ -453,7 +453,7 @@ const FileInput = ({
   };
 
   return (
-    <div className="w-125 h-32 relative overflow-hidden">
+    <div className="max-w-125 h-24 sm:h-32 relative overflow-hidden">
       <input
         type="file"
         ref={fileInputRef}

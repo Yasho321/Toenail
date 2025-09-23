@@ -109,7 +109,7 @@ export default function Landing() {
           <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
             <div className="text-center mb-12 sm:mb-16">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-white px-2">
-                Why Choose ThumbnailAI?
+                Why Choose Toenail <span className="text-red-600">AI</span>?
               </h2>
               <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto px-2">
                 Professional quality thumbnails that help your videos get more clicks and views
