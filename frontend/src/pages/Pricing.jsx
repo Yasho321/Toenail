@@ -110,7 +110,7 @@ export default function Pricing() {
               </Link>
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8  rounded-lg flex items-center justify-center">
-                  <img src="../../public/logo.png"/>
+                  <img src="./logo.png"/>
                 </div>
                 <span className="text-xl font-bold">Toenail <span className="text-red-600">AI</span></span>
               </div>
