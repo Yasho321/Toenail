@@ -47,7 +47,6 @@ export const verifyPayment = async (req, res) => {
   try {
     const { razorpay_payment_id, razorpay_order_id,razorpay_signature} = req.body;
     
-    console.log('rpi',razorpay_payment_id,'roi',razorpay_order_id,'rs',razorpay_signature);
     
     
 
@@ -55,7 +54,7 @@ export const verifyPayment = async (req, res) => {
 
     const expectedSignature = crypto.createHmac("sha256",process.env.RAZORPAY_KEY_SECRET).update(verifyingToken.toString()).digest("hex");
 
-    console.log({ expectedSignature, razorpay_signature })
+    
 
     if(razorpay_signature !== expectedSignature){
         return res.status(400).json({
@@ -63,12 +62,12 @@ export const verifyPayment = async (req, res) => {
             message : "Signature did not match"
         })      
     }
-    console.log('here');
+   
     
      const paymentDetails = await razorpayInstance.payments.fetch(razorpay_payment_id);
-     console.log('here2');
+    
     if (paymentDetails.status !== "captured") {
-      console.log('here3');
+      
       return res.status(400).json({ success: false, message: "Payment not captured yet" });
     }
 
@@ -126,12 +125,7 @@ export const razorpayWebhook = async (req, res) => {
       });
 
       const user2= await User.findByIdAndUpdate(userId, { $inc: { tokenBalance: tokens } });
-      console.log(tokens,"tokens");
       
-      console.log(user2,"user");
-      
-
-      console.log(`✅ Webhook: Tokens credited to user ${userId}`);
     }
 
     }

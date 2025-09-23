@@ -14,10 +14,12 @@ import toast from 'react-hot-toast';
 import { useAuth } from '@clerk/clerk-react';
 import FileInput from './ui/file-input';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { useChatStore } from '@/stores/chatStore';
 
 export default function ChatInterface({ chatId }) {
   const {getToken} = useAuth();
   const { messages, isLoading, isGenerating, fetchMessages, generateThumbnail ,continueChat} = useThumbnailStore();
+  const {fetchChats} = useChatStore();
   const { updateTokens ,token} = useAuthStore();
   const messagesEndRef = useRef(null);
   
@@ -73,6 +75,7 @@ export default function ChatInterface({ chatId }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    await fetchChats(getToken)
 
     if(token<=0){
       toast.error("Not enough tokens to continue");
@@ -183,7 +186,7 @@ export default function ChatInterface({ chatId }) {
   };
 
   const handleSendMessage = async () => {
-
+    await fetchChats(getToken);
     if(token<=0){
       toast.error("Not enough tokens to continue");
       return ;
@@ -191,7 +194,7 @@ export default function ChatInterface({ chatId }) {
     if (!prompt.trim() || !selectedImageForChat) return;
     
     
-    console.log('here 2');
+    
     
     // const userMessage = {
     //   role: 'user',

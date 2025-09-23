@@ -35,7 +35,7 @@ export const usePaymentStore = create((set) => ({
     try {
       set({ isProcessingPayment: true });
       const token =await getToken();
-      console.log(token);
+      
       
       const response = await axiosInstance.post('/payment/verify', paymentData,{
          headers: {
@@ -45,7 +45,7 @@ export const usePaymentStore = create((set) => ({
         },
       });
 
-      console.log(response);
+    
       
       
       if (response.data.success) {

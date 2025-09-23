@@ -78,7 +78,7 @@ export const createChat = async (req , res)=>{
         
 
         const {chatId} = req.params; 
-        console.log('here user Id', userId , 'user', user ,'chatId', chatId);
+       
         const token = user.tokenBalance;
         const {genre , title , mood ,resolution, prompt} = req.body;
         const file = req.file;
@@ -123,8 +123,7 @@ export const createChat = async (req , res)=>{
         
         let width ; 
         let height; 
-        console.log(resolution)
-        console.log(resolution.includes('1280 x 720'));
+        
         
         if(resolution.includes('1280 x 720')){
             width = 1280

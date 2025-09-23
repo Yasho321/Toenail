@@ -44,7 +44,7 @@ export const getChat = async (req , res)=>{
                 message : "Unauthorized"
             })
         }
-        console.log(userId , typeof userId) ;
+       
         
         const user = await User.findOne({clerkId : userId});
         
