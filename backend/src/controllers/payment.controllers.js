@@ -125,7 +125,11 @@ export const razorpayWebhook = async (req, res) => {
         
       });
 
-      await User.findByIdAndUpdate(userId, { $inc: { tokenBalance: tokens } });
+      const user2= await User.findByIdAndUpdate(userId, { $inc: { tokenBalance: tokens } });
+      console.log(tokens,"tokens");
+      
+      console.log(user2,"user");
+      
 
       console.log(`✅ Webhook: Tokens credited to user ${userId}`);
     }

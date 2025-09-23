@@ -445,7 +445,7 @@ export default function ChatInterface({ chatId }) {
             ) : (
               <Send className="w-3 h-3 sm:w-4 sm:h-4" />
             )}
-            {isGenerating ? 'Generating Thumbnail...' : 'Generate Thumbnail'}
+            {isGenerating ? "Generating Thumbnail...(This may take some time be patient, Don't refresh)" : 'Generate Thumbnail'}
           </Button>
         </form>
       </div>
