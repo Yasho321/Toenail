@@ -633,7 +633,7 @@ export const continueChat = async(req,res)=>{
         ];
         const date = Date.now()
 
-        let messageResponse = {role : "assistant"} ; 
+        let messageResponse = {role : "assistant" , text : ""} ; 
         let images = [];
 
         const response2 = await ai.models.generateContent({
