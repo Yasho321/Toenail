@@ -16,7 +16,7 @@ export default function Landing() {
       />
       {/* Soft vignette to blend edges */}
       <div
-        className="fixedinset-0 z-0 pointer-events-none"
+        className="fixed inset-0 z-0 pointer-events-none"
         style={{
           backgroundImage:
             "radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.5) 100%)",
@@ -88,7 +88,9 @@ export default function Landing() {
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1 ml-2" />
                   </Button>
                 </SignUpButton>
-                <Button variant="outline" className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white px-6 sm:px-8 py-3 text-base sm:text-lg group w-full sm:w-auto" size="lg">
+                <Button variant="outline" className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white px-6 sm:px-8 py-3 text-base sm:text-lg group w-full sm:w-auto" size="lg" onClick={() => {
+                  document.getElementById("demo-video")?.scrollIntoView({ behavior: "smooth" });
+                }}>
                   <Play className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                   Watch Demo
                 </Button>
@@ -171,7 +173,7 @@ export default function Landing() {
 
             {/* Demo Video */}
             <div className="text-center">
-              <div className="max-w-4xl mx-auto">
+              <div className="max-w-4xl mx-auto" id="demo-video" >
                 <video 
                   width="100%" 
                   height="400" 
@@ -212,7 +214,7 @@ export default function Landing() {
                   <div>
                     <p className="text-red-400 font-semibold mb-2">Before</p>
                     <img 
-                      src="https://ik.imagekit.io/toenail/user-img/hitesh_NhB-uhzHm_E_3yATZUO.jpeg?updatedAt=1758796879107" 
+                      src="./pexels-hiteshchoudhary-18681382.jpg" 
                       alt="Before thumbnail" 
                       className="w-full aspect-video object-cover rounded-lg border border-gray-700"
                     />
@@ -238,7 +240,7 @@ export default function Landing() {
                   <div>
                     <p className="text-red-400 font-semibold mb-2">Before</p>
                     <img 
-                      src="https://ik.imagekit.io/toenail/user-img/pgarg_a08nwDFTt_cgJPW1ptm.jpg?updatedAt=1758796049646" 
+                      src="https://www.piyushgarg.dev/_next/image?url=%2Fimages%2Favatar.png&w=1080&q=75" 
                       alt="Before thumbnail" 
                       className="w-full aspect-video object-cover rounded-lg border border-gray-700"
                     />
@@ -264,7 +266,7 @@ export default function Landing() {
                   <div>
                     <p className="text-red-400 font-semibold mb-2">Before</p>
                     <img 
-                      src="https://ik.imagekit.io/toenail/user-img/hitesh_NhB-uhzHm_peggtblRl.jpeg?updatedAt=1758797310006" 
+                      src="./pexels-hiteshchoudhary-18681382.jpg" 
                       alt="Before thumbnail" 
                       className="w-full aspect-video object-cover rounded-lg border border-gray-700"
                     />
@@ -288,86 +290,165 @@ export default function Landing() {
         </section>
 
         {/* Why Not Canva/Designer Section */}
-        <section className="py-12 sm:py-16 lg:py-20">
+       <section className="py-12 sm:py-16 lg:py-20">
           <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
             <div className="text-center mb-12 sm:mb-16">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-white px-2">
-                Why Not Canva / Designer?
+                Toenail AI vs Traditional Tools
               </h2>
               <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto px-2">
-                See why creators choose Toenail AI over traditional design tools
+                See why creators choose Toenail AI over Canva, Photoshop, and freelance designers
               </p>
             </div>
 
-            <div className="max-w-4xl mx-auto">
-              <Card className="backdrop-blur-sm bg-white/5 border-red-600/50 overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-gray-700">
-                        <th className="text-left p-6 text-white font-semibold">Feature</th>
-                        <th className="text-center p-6 text-red-500 font-semibold">Toenail AI</th>
-                        <th className="text-center p-6 text-gray-400 font-semibold">Canva/Designer</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b border-gray-800">
-                        <td className="p-6 text-gray-300 font-medium">Price per thumbnail</td>
-                        <td className="p-6 text-center">
-                          <span className="text-green-400 font-bold">₹49</span>
-                        </td>
-                        <td className="p-6 text-center">
-                          <span className="text-red-400 font-bold">₹1000+</span>
-                        </td>
-                      </tr>
-                      <tr className="border-b border-gray-800">
-                        <td className="p-6 text-gray-300 font-medium">Time to create</td>
-                        <td className="p-6 text-center">
-                          <span className="text-green-400 font-bold">2 minutes</span>
-                        </td>
-                        <td className="p-6 text-center">
-                          <span className="text-red-400 font-bold">2+ hours</span>
-                        </td>
-                      </tr>
-                      <tr className="border-b border-gray-800">
-                        <td className="p-6 text-gray-300 font-medium">Conversational editing</td>
-                        <td className="p-6 text-center">
-                          <Check className="w-6 h-6 text-green-400 mx-auto" />
-                        </td>
-                        <td className="p-6 text-center">
-                          <X className="w-6 h-6 text-red-400 mx-auto" />
-                        </td>
-                      </tr>
-                      <tr className="border-b border-gray-800">
-                        <td className="p-6 text-gray-300 font-medium">YouTube CTR optimized</td>
-                        <td className="p-6 text-center">
-                          <Check className="w-6 h-6 text-green-400 mx-auto" />
-                        </td>
-                        <td className="p-6 text-center">
-                          <X className="w-6 h-6 text-red-400 mx-auto" />
-                        </td>
-                      </tr>
-                      <tr className="border-b border-gray-800">
-                        <td className="p-6 text-gray-300 font-medium">Design skills required</td>
-                        <td className="p-6 text-center">
-                          <X className="w-6 h-6 text-green-400 mx-auto" />
-                        </td>
-                        <td className="p-6 text-center">
-                          <Check className="w-6 h-6 text-red-400 mx-auto" />
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="p-6 text-gray-300 font-medium">Personalized AI learning</td>
-                        <td className="p-6 text-center">
-                          <Check className="w-6 h-6 text-green-400 mx-auto" />
-                        </td>
-                        <td className="p-6 text-center">
-                          <X className="w-6 h-6 text-red-400 mx-auto" />
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
+              {/* Toenail AI Card */}
+              <Card className="p-6 sm:p-8 backdrop-blur-sm bg-gradient-to-br from-red-600/20 to-red-800/20 border-red-500/50 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-4 right-4">
+                  <div className="bg-green-500 text-black px-3 py-1 rounded-full text-xs font-bold">
+                    RECOMMENDED
+                  </div>
                 </div>
+                
+                <div className="mb-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12  rounded-full flex items-center justify-center">
+                      <img src="./logo.png" className="rounded-full"/>
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-white">Toenail <span className="text-red-600">AI</span></h3>
+                      <p className="text-red-300 text-sm">Smart AI-Powered Solution</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-center justify-between p-4 bg-black/20 rounded-lg">
+                    <span className="text-gray-300 font-medium">Price per thumbnail</span>
+                    <span className="text-green-400 font-bold text-xl">₹49</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-4 bg-black/20 rounded-lg">
+                    <span className="text-gray-300 font-medium">Time to create</span>
+                    <span className="text-green-400 font-bold text-xl">2 minutes</span>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 p-3 bg-green-500/10 rounded-lg">
+                      <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                      <span className="text-gray-300">Conversational editing with chat</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-3 p-3 bg-green-500/10 rounded-lg">
+                      <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                      <span className="text-gray-300">YouTube CTR optimized</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-3 p-3 bg-green-500/10 rounded-lg">
+                      <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                      <span className="text-gray-300">No design skills needed</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-3 p-3 bg-green-500/10 rounded-lg">
+                      <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                      <span className="text-gray-300">Personalized AI learning</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-3 p-3 bg-green-500/10 rounded-lg">
+                      <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                      <span className="text-gray-300">Instant results</span>
+                    </div>
+                  </div>
+                </div>
+                <SignUpButton>
+                <Button className="w-full bg-red-600 hover:bg-red-700 text-white py-3 text-lg font-semibold">
+                  Start Creating Now
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+                </SignUpButton>
+              </Card>
+
+              {/* Traditional Tools Card */}
+              <Card className="p-6 sm:p-8 backdrop-blur-sm bg-white/5 border-gray-600/50 shadow-xl relative overflow-hidden">
+                <div className="absolute top-4 right-4">
+                  <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                    OUTDATED
+                  </div>
+                </div>
+                
+                <div className="mb-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 bg-gray-600 rounded-xl flex items-center justify-center">
+                      <ImageIcon className="w-6 h-6 text-gray-300" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold text-white">Traditional Tools</h3>
+                      <p className="text-gray-400 text-sm">Canva, Photoshop, Designers</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-center justify-between p-4 bg-black/20 rounded-lg">
+                    <span className="text-gray-300 font-medium">Price per thumbnail</span>
+                    <span className="text-red-400 font-bold text-xl">₹1000+</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-4 bg-black/20 rounded-lg">
+                    <span className="text-gray-300 font-medium">Time to create</span>
+                    <span className="text-red-400 font-bold text-xl">2+ hours</span>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 p-3 bg-red-500/10 rounded-lg">
+                      <X className="w-5 h-5 text-red-400 flex-shrink-0" />
+                      <span className="text-gray-300">Manual design process</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-3 p-3 bg-red-500/10 rounded-lg">
+                      <X className="w-5 h-5 text-red-400 flex-shrink-0" />
+                      <span className="text-gray-300">Generic templates</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-3 p-3 bg-red-500/10 rounded-lg">
+                      <X className="w-5 h-5 text-red-400 flex-shrink-0" />
+                      <span className="text-gray-300">Requires design expertise</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-3 p-3 bg-red-500/10 rounded-lg">
+                      <X className="w-5 h-5 text-red-400 flex-shrink-0" />
+                      <span className="text-gray-300">No personalization</span>
+                    </div>
+                    
+                    <div className="flex items-center gap-3 p-3 bg-red-500/10 rounded-lg">
+                      <X className="w-5 h-5 text-red-400 flex-shrink-0" />
+                      <span className="text-gray-300">Time-consuming process</span>
+                    </div>
+                  </div>
+                </div>
+
+                <Button variant="outline" className="w-full border-gray-600 text-gray-400 py-3 text-lg font-semibold cursor-not-allowed" disabled>
+                  Outdated Method
+                  <X className="w-5 h-5 ml-2" />
+                </Button>
+              </Card>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              <Card className="p-6 text-center backdrop-blur-sm bg-white/10 border-red-500/30">
+                <div className="text-3xl font-bold text-red-400 mb-2">60x</div>
+                <div className="text-gray-300 text-sm">Faster than traditional methods</div>
+              </Card>
+              
+              <Card className="p-6 text-center backdrop-blur-sm bg-white/10 border-red-500/30">
+                <div className="text-3xl font-bold text-red-400 mb-2">95%</div>
+                <div className="text-gray-300 text-sm">Cost savings vs hiring designers</div>
+              </Card>
+              
+              <Card className="p-6 text-center backdrop-blur-sm bg-white/10 border-red-500/30">
+                <div className="text-3xl font-bold text-red-400 mb-2">1000+</div>
+                <div className="text-gray-300 text-sm">Happy creators using our platform</div>
               </Card>
             </div>
           </div>
