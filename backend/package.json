@@ -31,6 +31,7 @@
     "mongodb": "^6.19.0",
     "mongoose": "^8.18.0",
     "multer": "^2.0.2",
+    "neo4j-driver": "^5.28.2",
     "openai": "^5.16.0",
     "path": "^0.12.7",
     "razorpay": "^2.9.6",
