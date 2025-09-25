@@ -1,6 +1,6 @@
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
-import { Check, Play, Star, Users, Zap, ArrowRight, ImageIcon, Download } from "lucide-react";
+import { Check, Play, Star, Users, Zap, ArrowRight, ImageIcon, Download, Upload, MessageSquare, X, ArrowDown } from "lucide-react";
 import { SignInButton, SignUpButton } from "@clerk/clerk-react";
 
 export default function Landing() {
@@ -8,7 +8,7 @@ export default function Landing() {
     <div className="min-h-screen w-full bg-black relative">
       {/* Crimson Core Glow */}
       <div
-        className="absolute inset-0 z-1"
+        className="fixed inset-0 z-1 "
         style={{
           background:
             "linear-gradient(0deg, rgba(0,0,0,0.6), rgba(0,0,0,0.6)), radial-gradient(68% 58% at 50% 50%, #c81e3a 0%, #a51d35 16%, #7d1a2f 32%, #591828 46%, #3c1722 60%, #2a151d 72%, #1f1317 84%, #141013 94%, #0a0a0a 100%), radial-gradient(90% 75% at 50% 50%, rgba(228,42,66,0.06) 0%, rgba(228,42,66,0) 55%), radial-gradient(150% 120% at 8% 8%, rgba(0,0,0,0) 42%, #0b0a0a 82%, #070707 100%), radial-gradient(150% 120% at 92% 92%, rgba(0,0,0,0) 42%, #0b0a0a 82%, #070707 100%), radial-gradient(60% 50% at 50% 60%, rgba(240,60,80,0.06), rgba(0,0,0,0) 60%), #050505",
@@ -16,7 +16,7 @@ export default function Landing() {
       />
       {/* Soft vignette to blend edges */}
       <div
-        className="absolute inset-0 z-0 pointer-events-none"
+        className="fixedinset-0 z-0 pointer-events-none"
         style={{
           backgroundImage:
             "radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.5) 100%)",
@@ -32,7 +32,7 @@ export default function Landing() {
             <div className="flex justify-between items-center py-3 sm:py-4">
               <div className="flex items-center space-x-1 sm:space-x-2">
                 <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center">
-                  <img src="./logo.png"/>
+                  <img src="./logo.png" alt="Toenail AI Logo" />
                 </div>
                 <span className="text-lg sm:text-xl font-bold text-white">Toenail <span className="text-red-600">AI</span></span>
               </div>
@@ -50,20 +50,29 @@ export default function Landing() {
 
         {/* Hero Section */}
         <section className="relative py-12 sm:py-16 lg:py-32 overflow-hidden">
-          <div className="absolute inset-0"></div>
           <div className="relative max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 text-center">
             <div className="max-w-4xl mx-auto">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold tracking-tight mb-6 sm:mb-8 text-white ">
+              {/* Hook */}
+              <div className="mb-6 sm:mb-8">
+                <p className="text-lg sm:text-xl lg:text-2xl text-red-400 font-medium mb-2">
+                  Why pay ₹1000 for a thumbnail when AI makes it in 2 minutes for ₹49?
+                </p>
+              </div>
+              
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold tracking-tight mb-6 sm:mb-8 text-white">
                 YouTube Thumbnails
                 <br />
                 <span className="bg-gradient-to-r from-red-500 via-red-600 to-red-700 bg-clip-text text-transparent">
                   That Demand Attention
                 </span>
               </h1>
-              <p className="text-base sm:text-lg lg:text-xl text-gray-300 mb-8 sm:mb-12 max-w-2xl mx-auto leading-relaxed px-2">
-                Create professional YouTube thumbnails in seconds with AI. No design skills needed. 
-                Just upload your image and let our AI do the magic.
-              </p>
+              
+              {/* Promise */}
+              <div className="mb-8 sm:mb-12">
+                <p className="text-base sm:text-lg lg:text-xl text-gray-300 mb-6 max-w-3xl mx-auto leading-relaxed px-2">
+                  Upload your photo → Answer 4 quick questions → Share us your vision →  Get your attention-grabbing YouTube thumbnail → editable with simple chat prompts.
+                </p>
+              </div>
               
               {/* Pricing Hero */}
               <div className="flex items-center justify-center gap-2 sm:gap-4 mb-8 sm:mb-12 flex-wrap">
@@ -104,6 +113,266 @@ export default function Landing() {
           </div>
         </section>
 
+        {/* How It Works Section */}
+        <section className="py-12 sm:py-16 lg:py-20">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+            <div className="text-center mb-12 sm:mb-16">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-white px-2">
+                How It Works
+              </h2>
+              <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto px-2">
+                From photo to viral thumbnail in just 3 simple steps
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              {/* Step 1 */}
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-red-600 to-red-700 rounded-full flex items-center justify-center mb-6 mx-auto">
+                  <Upload className="w-8 h-8 text-white" />
+                </div>
+                <div className="bg-red-600 text-white text-sm font-bold px-3 py-1 rounded-full inline-block mb-4">
+                  STEP 1
+                </div>
+                <h3 className="text-xl font-semibold mb-4 text-white">Upload Your Photo</h3>
+                <p className="text-gray-300">
+                  Simply upload your photo and tell us about your video content
+                </p>
+              </div>
+
+              {/* Step 2 */}
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-red-600 to-red-700 rounded-full flex items-center justify-center mb-6 mx-auto">
+                  <MessageSquare className="w-8 h-8 text-white" />
+                </div>
+                <div className="bg-red-600 text-white text-sm font-bold px-3 py-1 rounded-full inline-block mb-4">
+                  STEP 2
+                </div>
+                <h3 className="text-xl font-semibold mb-4 text-white">AI Creates & Chat Edits</h3>
+                <p className="text-gray-300">
+                  Our AI generates your thumbnail, then refine it using simple chat prompts
+                </p>
+              </div>
+
+              {/* Step 3 */}
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-red-600 to-red-700 rounded-full flex items-center justify-center mb-6 mx-auto">
+                  <Download className="w-8 h-8 text-white" />
+                </div>
+                <div className="bg-red-600 text-white text-sm font-bold px-3 py-1 rounded-full inline-block mb-4">
+                  STEP 3
+                </div>
+                <h3 className="text-xl font-semibold mb-4 text-white">Download & Upload</h3>
+                <p className="text-gray-300">
+                  Download your high-quality thumbnail and watch your views soar
+                </p>
+              </div>
+            </div>
+
+            {/* Demo Video */}
+            <div className="text-center">
+              <div className="max-w-4xl mx-auto">
+                <video 
+                  width="100%" 
+                  height="400" 
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="rounded-lg border border-red-600/30 shadow-2xl bg-black/20 backdrop-blur-sm"
+                  poster="https://ik.imagekit.io/toenail/Reference-image/Untitled%20video%20-%20Made%20with%20Clipchamp%20(31).mp4/ik-thumbnail.jpg?updatedAt=1758797924875"
+                >
+                  <source 
+                    src="https://ik.imagekit.io/toenail/Reference-image/Untitled%20video%20-%20Made%20with%20Clipchamp%20(31).mp4?updatedAt=1758797924875" 
+                    type="video/mp4" 
+                  />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Before vs After Showcase */}
+         <section className="py-12 sm:py-16 lg:py-20">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+            <div className="text-center mb-12 sm:mb-16">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-white px-2">
+                See The Transformation
+              </h2>
+              <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto px-2">
+                Real creators, real results. See how ordinary photos become viral thumbnails.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Example 1 */}
+              <div className="text-center">
+                <div className="space-y-4 mb-4">
+                  <div>
+                    <p className="text-red-400 font-semibold mb-2">Before</p>
+                    <img 
+                      src="https://ik.imagekit.io/toenail/user-img/hitesh_NhB-uhzHm_E_3yATZUO.jpeg?updatedAt=1758796879107" 
+                      alt="Before thumbnail" 
+                      className="w-full aspect-video object-cover rounded-lg border border-gray-700"
+                    />
+                  </div>
+                  <div className="flex justify-center">
+                    <ArrowDown className="w-6 h-6 text-red-500" />
+                  </div>
+                  <div>
+                    <p className="text-green-400 font-semibold mb-2">After</p>
+                    <img 
+                      src="https://ik.imagekit.io/toenail/thumbnail-img/PUBG_First_Time_Gameplay_Thumbnail_Edit-thumbnail1758797091317_cZbp7fB9G.png?updatedAt=1758797105813" 
+                      alt="After thumbnail" 
+                      className="w-full aspect-video object-cover rounded-lg border border-red-600"
+                    />
+                  </div>
+                </div>
+                <p className="text-sm text-gray-400">Gaming Content Creator</p>
+              </div>
+
+              {/* Example 2 */}
+              <div className="text-center">
+                <div className="space-y-4 mb-4">
+                  <div>
+                    <p className="text-red-400 font-semibold mb-2">Before</p>
+                    <img 
+                      src="https://ik.imagekit.io/toenail/user-img/pgarg_a08nwDFTt_cgJPW1ptm.jpg?updatedAt=1758796049646" 
+                      alt="Before thumbnail" 
+                      className="w-full aspect-video object-cover rounded-lg border border-gray-700"
+                    />
+                  </div>
+                  <div className="flex justify-center">
+                    <ArrowDown className="w-6 h-6 text-red-500" />
+                  </div>
+                  <div>
+                    <p className="text-green-400 font-semibold mb-2">After</p>
+                    <img 
+                      src="https://ik.imagekit.io/toenail/thumbnail-img/Creating_an_AI_Girlfriend__Step-by-Step_Guide_with_Pink_Floral_Aesthetic_Thumbnail-thumbnail1_Lvxc2bHYL.png?updatedAt=1758796082649" 
+                      alt="After thumbnail" 
+                      className="w-full aspect-video object-cover rounded-lg border border-red-600"
+                    />
+                  </div>
+                </div>
+                <p className="text-sm text-gray-400">Tech Tutorial Creator</p>
+              </div>
+
+              {/* Example 3 */}
+              <div className="text-center">
+                <div className="space-y-4 mb-4">
+                  <div>
+                    <p className="text-red-400 font-semibold mb-2">Before</p>
+                    <img 
+                      src="https://ik.imagekit.io/toenail/user-img/hitesh_NhB-uhzHm_peggtblRl.jpeg?updatedAt=1758797310006" 
+                      alt="Before thumbnail" 
+                      className="w-full aspect-video object-cover rounded-lg border border-gray-700"
+                    />
+                  </div>
+                  <div className="flex justify-center">
+                    <ArrowDown className="w-6 h-6 text-red-500" />
+                  </div>
+                  <div>
+                    <p className="text-green-400 font-semibold mb-2">After</p>
+                    <img 
+                      src="https://ik.imagekit.io/toenail/thumbnail-img/Thumbnail_design_request_for_top_5_bicep_exercises_video-thumbnail1758794339581_iV-xqLTHJ.png?updatedAt=1758794352861" 
+                      alt="After thumbnail" 
+                      className="w-full aspect-video object-cover rounded-lg border border-red-600"
+                    />
+                  </div>
+                </div>
+                <p className="text-sm text-gray-400">Fitness Content Creator</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Why Not Canva/Designer Section */}
+        <section className="py-12 sm:py-16 lg:py-20">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+            <div className="text-center mb-12 sm:mb-16">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-white px-2">
+                Why Not Canva / Designer?
+              </h2>
+              <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto px-2">
+                See why creators choose Toenail AI over traditional design tools
+              </p>
+            </div>
+
+            <div className="max-w-4xl mx-auto">
+              <Card className="backdrop-blur-sm bg-white/5 border-red-600/50 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-gray-700">
+                        <th className="text-left p-6 text-white font-semibold">Feature</th>
+                        <th className="text-center p-6 text-red-500 font-semibold">Toenail AI</th>
+                        <th className="text-center p-6 text-gray-400 font-semibold">Canva/Designer</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b border-gray-800">
+                        <td className="p-6 text-gray-300 font-medium">Price per thumbnail</td>
+                        <td className="p-6 text-center">
+                          <span className="text-green-400 font-bold">₹49</span>
+                        </td>
+                        <td className="p-6 text-center">
+                          <span className="text-red-400 font-bold">₹1000+</span>
+                        </td>
+                      </tr>
+                      <tr className="border-b border-gray-800">
+                        <td className="p-6 text-gray-300 font-medium">Time to create</td>
+                        <td className="p-6 text-center">
+                          <span className="text-green-400 font-bold">2 minutes</span>
+                        </td>
+                        <td className="p-6 text-center">
+                          <span className="text-red-400 font-bold">2+ hours</span>
+                        </td>
+                      </tr>
+                      <tr className="border-b border-gray-800">
+                        <td className="p-6 text-gray-300 font-medium">Conversational editing</td>
+                        <td className="p-6 text-center">
+                          <Check className="w-6 h-6 text-green-400 mx-auto" />
+                        </td>
+                        <td className="p-6 text-center">
+                          <X className="w-6 h-6 text-red-400 mx-auto" />
+                        </td>
+                      </tr>
+                      <tr className="border-b border-gray-800">
+                        <td className="p-6 text-gray-300 font-medium">YouTube CTR optimized</td>
+                        <td className="p-6 text-center">
+                          <Check className="w-6 h-6 text-green-400 mx-auto" />
+                        </td>
+                        <td className="p-6 text-center">
+                          <X className="w-6 h-6 text-red-400 mx-auto" />
+                        </td>
+                      </tr>
+                      <tr className="border-b border-gray-800">
+                        <td className="p-6 text-gray-300 font-medium">Design skills required</td>
+                        <td className="p-6 text-center">
+                          <X className="w-6 h-6 text-green-400 mx-auto" />
+                        </td>
+                        <td className="p-6 text-center">
+                          <Check className="w-6 h-6 text-red-400 mx-auto" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="p-6 text-gray-300 font-medium">Personalized AI learning</td>
+                        <td className="p-6 text-center">
+                          <Check className="w-6 h-6 text-green-400 mx-auto" />
+                        </td>
+                        <td className="p-6 text-center">
+                          <X className="w-6 h-6 text-red-400 mx-auto" />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </section>
+
         {/* Features Section */}
         <section className="py-12 sm:py-16 lg:py-20">
           <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
@@ -129,11 +398,11 @@ export default function Landing() {
 
               <Card className="p-4 sm:p-6 lg:p-8 backdrop-blur-sm bg-white/5 hover:border-red-600 border-red-600/50 shadow-xl transition-all duration-300">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-red-600 to-red-700 rounded-lg flex items-center justify-center mb-4 sm:mb-6">
-                  <ImageIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">AI-Powered Design</h3>
+                <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">Conversational Editing</h3>
                 <p className="text-sm sm:text-base text-gray-300">
-                  Advanced AI understands your content and creates thumbnails that convert.
+                  Refine your thumbnails with simple chat prompts - no design skills needed.
                 </p>
               </Card>
 
@@ -141,9 +410,9 @@ export default function Landing() {
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-red-600 to-red-700 rounded-lg flex items-center justify-center mb-4 sm:mb-6">
                   <Download className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">High Quality Export</h3>
+                <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">YouTube Optimized</h3>
                 <p className="text-sm sm:text-base text-gray-300">
-                  Download in multiple formats and resolutions. Perfect for YouTube.
+                  Designed specifically for YouTube CTR and virality. Perfect dimensions and formats.
                 </p>
               </Card>
             </div>
@@ -257,7 +526,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* CTA Section */}
+        {/* Final CTA Section */}
         <section className="py-12 sm:py-16 lg:py-20">
           <div className="max-w-4xl mx-auto text-center px-2 sm:px-4 lg:px-8">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-white">
@@ -268,7 +537,7 @@ export default function Landing() {
             </p>
             <SignUpButton>
               <Button className="bg-red-600 hover:bg-red-700 text-white px-6 sm:px-8 py-3 text-base sm:text-lg group w-full sm:w-auto" size="lg">
-                Start Creating for Free
+                Sign Up and Get 3 Free Tokens
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1 ml-2" />
               </Button>
             </SignUpButton>
