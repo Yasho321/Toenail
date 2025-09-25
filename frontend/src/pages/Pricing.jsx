@@ -235,7 +235,7 @@ export default function Pricing() {
                 <div className="absolute inset-0 bg-gradient-to-br from-red-600/10 to-red-700/5 rounded-lg"></div>
                 
                 <div className="relative text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300 shadow-xl shadow-red-500/40">
+                  <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300  shadow-red-500/40">
                     <Crown className="w-10 h-10 text-white" />
                   </div>
                   
