@@ -36,7 +36,7 @@ export default function Pricing() {
           key: import.meta.env.VITE_RAZORPAY_KEY_ID,
           amount: orderData.amount * 100,
           currency: 'INR',
-          name: 'ThumbnailAI',
+          name: 'ToenailAI',
           description: `${plans[planName].name} Plan - ${plans[planName].tokens} Tokens`,
           order_id: orderData.orderId,
           handler: async (response) => {
