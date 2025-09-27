@@ -1,6 +1,6 @@
 import { Button } from "../components/ui/button";
 import { Card } from "../components/ui/card";
-import { Check, Play, Star, Users, Zap, ArrowRight, ImageIcon, Download, Upload, MessageSquare, X, ArrowDown } from "lucide-react";
+import { Check, Play, Star, Users, Zap, ArrowRight, ImageIcon, Download, Upload, MessageSquare, X, ArrowDown, Crown, Sparkles, Shield, Clock } from "lucide-react";
 import { SignInButton, SignUpButton } from "@clerk/clerk-react";
 
 export default function Landing() {
@@ -81,7 +81,7 @@ export default function Landing() {
                 <span className="text-sm sm:text-base lg:text-lg text-gray-300">per thumbnail</span>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-12 sm:mb-16 px-2">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-6 sm:mb-8 px-2">
                 <SignUpButton>
                   <Button className="bg-red-500 hover:bg-red-600 text-white px-6 sm:px-8 py-3 text-base sm:text-lg group w-full sm:w-auto" size="lg">
                     Start Creating Now
@@ -97,20 +97,7 @@ export default function Landing() {
               </div>
 
               {/* Social Proof */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-xs sm:text-sm text-gray-400">
-                <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4 text-red-500" />
-                  <span>1000+ creators</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Star className="w-4 h-4 text-red-500 fill-red-500" />
-                  <span>4.9/5 rating</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-red-500" />
-                  <span>HC Backed</span>
-                </div>
-              </div>
+              
             </div>
           </div>
         </section>
@@ -435,7 +422,7 @@ export default function Landing() {
             </div>
 
             {/* Quick Stats */}
-            <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
               <Card className="p-6 text-center backdrop-blur-sm bg-white/10 border-red-500/30">
                 <div className="text-3xl font-bold text-red-400 mb-2">60x</div>
                 <div className="text-gray-300 text-sm">Faster than traditional methods</div>
@@ -446,10 +433,7 @@ export default function Landing() {
                 <div className="text-gray-300 text-sm">Cost savings vs hiring designers</div>
               </Card>
               
-              <Card className="p-6 text-center backdrop-blur-sm bg-white/10 border-red-500/30">
-                <div className="text-3xl font-bold text-red-400 mb-2">1000+</div>
-                <div className="text-gray-300 text-sm">Happy creators using our platform</div>
-              </Card>
+              
             </div>
           </div>
         </section>
@@ -501,108 +485,213 @@ export default function Landing() {
         </section>
 
         {/* Pricing Section */}
-        <section className="py-12 sm:py-16 lg:py-20">
-          <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-            <div className="text-center mb-12 sm:mb-16">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-white px-2">
-                Simple, Transparent Pricing
-              </h2>
-              <p className="text-lg sm:text-xl text-gray-300 px-2">
-                Pay only for what you use. No monthly subscriptions.
-              </p>
+       <section className="pb-20">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid md:grid-cols-3 gap-8">
+              {/* Standard Plan */}
+              <Card className="p-8 bg-black/40 backdrop-blur-sm text-white border-white/10 hover:border-red-600/20 transition-all duration-300 relative">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-red-600 to-red-700 rounded-lg flex items-center justify-center mx-auto mb-6">
+                    <Zap className="w-8 h-8 text-white" />
+                  </div>
+                  
+                  <h3 className="text-2xl font-bold mb-2">Standard</h3>
+                  <div className="text-4xl font-bold mb-2">₹800</div>
+                  <p className="text-white/70 mb-6">
+                     10 AI Thumbnails
+                  </p>
+                 <p className="text-white/60 mb-4 sm:mb-6 lg:mb-8 bg-black/20 rounded-lg px-2 sm:px-3 py-1 sm:py-2 border border-white/5 text-sm">
+                    ₹{Math.round( 800/  10)} per thumbnail
+                  </p>
+
+                  <ul className="space-y-4 mb-8 text-left">
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-red-600/20 rounded-full flex items-center justify-center">
+                        <Check className="w-3 h-3 text-red-600" />
+                      </div>
+                      <span>10 AI-generated thumbnails</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-red-600/20 rounded-full flex items-center justify-center">
+                        <Check className="w-3 h-3 text-red-600" />
+                      </div>
+                      <span>High-quality 1280x720 resolution</span>
+                    </li>
+                    
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-red-600/20 rounded-full flex items-center justify-center">
+                        <Check className="w-3 h-3 text-red-600" />
+                      </div>
+                      <span>Basic support</span>
+                    </li>
+                  </ul>
+
+                  
+                    <SignInButton>
+                      <Button className="w-full bg-white/10 text-white border border-white/20 hover:bg-white/20">
+                        Sign In to Purchase
+                      </Button>
+                    </SignInButton>
+                 
+                </div>
+              </Card>
+
+              {/* Premium Plan */}
+              <Card className="p-8 bg-black/40 backdrop-blur-sm text-white border-red-600/50 hover:border-red-600 transition-all duration-300 relative scale-105">
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <div className="bg-gradient-to-r from-red-600 to-red-700 px-4 py-2 rounded-full text-sm font-semibold">
+                    Most Popular
+                  </div>
+                </div>
+                
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-red-600 to-red-700 rounded-lg flex items-center justify-center mx-auto mb-6">
+                    <Crown className="w-8 h-8 text-white" />
+                  </div>
+                  
+                  <h3 className="text-2xl font-bold mb-2">Premium</h3>
+                  <div className="text-4xl font-bold mb-2">₹1,400</div>
+                  <p className="text-white/70 mb-6">
+                     25 AI Thumbnails
+                  </p>
+                  <p className="text-white/60 mb-4 sm:mb-6 lg:mb-8 bg-black/20 rounded-lg px-2 sm:px-3 py-1 sm:py-2 border border-white/5 text-sm">
+                    ₹{Math.round( 1400 /  25)} per thumbnail
+                  </p>
+
+                  <ul className="space-y-4 mb-8 text-left">
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-red-600 rounded-full flex items-center justify-center">
+                        <Check className="w-3 h-3 text-white" />
+                      </div>
+                      <span> 25 AI-generated thumbnails</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-red-600 rounded-full flex items-center justify-center">
+                        <Check className="w-3 h-3 text-white" />
+                      </div>
+                      <span>Ultra HD 1920x1080 resolution</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-red-600 rounded-full flex items-center justify-center">
+                        <Check className="w-3 h-3 text-white" />
+                      </div>
+                      <span>Multiple format downloads</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-red-600 rounded-full flex items-center justify-center">
+                        <Check className="w-3 h-3 text-white" />
+                      </div>
+                      <span>Priority support</span>
+                    </li>
+                  </ul>
+
+                  
+                    <SignInButton>
+                      <Button className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800">
+                        Sign In to Purchase
+                      </Button>
+                    </SignInButton>
+                  
+                </div>
+              </Card>
+
+              {/* Pro Plan */}
+              <Card className="p-8 bg-black/40 backdrop-blur-sm text-white border-white/10 hover:border-red-600/20 transition-all duration-300 relative">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-red-600 to-red-700 rounded-lg flex items-center justify-center mx-auto mb-6">
+                    <Star className="w-8 h-8 text-white" />
+                  </div>
+                  
+                  <h3 className="text-2xl font-bold mb-2">Pro</h3>
+                  <div className="text-4xl font-bold mb-2">₹2,450</div>
+                  <p className="text-white/70 mb-6">
+                     50 AI Thumbnails
+                  </p>
+                  <p className="text-white/60 mb-4 sm:mb-6 lg:mb-8 bg-black/20 rounded-lg px-2 sm:px-3 py-1 sm:py-2 border border-white/5 text-sm">
+                    ₹{Math.round( 2450 /  50)} per thumbnail
+                  </p>
+
+                  <ul className="space-y-4 mb-8 text-left">
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-red-600/20 rounded-full flex items-center justify-center">
+                        <Check className="w-3 h-3 text-red-600" />
+                      </div>
+                      <span> 50 AI-generated thumbnails</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-red-600/20 rounded-full flex items-center justify-center">
+                        <Check className="w-3 h-3 text-red-600" />
+                      </div>
+                      <span>Ultra HD quality</span>
+                    </li>
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-red-600/20 rounded-full flex items-center justify-center">
+                        <Check className="w-3 h-3 text-red-600" />
+                      </div>
+                      <span>Fastest processing</span>
+                    </li>
+                    
+                    <li className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-red-600/20 rounded-full flex items-center justify-center">
+                        <Check className="w-3 h-3 text-red-600" />
+                      </div>
+                      <span>24/7 priority support</span>
+                    </li>
+                  </ul>
+
+                  
+                    <SignInButton>
+                      <Button className="w-full bg-white/10 text-white border border-white/20 hover:bg-white/20">
+                        Sign In to Purchase
+                      </Button>
+                    </SignInButton>
+                 
+                </div>
+              </Card>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 max-w-5xl mx-auto">
-              {/* Standard */}
-              <Card className="p-4 sm:p-6 lg:p-8 backdrop-blur-sm bg-white/5 hover:border-red-600 border-red-600/50 shadow-xl transition-all duration-300">
-                <div className="text-center">
-                  <h3 className="text-lg sm:text-xl font-semibold mb-2 text-white">Standard</h3>
-                  <div className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-white">₹800</div>
-                  <p className="text-gray-400 mb-4 sm:mb-6">10 Thumbnails</p>
-                  <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 text-left">
-                    <li className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-red-500 flex-shrink-0" />
-                      <span className="text-sm sm:text-base text-gray-300">10 AI thumbnails</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-red-500 flex-shrink-0" />
-                      <span className="text-sm sm:text-base text-gray-300">High quality export</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-red-500 flex-shrink-0" />
-                      <span className="text-sm sm:text-base text-gray-300">Basic support</span>
-                    </li>
-                  </ul>
-                  <SignUpButton>
-                    <Button variant="outline" className="w-full bg-red-700 hover:bg-red-600 hover:text-white text-white border-none text-sm sm:text-base">Choose Plan</Button>
-                  </SignUpButton>
+            {/* Enhanced Features Section - Mobile Responsive */}
+            <div className="mt-16 sm:mt-24 lg:mt-32">
+              <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 lg:mb-6 bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
+                  All plans include
+                </h2>
+                <p className="text-white/60 text-base sm:text-lg px-4">Everything you need to create stunning thumbnails</p>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-6xl mx-auto">
+                <div className="group text-center p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-black/40 to-black/20 backdrop-blur-sm border border-white/10 hover:border-red-600/30 transition-all duration-300 hover:scale-105">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-red-600/20 to-red-700/20 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 border border-red-600/20">
+                    <Zap className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
+                  </div>
+                  <h3 className="font-bold mb-2 sm:mb-3 text-base sm:text-lg">Personalized AI</h3>
+                  <p className="text-sm text-white/60 leading-relaxed">It remembers your preferences and learns your style</p>
                 </div>
-              </Card>
-
-              {/* Premium */}
-              <Card className="p-4 sm:p-6 lg:p-8 backdrop-blur-sm bg-white/5 hover:border-red-600 border-red-600/50 shadow-xl transition-all duration-300 relative sm:col-span-2 lg:col-span-1">
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-gradient-to-r from-red-600 to-red-700 text-white px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
-                    Popular
-                  </span>
+                
+                <div className="group text-center p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-black/40 to-black/20 backdrop-blur-sm border border-white/10 hover:border-red-600/30 transition-all duration-300 hover:scale-105">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-red-600/20 to-red-700/20 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 border border-red-600/20">
+                    <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
+                  </div>
+                  <h3 className="font-bold mb-2 sm:mb-3 text-base sm:text-lg">AI-Powered</h3>
+                  <p className="text-sm text-white/60 leading-relaxed">Advanced AI technology for perfect thumbnails</p>
                 </div>
-                <div className="text-center">
-                  <h3 className="text-lg sm:text-xl font-semibold mb-2 text-white">Premium</h3>
-                  <div className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-white">₹1,400</div>
-                  <p className="text-gray-400 mb-4 sm:mb-6">25 Thumbnails</p>
-                  <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 text-left">
-                    <li className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-red-500 flex-shrink-0" />
-                      <span className="text-sm sm:text-base text-gray-300">25 AI thumbnails</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-red-500 flex-shrink-0" />
-                      <span className="text-sm sm:text-base text-gray-300">Premium quality</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-red-500 flex-shrink-0" />
-                      <span className="text-sm sm:text-base text-gray-300">Priority support</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-red-500 flex-shrink-0" />
-                      <span className="text-sm sm:text-base text-gray-300">Multiple formats</span>
-                    </li>
-                  </ul>
-                  <SignUpButton>
-                    <Button className="w-full bg-red-700 hover:bg-red-600 hover:text-white text-white text-sm sm:text-base">Choose Plan</Button>
-                  </SignUpButton>
+                
+                <div className="group text-center p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-black/40 to-black/20 backdrop-blur-sm border border-white/10 hover:border-red-600/30 transition-all duration-300 hover:scale-105">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-red-600/20 to-red-700/20 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 border border-red-600/20">
+                    <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
+                  </div>
+                  <h3 className="font-bold mb-2 sm:mb-3 text-base sm:text-lg">No Watermarks</h3>
+                  <p className="text-sm text-white/60 leading-relaxed">Clean, professional output without branding</p>
                 </div>
-              </Card>
-
-              {/* Pro */}
-              <Card className="p-4 sm:p-6 lg:p-8 backdrop-blur-sm bg-white/5 hover:border-red-600 border-red-600/50 shadow-xl transition-all duration-300 sm:col-span-2 lg:col-span-1">
-                <div className="text-center">
-                  <h3 className="text-lg sm:text-xl font-semibold mb-2 text-white">Pro</h3>
-                  <div className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-white">₹2,450</div>
-                  <p className="text-gray-400 mb-4 sm:mb-6">50 Thumbnails</p>
-                  <ul className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 text-left">
-                    <li className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-red-500 flex-shrink-0" />
-                      <span className="text-sm sm:text-base text-gray-300">50 AI thumbnails</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-red-500 flex-shrink-0" />
-                      <span className="text-sm sm:text-base text-gray-300">Ultra HD quality</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-red-500 flex-shrink-0" />
-                      <span className="text-sm sm:text-base text-gray-300">24/7 support</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Check className="w-4 h-4 text-red-500 flex-shrink-0" />
-                      <span className="text-sm sm:text-base text-gray-300">Multiple Format</span>
-                    </li>
-                  </ul>
-                  <SignUpButton>
-                    <Button variant="outline" className="w-full bg-red-700 hover:bg-red-600 hover:text-white border-none text-white text-sm sm:text-base">Choose Plan</Button>
-                  </SignUpButton>
+                
+                <div className="group text-center p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-black/40 to-black/20 backdrop-blur-sm border border-white/10 hover:border-red-600/30 transition-all duration-300 hover:scale-105">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-red-600/20 to-red-700/20 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 border border-red-600/20">
+                    <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
+                  </div>
+                  <h3 className="font-bold mb-2 sm:mb-3 text-base sm:text-lg">No Expiry</h3>
+                  <p className="text-sm text-white/60 leading-relaxed">Tokens never expire, use them anytime</p>
                 </div>
-              </Card>
+              </div>
             </div>
           </div>
         </section>
@@ -628,7 +717,43 @@ export default function Landing() {
         {/* Footer */}
         <footer className="border-t border-gray-800 py-8 sm:py-12">
           <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-            <div className="text-center text-gray-400">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+              {/* Company Info */}
+              <div>
+                <div className="flex items-center space-x-2 mb-4">
+                  <div className="w-6 h-6 rounded-lg flex items-center justify-center">
+                    <img src="./logo.png" alt="Toenail AI Logo" />
+                  </div>
+                  <span className="text-lg font-bold text-white">Toenail <span className="text-red-600">AI</span></span>
+                </div>
+                <p className="text-gray-400 text-sm">
+                  Create viral YouTube thumbnails with AI in just 2 minutes. Professional results at fraction of the cost.
+                </p>
+              </div>
+
+              {/* Quick Links */}
+              <div>
+                <h3 className="text-white font-semibold mb-4">Quick Links</h3>
+                <ul className="space-y-2 text-sm">
+                  <li><a href="/privacy" className="text-gray-400 hover:text-red-400 transition-colors">Privacy Policy</a></li>
+                  <li><a href="/terms-conditions" className="text-gray-400 hover:text-red-400 transition-colors">Terms & Conditions</a></li>
+                  <li><a href="/cancellation-refunds" className="text-gray-400 hover:text-red-400 transition-colors">Cancellation & Refunds</a></li>
+                  <li><a href="/shipping" className="text-gray-400 hover:text-red-400 transition-colors">Delivery Information</a></li>
+                </ul>
+              </div>
+
+              {/* Support */}
+              <div>
+                <h3 className="text-white font-semibold mb-4">Support</h3>
+                <ul className="space-y-2 text-sm">
+                  <li><a href="/contact" className="text-gray-400 hover:text-red-400 transition-colors">Contact Us</a></li>
+                  <li><a href="mailto:support@toenailai.com" className="text-gray-400 hover:text-red-400 transition-colors">support@toenailai.com</a></li>
+                  <li><span className="text-gray-400">Response within 2 hours</span></li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="border-t border-gray-800 pt-6 text-center text-gray-400">
               <p className="text-sm sm:text-base">&copy; 2025 Toenail AI. All rights reserved.</p>
             </div>
           </div>
