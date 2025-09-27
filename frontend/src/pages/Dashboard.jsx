@@ -55,7 +55,7 @@ export default function Dashboard() {
   
 
   return (
-    <div className="h-screen w-full  relative flex flex-col lg:flex-row">
+    <div className="h-screen w-full bg-black  relative flex flex-col lg:flex-row">
       {/* Crimson Core Glow */}
       
       

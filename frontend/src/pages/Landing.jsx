@@ -664,7 +664,7 @@ export default function Landing() {
                   <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-red-600/20 to-red-700/20 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 border border-red-600/20">
                     <Zap className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
                   </div>
-                  <h3 className="font-bold mb-2 sm:mb-3 text-base sm:text-lg">Personalized AI</h3>
+                  <h3 className="font-bold mb-2 text-white sm:mb-3 text-base sm:text-lg">Personalized AI</h3>
                   <p className="text-sm text-white/60 leading-relaxed">It remembers your preferences and learns your style</p>
                 </div>
                 
@@ -672,7 +672,7 @@ export default function Landing() {
                   <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-red-600/20 to-red-700/20 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 border border-red-600/20">
                     <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
                   </div>
-                  <h3 className="font-bold mb-2 sm:mb-3 text-base sm:text-lg">AI-Powered</h3>
+                  <h3 className="font-bold mb-2 text-white sm:mb-3 text-base sm:text-lg">AI-Powered</h3>
                   <p className="text-sm text-white/60 leading-relaxed">Advanced AI technology for perfect thumbnails</p>
                 </div>
                 
@@ -680,7 +680,7 @@ export default function Landing() {
                   <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-red-600/20 to-red-700/20 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 border border-red-600/20">
                     <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
                   </div>
-                  <h3 className="font-bold mb-2 sm:mb-3 text-base sm:text-lg">No Watermarks</h3>
+                  <h3 className="font-bold mb-2 text-white sm:mb-3 text-base sm:text-lg">No Watermarks</h3>
                   <p className="text-sm text-white/60 leading-relaxed">Clean, professional output without branding</p>
                 </div>
                 
@@ -688,7 +688,7 @@ export default function Landing() {
                   <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-red-600/20 to-red-700/20 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 border border-red-600/20">
                     <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
                   </div>
-                  <h3 className="font-bold mb-2 sm:mb-3 text-base sm:text-lg">No Expiry</h3>
+                  <h3 className="font-bold mb-2 text-white sm:mb-3 text-base sm:text-lg">No Expiry</h3>
                   <p className="text-sm text-white/60 leading-relaxed">Tokens never expire, use them anytime</p>
                 </div>
               </div>
