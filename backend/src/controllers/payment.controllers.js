@@ -4,6 +4,8 @@ import Payment from "../models/payment.model.js";
 import User from "../models/user.model.js";
 import {   getAuth } from '@clerk/express'
 import { validateWebhookSignature } from "razorpay/dist/utils/razorpay-utils.js";
+import PDFDocument from "pdfkit";
+
 export const createOrder = async (req, res) => {
   try {
     const { planName } = req.body;
@@ -120,8 +122,13 @@ export const razorpayWebhook = async (req, res) => {
         amount: payment.amount / 100,
         tokens,
         razorpayId: payment.id,
+        invoiceDate: payment.created_at,
         razorpayOrderId: payment.order_id,
-        
+        status : payment.status , 
+        receiptNumber: `RCP-${Date.now()}`,
+        method : payment.method ,
+        email : payment.email , 
+        contact : payment.contact
       });
 
       const user2= await User.findByIdAndUpdate(userId, { $inc: { tokenBalance: tokens } });
@@ -139,3 +146,105 @@ export const razorpayWebhook = async (req, res) => {
     res.status(500).json({ success: false });
   }
 };
+export const getAllPayment = async(req , res)=>{
+  try {
+    const { userId } = getAuth(req, { acceptsToken: 'any' })
+    const user = await User.findOne({clerkId : userId});
+    if(!user){
+      return res.status(400).json({
+        success : false , 
+        message : "Unauthorized"
+      })
+    }
+
+    const payments = await Payment.find({userId : user._id}).sort({ createdAt: -1 });
+    if(!payments){
+      return res.status(400).json({
+        success : false , 
+        message : "Unable to fetch payments"
+      })
+    }
+
+    return res.status(200).json({
+        success : true ,
+        message : "Payments fetched",
+        payments
+    })
+    
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+        success : false , 
+        message : "Unable to fetch payments"
+    })
+    
+  }
+}
+
+export const downloadReciept = async(req , res)=>{
+  try {
+    const { userId } = getAuth(req, { acceptsToken: 'any' })
+    const user = await User.findOne({clerkId : userId});
+    const {id}= req.params; 
+    const payment = await Payment.findById(id);
+
+    if (payment.userId.toString() !== user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to access this receipt"
+      });
+    }
+    
+    if(!user){
+      return res.status(400).json({
+        success : false , 
+        message : "Unauthorized"
+      })
+    }
+    if(!payment){
+      return res.status(400).json({
+        success : false , 
+        message : "Unable to find payment"
+      })
+    }
+
+    const doc = new PDFDocument();
+    const fileName = `receipt_${payment.receiptNumber || payment._id}.pdf`;
+    res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
+    res.setHeader("Content-Type", "application/pdf");
+    doc.pipe(res);
+    doc.fontSize(18).text("Payment Receipt", { align: "center" });
+    doc.moveDown();
+     doc.fontSize(12).text(`Receipt No: ${payment.receiptNumber}`);
+    doc.text(`Date: ${payment.invoiceDate.toLocaleString()}`);
+    doc.text(`Payment ID: ${payment.razorpayId}`);
+    doc.text(`Order ID: ${payment.razorpayOrderId}`);
+    doc.text(`Status: ${payment.status}`);
+    doc.text(`Method: ${payment.method}`);
+    doc.moveDown();
+
+    doc.text(`Amount Paid: ₹${payment.amount}`);
+    doc.text(`Tokens Credited: ${payment.tokens}`);
+    doc.moveDown();
+
+    doc.text(`Customer Email: ${payment.email || user.email}`);
+    doc.text(`Customer Contact: ${payment.contact || "N/A"}`);
+    doc.moveDown();
+
+    doc.text("Seller: Toenail AI ");
+    doc.text("Address: Raipur , CG ");
+    doc.text("Website: toenail.in");
+
+    doc.end();
+
+
+
+  }catch (error) {
+    console.log(error)
+    return res.status(500).json({
+        success : false , 
+        message : "Unable to download reciept"
+    })
+    
+  }
+}

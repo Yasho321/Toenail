@@ -12,7 +12,12 @@ const chatSchema = new mongoose.Schema(
     title : {
         type : String,
         default : "Untitled"
+    },
+    pinned : {
+        type : Boolean,
+        default : false
     }
+
   },
   { timestamps: true }
 );

@@ -1,6 +1,6 @@
 import express from "express";
 
-import { createOrder, razorpayWebhook, verifyPayment } from "../controllers/payment.controllers.js";
+import { createOrder, downloadReciept, getAllPayment, razorpayWebhook, verifyPayment } from "../controllers/payment.controllers.js";
  
 
 const router = express.Router();
@@ -12,6 +12,8 @@ router.post(
   
   razorpayWebhook
 );
+router.get("/", getAllPayment);
+router.get("/:id", downloadReciept);
 
 
 

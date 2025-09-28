@@ -49,13 +49,16 @@ export const getChat = async (req , res)=>{
         const user = await User.findOne({clerkId : userId});
         
         
-        const chat = await Chat.find({
-            userId : user._id
+        const pinnedChat = await Chat.find({
+            userId : user._id,
+            pinned: true
         }).sort({ createdAt: -1 })
+        const chat = await Chat.find({userId : user._id}).sort({ createdAt: -1 });
 
         return res.status(200).json({
             success : true ,
             message : "Chats fetched",
+            pinnedChat,
             chat
         })
         
@@ -125,6 +128,99 @@ export const deleteChat = async(req,res)=>{
             message:"Internal Server error while deleting chat"
         })
         
+        
+    }
+}
+
+export const pin = async(req,res)=>{
+    try {
+        const { userId } = getAuth(req, { acceptsToken: 'any' }) 
+        if(!userId) {
+            return res.status(400).json({
+                success: false , 
+                message : "Unauthorized"
+            })
+        }
+       
+        
+        const user = await User.findOne({clerkId : userId});
+        
+        const { chatId } = req.params ;
+        const chat = await Chat.findById(chatId);
+
+        if(!chat){
+            return res.status(400).json({
+                success: false,
+                message : 'No chat found'
+            })
+        }
+         if(chat.userId.toString() !== user._id.toString()){
+            return res.status(403).json({
+                success: false,
+                message : 'You are not authorized to pin this chat'
+            }) 
+        }
+        chat.pinned = true;
+        await chat.save();
+        return res.status(200).json({
+            success:true,
+            message:"Pinned successfully"
+        })
+        
+        
+    } catch (error) {
+        console.log(error)
+         return res.status(500).json({
+                success: false , 
+                message : "Unable to pin chat"
+            })
+
+        
+    }
+}
+
+export const unpin = async(req,res)=>{
+    try {
+        const { userId } = getAuth(req, { acceptsToken: 'any' }) 
+        if(!userId) {
+            return res.status(400).json({
+                success: false , 
+                message : "Unauthorized"
+            })
+        }
+       
+        
+        const user = await User.findOne({clerkId : userId});
+        
+        const { chatId } = req.params ;
+        const chat = await Chat.findById(chatId);
+        
+        if(!chat){
+            return res.status(400).json({
+                success: false,
+                message : 'No chat found'
+            })
+        }
+        if(chat.userId.toString() !== user._id.toString()){
+            return res.status(403).json({
+                success: false,
+                message : 'You are not authorized to unpin this chat'
+            }) 
+        }
+        chat.pinned = false;
+        await chat.save();
+        return res.status(200).json({
+            success:true,
+            message:"Unpinned successfully"
+        })
+        
+        
+    } catch (error) {
+        console.log(error)
+         return res.status(500).json({
+                success: false , 
+                message : "Unable to unpin chat"
+            })
         
     }
 }

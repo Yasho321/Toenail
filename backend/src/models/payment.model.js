@@ -15,6 +15,9 @@ const paymentSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    status: { type: String, enum: ["created", "paid", "failed"], default: "created" },
+    receiptNumber: { type: String },
+    invoiceDate: { type: Date, default: Date.now },
     razorpayId: {
       type: String,
       required: true,
@@ -22,7 +25,10 @@ const paymentSchema = new mongoose.Schema(
     razorpayOrderId: {
       type: String,
       required: true,
-    }
+    },
+    method: { type: String }, 
+    email: { type: String },
+    contact: { type: String },
   },
   {
     timestamps: true, 

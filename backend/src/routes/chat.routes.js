@@ -1,6 +1,6 @@
 import {Router } from 'express';
 
-import { createChat, deleteChat, getChat, renameChat } from '../controllers/chat.controllers.js';
+import { createChat, deleteChat, getChat, pin, renameChat } from '../controllers/chat.controllers.js';
 
 
 
@@ -12,6 +12,9 @@ router.delete("/:chatId",deleteChat)
 
 
 router.get("/" , getChat)
+router.get("/pin/:chatId" , pin)
+router.get("/unpin/:chatId" , pin)
+
 
 
 
