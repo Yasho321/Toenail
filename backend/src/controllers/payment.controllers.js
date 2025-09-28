@@ -213,27 +213,84 @@ export const downloadReciept = async(req , res)=>{
     res.setHeader("Content-Disposition", `attachment; filename=${fileName}`);
     res.setHeader("Content-Type", "application/pdf");
     doc.pipe(res);
-    doc.fontSize(18).text("Payment Receipt", { align: "center" });
-    doc.moveDown();
-     doc.fontSize(12).text(`Receipt No: ${payment.receiptNumber}`);
-    doc.text(`Date: ${payment.invoiceDate.toLocaleString()}`);
-    doc.text(`Payment ID: ${payment.razorpayId}`);
-    doc.text(`Order ID: ${payment.razorpayOrderId}`);
-    doc.text(`Status: ${payment.status}`);
-    doc.text(`Method: ${payment.method}`);
-    doc.moveDown();
+   doc
+    .fontSize(22)
+    .fillColor("#E11D48")
+    .text("Toenail AI", { align: "center" })
+    .moveDown(0.5);
 
-    doc.text(`Amount Paid: ₹${payment.amount}`);
-    doc.text(`Tokens Credited: ${payment.tokens}`);
-    doc.moveDown();
+  doc
+    .fontSize(16)
+    .fillColor("black")
+    .text("Payment Receipt", { align: "center" })
+    .moveDown(1);
 
-    doc.text(`Customer Email: ${payment.email || user.email}`);
-    doc.text(`Customer Contact: ${payment.contact || "N/A"}`);
-    doc.moveDown();
+  // Draw a separator line
+  doc
+    .moveTo(50, doc.y)
+    .lineTo(550, doc.y)
+    .strokeColor("#E11D48")
+    .lineWidth(1)
+    .stroke()
+    .moveDown(1);
 
-    doc.text("Seller: Toenail AI ");
-    doc.text("Address: Raipur , CG ");
-    doc.text("Website: toenail.in");
+  // ===== RECEIPT INFO =====
+  doc.fontSize(12).fillColor("black").text(`Receipt No: ${payment.receiptNumber}`, { continued: true }).text(`   Date: ${payment.invoiceDate.toLocaleDateString()}`, { align: "right" });
+  doc.text(`Payment ID: ${payment.razorpayId}`);
+  doc.text(`Order ID: ${payment.razorpayOrderId}`);
+  doc.text(`Status: ${payment.status}`);
+  doc.text(`Method: ${payment.method}`).moveDown(1);
+
+  // ===== AMOUNT DETAILS =====
+  doc
+    .fontSize(14)
+    .fillColor("#E11D48")
+    .text("Payment Summary", { underline: true })
+    .moveDown(0.5);
+
+  doc
+    .fontSize(12)
+    .fillColor("black")
+    .text(`Amount Paid: ₹${payment.amount}`, { continued: true })
+    .text(`   Tokens Credited: ${payment.tokens}`, { align: "right" })
+    .moveDown(1);
+
+  // ===== CUSTOMER INFO =====
+  doc
+    .fontSize(14)
+    .fillColor("#E11D48")
+    .text("Customer Details", { underline: true })
+    .moveDown(0.5);
+
+  doc
+    .fontSize(12)
+    .fillColor("black")
+    .text(`Email: ${payment.email || user.email}`)
+    .text(`Contact: ${payment.contact || "N/A"}`)
+    .moveDown(1);
+
+  // ===== SELLER INFO =====
+  doc
+    .fontSize(14)
+    .fillColor("#E11D48")
+    .text("Seller Information", { underline: true })
+    .moveDown(0.5);
+
+  doc
+    .fontSize(12)
+    .fillColor("black")
+    .text("Seller: Toenail AI")
+    .text("Address: Raipur, CG")
+    .text("Website: toenail.in")
+    .moveDown(2);
+
+  // ===== FOOTER =====
+  doc
+    .fontSize(10)
+    .fillColor("gray")
+    .text("This is a system generated receipt and does not require signature.", {
+      align: "center",
+    });
 
     doc.end();
 
