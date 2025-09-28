@@ -47,24 +47,22 @@ export default function ChatCard({ chat, isSelected, onSelect }) {
 
   return (
     <Card
-      className={`p-3 cursor-pointer transition-all duration-200 group relative ${
+      className={`p-3 cursor-pointer text-white w-[60%] transition-all duration-200 group relative ${
         isSelected 
-          ? 'bg-chat-surface-hover border-primary shadow-lg' 
-          : 'bg-chat-surface border-chat-border hover:bg-chat-surface-hover hover:border-primary/50'
+          ? 'bg-[#0B0B0F]  shadow-xl shadow-primary/40' 
+          : ' bg-[#151015] border-none  hover:bg-chat-surface-hover '
       }`}
       onClick={handleCardClick}
     >
       {/* Pin indicator */}
       {chat.pinned && (
         <div className="absolute top-2 right-2">
-          <Bookmark className="w-3 h-3 text-pin fill-pin" />
+          <Bookmark className="w-3 h-3 text-white fill-pin" />
         </div>
       )}
 
       <div className="flex items-start gap-3">
-        <div className="w-8 h-8 bg-gradient-to-r from-primary/20 to-primary/30 rounded-full flex items-center justify-center flex-shrink-0">
-          <Sparkles className="w-4 h-4 text-primary" />
-        </div>
+        
         
         <div className="min-w-0 flex-1 pr-6">
           {isEditing ? (
@@ -98,12 +96,10 @@ export default function ChatCard({ chat, isSelected, onSelect }) {
             </div>
           ) : (
             <>
-              <h3 className="font-medium truncate text-chat-text text-sm mb-1">
+              <h3 className="font-medium flex items-center truncate text-chat-text text-sm mb-1">
                 {chat.title || 'Untitled Chat'}
               </h3>
-              <p className="text-xs text-chat-text-muted">
-                {new Date(chat.createdAt).toLocaleDateString()}
-              </p>
+             
             </>
           )}
         </div>
@@ -114,7 +110,7 @@ export default function ChatCard({ chat, isSelected, onSelect }) {
               variant="ghost"
               size="sm"
               onClick={handlePin}
-              className="h-8 w-8 p-0 text-chat-text-muted hover:text-pin"
+              className="h-8 w-8 p-0 text-white bg-[#0B0B0F] hover:text-white hover:bg-[#1E1A1F]"
               title={chat.pinned ? 'Unpin chat' : 'Pin chat'}
             >
               {chat.pinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
@@ -127,7 +123,7 @@ export default function ChatCard({ chat, isSelected, onSelect }) {
                 e.stopPropagation();
                 setIsEditing(true);
               }}
-              className="h-8 w-8 p-0 text-chat-text-muted hover:text-primary"
+              className="h-8 w-8 p-0 text-white bg-[#0B0B0F] hover:text-white hover:bg-[#1E1A1F]"
               title="Rename chat"
             >
               <Edit3 className="w-4 h-4" />
@@ -137,7 +133,7 @@ export default function ChatCard({ chat, isSelected, onSelect }) {
               variant="ghost"
               size="sm"
               onClick={handleDelete}
-              className="h-8 w-8 p-0 text-chat-text-muted hover:text-destructive"
+              className="h-8 w-8 p-0 text-white bg-[#0B0B0F]  hover:bg-[#1E1A1F] hover:text-destructive"
               title="Delete chat"
             >
               <Trash2 className="w-4 h-4" />

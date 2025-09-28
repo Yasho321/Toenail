@@ -5,11 +5,14 @@ import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Input } from './ui/input';
 import { ScrollArea } from './ui/scroll-area';
-import { Send, Download, Loader2, Image as ImageIcon, Bot, User, MessageCircle, X, Paperclip, Plus, Settings } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Send, Download, Loader2, Image as ImageIcon, Bot, User, MessageCircle, X, Plus, Camera, ArrowUp, Paperclip } from 'lucide-react';
 import { useAuth } from '@clerk/clerk-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { useChatStore } from '../stores/chatStore';
-import ThumbnailFormModal from './ThumbnailFormModal';
+import FileInput from './ui/file-input';
 import toast from 'react-hot-toast';
 
 export default function ChatInterface({ chatId }) {
@@ -22,7 +25,19 @@ export default function ChatInterface({ chatId }) {
   const [prompt, setPrompt] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
   const [selectedImageForChat, setSelectedImageForChat] = useState(null);
-  const [showFormModal, setShowFormModal] = useState(false);
+  const [showOptionsPopover, setShowOptionsPopover] = useState(false);
+  const [showVideoTitleDialog, setShowVideoTitleDialog] = useState(false);
+
+  // Form fields for new thumbnail generation
+  const [formData, setFormData] = useState({
+    genre: '',
+    mood: '',
+    resolution: '1280 x 720',
+    title: '',
+    file: null,
+    prompt: ''
+  });
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   useEffect(() => {
     if (chatId) {
@@ -36,6 +51,75 @@ export default function ChatInterface({ chatId }) {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleFileChange = (files) => {
+    const file = files[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('File size must be less than 10MB');
+        return;
+      }
+      
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        toast.error('Please select a valid image file (JPG, PNG, WEBP)');
+        return;
+      }
+
+      setFormData({ ...formData, file });
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+      if(isFormComplete()) setShowOptionsPopover(false);
+      
+    }
+  };
+
+  const handleVideoTitleSubmit = (title) => {
+    setFormData({ ...formData, title });
+    setShowVideoTitleDialog(false);
+  };
+
+  const isFormComplete = () => {
+    return  formData.genre && formData.mood && formData.resolution && formData.title && formData.file && formData.prompt.trim() || selectedImageForChat;
+  };
+
+  const handleGenerateThumbnail = async () => {
+    if (!isFormComplete()) {
+      toast.error('Please fill all fields');
+      return;
+    }
+
+    await fetchChats(getToken);
+    if (token <= 0) {
+      toast.error("Not enough tokens to continue");
+      return;
+    }
+
+    const submitData = new FormData();
+    submitData.append('prompt', formData.prompt);
+    submitData.append('genre', formData.genre);
+    submitData.append('mood', formData.mood);
+    submitData.append('title', formData.title);
+    submitData.append('resolution', formData.resolution);
+    submitData.append('file', formData.file);
+
+    const result = await generateThumbnail(chatId, submitData, getToken);
+    
+    if (result) {
+      updateTokens();
+      // Reset form
+      setFormData({
+        genre: '',
+        mood: '',
+        resolution: '1280 x 720',
+        title: '',
+        file: null,
+        prompt: ''
+      });
+      setPreviewUrl(null);
+      toast.success('Thumbnail generated successfully!');
+    }
   };
 
   const handleDownloadSingle = async (image) => {
@@ -97,11 +181,18 @@ export default function ChatInterface({ chatId }) {
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
+      if (selectedImageForChat) {
+        handleSendMessage();
+      } else {
+        
+        setFormData({ ...formData, prompt });
+      }
     }
   };
 
   const handleSendMessage = async () => {
+    if (messages.length === 0) return;
+
     await fetchChats(getToken);
     if (token <= 0) {
       toast.error("Not enough tokens to continue");
@@ -110,30 +201,12 @@ export default function ChatInterface({ chatId }) {
     if (!prompt.trim() || !selectedImageForChat) return;
 
     setPrompt('');
-
     const result = await continueChat(chatId, selectedImageForChat, prompt, getToken);
     
     if (result.success) {
       updateTokens();
     }
-  };
-
-  const handleFormSubmit = async (formData) => {
-    await fetchChats(getToken);
-
-    if (token <= 0) {
-      toast.error("Not enough tokens to continue");
-      return false;
-    }
-
-    const result = await generateThumbnail(chatId, formData, getToken);
-    
-    if (result) {
-      updateTokens();
-      toast.success('Thumbnail generated successfully!');
-      return true;
-    }
-    return false;
+    setSelectedImageForChat(null);
   };
 
   const renderMessage = (message, index) => {
@@ -143,17 +216,17 @@ export default function ChatInterface({ chatId }) {
       <div key={index} className={`flex gap-4 ${isUser ? 'justify-end' : 'justify-start'} mb-6`}>
         {!isUser && (
           <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-            <Bot className="w-4 h-4 text-primary" />
+            <Bot className="w-4 h-4 text-white" />
           </div>
         )}
         
-        <div className={`max-w-[80%] ${isUser ? 'order-first' : ''}`}>
+        <div className={`max-w-[60%] border-none  ${isUser ? 'order-first' : ''}`}>
           <Card className={`p-4 ${
             isUser 
-              ? 'bg-primary text-primary-foreground ml-auto' 
-              : 'bg-chat-surface border-chat-border'
+              ? 'bg-[#151015] border-none text-white ml-auto' 
+              : 'bg-[#151015] border-none'
           }`}>
-            <p className="mb-3 text-sm leading-relaxed">{message.text}</p>
+            <p className="mb-3 text-sm text-white leading-relaxed">{message.text}</p>
             
             {message.images && message.images.length > 0 && (
               <div className="space-y-4">
@@ -165,12 +238,12 @@ export default function ChatInterface({ chatId }) {
                         alt={`Generated thumbnail ${imgIndex + 1}`}
                         className={`w-full aspect-video object-cover rounded-lg transition-all cursor-pointer ${
                           image === selectedImageForChat 
-                            ? "border-2 border-primary shadow-lg shadow-primary/40 scale-[1.02]" 
-                            : "border border-chat-border hover:border-primary/50"
+                            ? " shadow-lg shadow-primary/40 scale-[1.02]" 
+                            : " hover:border-primary/50"
                         }`}
                         onClick={() => handleContinueChat(image)}
                       />
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
+                      <div className="absolute inset-0 bg-[#0B0B0F]/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
                         {image === selectedImageForChat ? (
                           <Button
                             variant="secondary"
@@ -225,7 +298,7 @@ export default function ChatInterface({ chatId }) {
                     onClick={() => handleDownloadAll(message.images)}
                     variant="outline"
                     size="sm"
-                    className="w-full border-chat-border hover:bg-chat-surface-hover"
+                    className="w-full border-none text-white bg-[#0B0B0F] hover:bg-[#1E1A1F] hover:text-white"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Download All as ZIP
@@ -260,70 +333,19 @@ export default function ChatInterface({ chatId }) {
         <div className="flex-1 flex items-center justify-center p-8">
           <div className="text-center max-w-2xl">
             <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <ImageIcon className="w-8 h-8 text-primary" />
+              <ImageIcon className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-2xl font-semibold text-chat-text mb-4">
+            <h2 className="text-2xl font-semibold text-white mb-4">
               Hello there!
             </h2>
-            <p className="text-chat-text-muted mb-8 text-lg">
+            <p className="text-white-muted mb-8 text-lg">
               How can I help you create amazing thumbnails today?
             </p>
-            
-            {/* Suggestion buttons */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-              <Button
-                variant="outline"
-                className="p-4 h-auto text-left justify-start border-chat-border hover:bg-chat-surface-hover"
-                onClick={() => setShowFormModal(true)}
-              >
-                <Plus className="w-5 h-5 mr-3 text-primary" />
-                <div>
-                  <div className="font-medium text-chat-text">Create Gaming Thumbnail</div>
-                  <div className="text-sm text-chat-text-muted">Generate exciting gaming content</div>
-                </div>
-              </Button>
-              
-              <Button
-                variant="outline"
-                className="p-4 h-auto text-left justify-start border-chat-border hover:bg-chat-surface-hover"
-                onClick={() => setShowFormModal(true)}
-              >
-                <Plus className="w-5 h-5 mr-3 text-primary" />
-                <div>
-                  <div className="font-medium text-chat-text">Tech Tutorial Thumbnail</div>
-                  <div className="text-sm text-chat-text-muted">Professional tech content design</div>
-                </div>
-              </Button>
-              
-              <Button
-                variant="outline"
-                className="p-4 h-auto text-left justify-start border-chat-border hover:bg-chat-surface-hover"
-                onClick={() => setShowFormModal(true)}
-              >
-                <Plus className="w-5 h-5 mr-3 text-primary" />
-                <div>
-                  <div className="font-medium text-chat-text">Music Video Thumbnail</div>
-                  <div className="text-sm text-chat-text-muted">Eye-catching music visuals</div>
-                </div>
-              </Button>
-              
-              <Button
-                variant="outline"
-                className="p-4 h-auto text-left justify-start border-chat-border hover:bg-chat-surface-hover"
-                onClick={() => setShowFormModal(true)}
-              >
-                <Plus className="w-5 h-5 mr-3 text-primary" />
-                <div>
-                  <div className="font-medium text-chat-text">Vlog Thumbnail</div>
-                  <div className="text-sm text-chat-text-muted">Personal and engaging designs</div>
-                </div>
-              </Button>
-            </div>
           </div>
         </div>
       ) : (
         /* Messages */
-        <ScrollArea className="flex-1">
+        <ScrollArea className="flex-1 overflow-y-auto">
           <div className="p-6 space-y-0">
             {messages[0]?.messages?.map((message, index) => renderMessage(message, index))}
             <div ref={messagesEndRef} />
@@ -331,51 +353,237 @@ export default function ChatInterface({ chatId }) {
         </ScrollArea>
       )}
 
-      {/* Input Area */}
-      <div className="border-t border-chat-border bg-chat-surface p-4">
+      {/* Enhanced Input Area */}
+      <div className="bg-chat-surface p-4">
+        {/* Selected Values Display */}
+        {!selectedImageForChat && (formData.genre || formData.mood || formData.resolution || formData.file || formData.prompt  || formData.title || previewUrl) && (
+          <div className="mb-4 flex flex-wrap gap-2">
+            {formData.genre && (
+              <div className="bg-primary/10 text-white px-2 py-1 rounded-md text-xs flex items-center gap-1">
+                Genre: {formData.genre}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setFormData({ ...formData, genre: '' })}
+                  className="h-4 w-4 p-0 hover:bg-primary/20"
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+            )}
+            {formData.mood && (
+              <div className="bg-primary/10 text-white px-2 py-1 rounded-md text-xs flex items-center gap-1">
+                Mood: {formData.mood}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setFormData({ ...formData, mood: '' })}
+                  className="h-4 w-4 p-0 hover:bg-primary/20"
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+            )}
+            {formData.resolution !== '1280 x 720'  && (
+              <div className="bg-primary/10 text-white px-2 py-1 rounded-md text-xs flex items-center gap-1">
+                Resolution: {formData.resolution}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setFormData({ ...formData, resolution: '1280 x 720' })}
+                  className="h-4 w-4 p-0 hover:bg-primary/20"
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+            )}
+            {formData.title && (
+              <div className="bg-primary/10 text-white px-2 py-1 rounded-md text-xs flex items-center gap-1">
+                Title: {formData.title}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setFormData({ ...formData, title: '' })}
+                  className="h-4 w-4 p-0 hover:bg-primary/20"
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+            )}
+            {previewUrl && (
+              <div className="bg-primary/10 text-white px-2 py-1 rounded-md text-xs flex items-center gap-1">
+                <ImageIcon className="w-3 h-3" />
+                Image uploaded
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    URL.revokeObjectURL(previewUrl);
+                    setPreviewUrl(null);
+                    setFormData({ ...formData, file: null });
+                  }}
+                  className="h-4 w-4 p-0 hover:bg-primary/20"
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="flex gap-3 items-end">
+          {/* Plus Button with Options */}
+          <Popover open={showOptionsPopover} onOpenChange={setShowOptionsPopover}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="border-none bg-[#0B0B0F] hover:bg-[#1E1A1F] hover:text-white"
+              >
+                <Plus className="w-4 h-4 " />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent 
+              side="top" 
+              className="w-80 bg-[#0B0B0F] border-chat-border text-white p-2"
+            >
+              <div className="space-y-2">
+                {/* Add Photo Option */}
+                <div className="p-2">
+                  <FileInput 
+                    allowMultiple={false} 
+                    onFileChange={handleFileChange}
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Genre Select */}
+                <div>
+                  <Select 
+                    value={formData.genre} 
+                    onValueChange={(value) => {
+                      setFormData({ ...formData, genre: value });
+                      if(isFormComplete()) setShowOptionsPopover(false);
+                    }}
+                  >
+                    <SelectTrigger className="w-full bg-chat-bg border-chat-border text-white">
+                      <SelectValue placeholder="Select Genre" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#0B0B0F] text-white border-chat-border">
+                      <SelectItem value="gaming">Gaming</SelectItem>
+                      <SelectItem value="music">Music</SelectItem>
+                      <SelectItem value="vlogs">Vlogs</SelectItem>
+                      <SelectItem value="tech">Tech</SelectItem>
+                      <SelectItem value="education">Education</SelectItem>
+                      <SelectItem value="entertainment">Entertainment</SelectItem>
+                      <SelectItem value="fitness">Fitness</SelectItem>
+                      <SelectItem value="fashion">Fashion</SelectItem>
+                      <SelectItem value="cooking">Cooking</SelectItem>
+                      <SelectItem value="travel">Travel</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Mood Select */}
+                <div>
+                  <Select 
+                    value={formData.mood} 
+                    onValueChange={(value) => {
+                      setFormData({ ...formData, mood: value });
+                      if(isFormComplete()) setShowOptionsPopover(false);
+                    }}
+                  >
+                    <SelectTrigger className="w-full bg-[#0B0B0F] text-white border-chat-border">
+                      <SelectValue placeholder="Select Mood" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#0B0B0F] text-white border-chat-border">
+                      <SelectItem value="exciting">Exciting</SelectItem>
+                      <SelectItem value="happy">Happy</SelectItem>
+                      <SelectItem value="dramatic">Dramatic</SelectItem>
+                      <SelectItem value="professional">Professional</SelectItem>
+                      <SelectItem value="fun">Fun</SelectItem>
+                      <SelectItem value="serious">Serious</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Resolution Select */}
+                <div>
+                  <Select 
+                    value={formData.resolution} 
+                    onValueChange={(value) => {
+                      setFormData({ ...formData, resolution: value });
+                      if(isFormComplete()) setShowOptionsPopover(false);
+                    }}
+                  >
+                    <SelectTrigger className="w-full bg-[#0B0B0F] text-white border-chat-border ">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#0B0B0F] text-white border-chat-border">
+                      <SelectItem value="1280 x 720">1280 x 720 (HD)</SelectItem>
+                      <SelectItem value="1920 x 1080">1920 x 1080 (Full HD)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Video Title Button */}
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start bg-[#0B0B0F] text-white hover:bg-chat-bg"
+                  onClick={() => {
+                    setShowVideoTitleDialog(true);
+                    if(isFormComplete()) setShowOptionsPopover(false);
+                  }}
+                >
+                  <Camera className="w-4 h-4 mr-2" />
+                  Video Title
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
+
           <div className="flex-1">
             <Input
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
+              value={!selectedImageForChat ? formData.prompt : prompt}
+              onChange={(e) => {
+                if (!selectedImageForChat) {
+                  setFormData({ ...formData, prompt: e.target.value });
+                } else {
+                  setPrompt(e.target.value);
+                }
+              }}
               onKeyPress={handleKeyPress}
               placeholder={
-                selectedImageForChat 
-                  ? "Continue the conversation about your thumbnail..." 
-                  : "Start a new thumbnail project..."
+                (messages.length === 0 && !selectedImageForChat)
+                  ? "Describe your thumbnail..." 
+                  : selectedImageForChat 
+                    ? "Continue the conversation about your thumbnail..." 
+                    : "Start a new thumbnail project..."
               }
               disabled={isGenerating}
-              className="bg-chat-bg border-chat-border text-chat-text placeholder:text-chat-text-muted"
+              className="bg-[#151015] rounded-xl shadow-xl border-none text-white placeholder:text-white-muted"
             />
           </div>
           
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setShowFormModal(true)}
-              className="border-chat-border hover:bg-chat-surface-hover"
-              title="Upload image and generate thumbnail"
-            >
-              <Paperclip className="w-4 h-4" />
-            </Button>
-            
-            <Button
-              onClick={messages.length === 0 ? () => setShowFormModal(true) : handleSendMessage}
-              disabled={messages.length > 0 && (!prompt.trim() || isGenerating || !selectedImageForChat)}
-              className="bg-primary hover:bg-primary/90"
-            >
-              {isGenerating ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Send className="w-4 h-4" />
-              )}
-            </Button>
-          </div>
+          <Button
+            onClick={ selectedImageForChat ? handleGenerateThumbnail : handleSendMessage}
+            disabled={
+              selectedImageForChat 
+                ?  !prompt.trim()|| isGenerating
+                : (!isFormComplete() || isGenerating )
+            }
+            className="bg-primary hover:bg-primary/90"
+          >
+            {isGenerating ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <ArrowUp className="w-4 h-4" />
+            )}
+          </Button>
         </div>
         
         {selectedImageForChat && (
-          <div className="mt-3 flex items-center gap-2 text-sm text-chat-text-muted">
+          <div className="mt-3 flex items-center gap-2 text-sm text-white-muted">
             <MessageCircle className="w-4 h-4" />
             <span>Chatting about selected image</span>
             <Button
@@ -390,13 +598,43 @@ export default function ChatInterface({ chatId }) {
         )}
       </div>
 
-      {/* Form Modal */}
-      <ThumbnailFormModal
-        isOpen={showFormModal}
-        onClose={() => setShowFormModal(false)}
-        onSubmit={handleFormSubmit}
-        isGenerating={isGenerating}
-      />
+      {/* Video Title Dialog */}
+      <Dialog open={showVideoTitleDialog} onOpenChange={setShowVideoTitleDialog}>
+        <DialogContent className="bg-chat-surface border-chat-border text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white">Enter Video Title</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Input
+              placeholder="Enter your video title..."
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              className="bg-chat-bg border-chat-border text-white"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleVideoTitleSubmit(formData.title);
+                }
+              }}
+            />
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowVideoTitleDialog(false)}
+                className="flex-1 border-chat-border hover:bg-chat-surface-hover"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => handleVideoTitleSubmit(formData.title)}
+                disabled={!formData.title.trim()}
+                className="flex-1 bg-primary hover:bg-primary/90"
+              >
+                Save
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

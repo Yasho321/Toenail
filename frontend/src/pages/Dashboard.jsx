@@ -46,7 +46,7 @@ export default function Dashboard() {
 
   if (isCheckingAuth) {
     return (
-      <div className='flex bg-chat-bg items-center justify-center h-screen'> 
+      <div className='flex bg-[#1E1A1F] items-center justify-center h-screen'> 
         <Loader className='text-primary size-10 animate-spin' />
       </div>
     )
@@ -63,41 +63,42 @@ export default function Dashboard() {
   const regularChats = sortedChats.filter(chat => !chat.pinned);
 
   return (
-    <div className="h-screen w-full bg-chat-bg relative flex">
+    <div className="h-screen w-full bg-[#1E1A1F] text-white relative flex">
       {/* Sidebar */}
-      <div className={`${sidebarCollapsed ? 'w-16' : 'w-80'} border-r border-chat-border bg-sidebar flex flex-col h-full transition-all duration-300 relative z-10`}>
+      <div className={`${sidebarCollapsed ? 'w-16' : 'w-80'} bg-[#151015] shadow-lg bg-[#1E1A1F] flex flex-col h-full transition-all duration-300 relative z-10`}>
         {/* Header */}
-        <div className={`p-4 border-b border-chat-border flex-shrink-0 ${sidebarCollapsed ? 'px-2' : ''}`}>
+        <div className={`p-4  flex-shrink-0 ${sidebarCollapsed ? 'px-2' : ''}`}>
           {!sidebarCollapsed && (
             <>
               <div className="flex items-center justify-between mb-4">
-                <h1 className="text-xl text-sidebar-foreground font-bold">
-                  Toenail <span className="text-primary">AI</span>
+                <h1 className="text-xl flex text-white font-bold">
+                 <img className='w-6 h-6 rounded-lg mr-2' src="./logo.png"/> Toenail <span className="text-red-500">AI</span>
                 </h1>
-                <UserButton />
+                <div className='mr-10'><UserButton /></div>
+                
               </div>
               
               {/* Stats Cards */}
-              <div className="grid grid-cols-3 gap-2 mb-4">
+              <div className="grid grid-cols-1  gap-2 mb-4">
                 {/* Tokens */}
-                <Card className="p-3 bg-sidebar-accent border-sidebar-border">
+                <Card className="p-3 bg-[#151015] border-none">
                   <div className="flex items-center gap-2">
-                    <Coins className="w-4 h-4 text-primary" />
-                    <div>
-                      <div className="text-xs text-sidebar-foreground/70">Tokens</div>
-                      <div className="text-lg font-bold text-sidebar-foreground">{token}</div>
+                    <Coins className="w-4 h-4 text-white" />
+                    <div className='flex items-center'>
+                      
+                      <div className="text-lg font-bold text-white">Tokens : {token}</div>
                     </div>
                   </div>
                 </Card>
                 
                 {/* Pricing */}
                 <Link to="/pricing">
-                  <Card className="p-3 bg-sidebar-accent border-sidebar-border hover:bg-sidebar-accent/80 cursor-pointer transition-colors">
+                  <Card className="p-3 bg-[#151015] border-none  hover:bg-[#151015]/80 cursor-pointer transition-colors">
                     <div className="flex items-center gap-2">
-                      <CreditCard className="w-4 h-4 text-primary" />
+                      <CreditCard className="w-4 h-4 text-white" />
                       <div>
-                        <div className="text-xs text-sidebar-foreground/70">Buy</div>
-                        <div className="text-sm font-medium text-sidebar-foreground">More</div>
+                        
+                        <div className="text-sm  font-medium text-white"> Buy Tokens</div>
                       </div>
                     </div>
                   </Card>
@@ -105,16 +106,26 @@ export default function Dashboard() {
                 
                 {/* Transactions */}
                 <Link to="/transactions">
-                  <Card className="p-3 bg-sidebar-accent border-sidebar-border hover:bg-sidebar-accent/80 cursor-pointer transition-colors">
+                  <Card className="p-3 bg-[#151015] border-none  hover:bg-[#151015]/80 cursor-pointer transition-colors">
                     <div className="flex items-center gap-2">
-                      <Receipt className="w-4 h-4 text-primary" />
-                      <div>
-                        <div className="text-xs text-sidebar-foreground/70">History</div>
-                        <div className="text-sm font-medium text-sidebar-foreground">View</div>
+                      <Receipt className="w-4 h-4 text-white" />
+                      <div className='flex items-center'>
+                        
+                        <div className="text-sm font-medium text-white">Transaction History</div>
                       </div>
                     </div>
                   </Card>
                 </Link>
+                <div className="flex items-center gap-2">
+                    <Button
+                      onClick={handleCreateChat}
+                      disabled={isCreatingChat}
+                      className="l bg-[#151015] hover:bg-[#0B0B0F]/90 text-white"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      New Chat
+                    </Button>
+                  </div>
               </div>
             </>
           )}
@@ -124,36 +135,25 @@ export default function Dashboard() {
             variant="ghost"
             size="icon"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className={`text-sidebar-foreground hover:bg-sidebar-accent ${sidebarCollapsed ? 'w-full' : 'absolute top-4 right-4'}`}
+            className={`text-white hover:bg-[#151015] hover:text-white  ${sidebarCollapsed ? 'w-full' : 'absolute top-4 right-4'}`}
           >
             {sidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </Button>
         </div>
 
         {/* New Chat Button */}
-        {!sidebarCollapsed && (
-          <div className="p-4 text-sidebar-foreground flex-shrink-0">
-            <Button
-              onClick={handleCreateChat}
-              disabled={isCreatingChat}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              New Thumbnail Chat
-            </Button>
-          </div>
-        )}
+        
 
         {/* Chat List */}
         {!sidebarCollapsed && (
-          <ScrollArea className="flex-1">
+          <ScrollArea className="flex-1 overflow-y-auto">
             <div className="p-4 space-y-4">
               {/* Pinned Chats */}
               {pinnedChats.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <Bookmark className="w-4 h-4 text-pin fill-pin" />
-                    <h3 className="text-sm font-medium text-sidebar-foreground/70">Pinned</h3>
+                    <Bookmark className="w-4 h-4 text-white fill-pin" />
+                    <h3 className="text-sm font-medium text-white/70">Pinned</h3>
                   </div>
                   <div className="space-y-2">
                     {pinnedChats.map((chat) => (
@@ -172,7 +172,7 @@ export default function Dashboard() {
               {regularChats.length > 0 && (
                 <div>
                   {pinnedChats.length > 0 && (
-                    <h3 className="text-sm font-medium text-sidebar-foreground/70 mb-3">Recent</h3>
+                    <h3 className="text-sm font-medium text-white/70 mb-3">Recent</h3>
                   )}
                   <div className="space-y-2">
                     {regularChats.map((chat) => (
@@ -190,9 +190,9 @@ export default function Dashboard() {
               {/* Empty State */}
               {chats.length === 0 && (
                 <div className="text-center py-8">
-                  <MessageSquare className="w-12 h-12 text-sidebar-foreground/50 mx-auto mb-4" />
-                  <p className="text-sidebar-foreground text-sm">No chats yet</p>
-                  <p className="text-xs text-sidebar-foreground/70">Create your first thumbnail!</p>
+                  <MessageSquare className="w-12 h-12 text-white/50 mx-auto mb-4" />
+                  <p className="text-white text-sm">No chats yet</p>
+                  <p className="text-xs text-white/70">Create your first thumbnail!</p>
                 </div>
               )}
             </div>
@@ -206,14 +206,14 @@ export default function Dashboard() {
               onClick={handleCreateChat}
               disabled={isCreatingChat}
               size="icon"
-              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="bg-[#0B0B0F] hover:bg-[#0B0B0F]/90 text-white"
               title="New Chat"
             >
               <Plus className="w-4 h-4" />
             </Button>
             
             {pinnedChats.length > 0 && (
-              <div className="w-8 h-1 bg-pin rounded-full" title={`${pinnedChats.length} pinned chats`} />
+              <div className="w-8 h-1 bg-[#0B0B0F] rounded-full" title={`${pinnedChats.length} pinned chats`} />
             )}
           </div>
         )}
@@ -226,14 +226,14 @@ export default function Dashboard() {
         ) : (
           <div className="flex-1 flex items-center justify-center p-8">
             <div className="text-center max-w-md">
-              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Sparkles className="w-8 h-8 text-primary" />
+              <div className="w-16 h-16 bg-[#0B0B0F]/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Sparkles className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-chat-text mb-4">Create Your First Thumbnail</h2>
-              <p className="text-chat-text-muted mb-6">
+              <h2 className="text-2xl font-bold text-white mb-4">Create Your First Thumbnail</h2>
+              <p className="text-white-muted mb-6">
                 Select a chat or create a new one to start generating amazing YouTube thumbnails with AI.
               </p>
-              <Button onClick={handleCreateChat} className="bg-primary hover:bg-primary/90">
+              <Button onClick={handleCreateChat} className="bg-[#0B0B0F] hover:bg-[#0B0B0F]/90">
                 <Plus className="w-4 h-4 mr-2" />
                 Start Creating
               </Button>
