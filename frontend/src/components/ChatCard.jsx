@@ -2,19 +2,19 @@ import { useState } from 'react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Sparkles, Edit3, Trash2, Check, X } from 'lucide-react';
+import { Sparkles, Edit3, Trash2, Check, X, Pin, PinOff, Bookmark } from 'lucide-react';
 import { useChatStore } from '../stores/chatStore';
 import { useAuth } from '@clerk/clerk-react';
 
 export default function ChatCard({ chat, isSelected, onSelect }) {
-    const {getToken} = useAuth();
+  const { getToken } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(chat.title || 'Untitled Chat');
-  const { renameChat, deleteChat } = useChatStore();
+  const { renameChat, deleteChat, pinChat, unpinChat } = useChatStore();
 
   const handleRename = async () => {
     if (editTitle.trim() && editTitle !== chat.title) {
-      const success = await renameChat(chat._id, editTitle.trim(),getToken);
+      const success = await renameChat(chat._id, editTitle.trim(), getToken);
       if (success) {
         setIsEditing(false);
       }
@@ -26,7 +26,16 @@ export default function ChatCard({ chat, isSelected, onSelect }) {
   const handleDelete = async (e) => {
     e.stopPropagation();
     if (window.confirm('Are you sure you want to delete this chat?')) {
-      await deleteChat(chat._id,getToken);
+      await deleteChat(chat._id, getToken);
+    }
+  };
+
+  const handlePin = async (e) => {
+    e.stopPropagation();
+    if (chat.pinned) {
+      await unpinChat(chat._id, getToken);
+    } else {
+      await pinChat(chat._id, getToken);
     }
   };
 
@@ -38,19 +47,28 @@ export default function ChatCard({ chat, isSelected, onSelect }) {
 
   return (
     <Card
-      className={`p-2 sm:p-3 cursor-pointer backdrop-blur-sm bg-white/5 hover:border-red-600 border-red-600/50 shadow-xl transition-all duration-200 hover:bg-white/10 group w-full lg:w-73  ${
-        isSelected ? 'bg-white/20 border-red-700 ' : ''
+      className={`p-3 cursor-pointer transition-all duration-200 group relative ${
+        isSelected 
+          ? 'bg-chat-surface-hover border-primary shadow-lg' 
+          : 'bg-chat-surface border-chat-border hover:bg-chat-surface-hover hover:border-primary/50'
       }`}
       onClick={handleCardClick}
     >
-      <div className="flex items-start gap-2 sm:gap-3">
-        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-red-600 to-red-700 rounded-full flex items-center justify-center flex-shrink-0">
-          <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+      {/* Pin indicator */}
+      {chat.pinned && (
+        <div className="absolute top-2 right-2">
+          <Bookmark className="w-3 h-3 text-pin fill-pin" />
+        </div>
+      )}
+
+      <div className="flex items-start gap-3">
+        <div className="w-8 h-8 bg-gradient-to-r from-primary/20 to-primary/30 rounded-full flex items-center justify-center flex-shrink-0">
+          <Sparkles className="w-4 h-4 text-primary" />
         </div>
         
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 pr-6">
           {isEditing ? (
-            <div className="flex text-white bg-black items-center gap-1 sm:gap-2" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
               <Input
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
@@ -58,32 +76,32 @@ export default function ChatCard({ chat, isSelected, onSelect }) {
                   if (e.key === 'Enter') handleRename();
                   if (e.key === 'Escape') setIsEditing(false);
                 }}
-                className="h-6 sm:h-8 text-xs sm:text-sm"
+                className="h-8 text-sm bg-chat-bg border-chat-border text-chat-text"
                 autoFocus
               />
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleRename}
-                className="h-6 w-6 sm:h-8 sm:w-8 p-0"
+                className="h-8 w-8 p-0 text-chat-text hover:text-primary"
               >
-                <Check className="w-3 h-3 sm:w-4 sm:h-4" />
+                <Check className="w-4 h-4" />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsEditing(false)}
-                className="h-6 w-6 sm:h-8 sm:w-8 p-0"
+                className="h-8 w-8 p-0 text-chat-text hover:text-destructive"
               >
-                <X className="w-3 h-3 sm:w-4 sm:h-4" />
+                <X className="w-4 h-4" />
               </Button>
             </div>
           ) : (
             <>
-              <h3 className="font-medium truncate text-white text-xs sm:text-sm">
+              <h3 className="font-medium truncate text-chat-text text-sm mb-1">
                 {chat.title || 'Untitled Chat'}
               </h3>
-              <p className="text-xs text-white">
+              <p className="text-xs text-chat-text-muted">
                 {new Date(chat.createdAt).toLocaleDateString()}
               </p>
             </>
@@ -91,7 +109,17 @@ export default function ChatCard({ chat, isSelected, onSelect }) {
         </div>
 
         {!isEditing && (
-          <div className="flex items-center bg-white/10 hover:bg-black hover:bg-black/10 gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handlePin}
+              className="h-8 w-8 p-0 text-chat-text-muted hover:text-pin"
+              title={chat.pinned ? 'Unpin chat' : 'Pin chat'}
+            >
+              {chat.pinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
+            </Button>
+            
             <Button
               variant="ghost"
               size="sm"
@@ -99,17 +127,20 @@ export default function ChatCard({ chat, isSelected, onSelect }) {
                 e.stopPropagation();
                 setIsEditing(true);
               }}
-              className="h-6 w-6 sm:h-8 sm:w-8 p-0 text-white hover:text-black"
+              className="h-8 w-8 p-0 text-chat-text-muted hover:text-primary"
+              title="Rename chat"
             >
-              <Edit3 className="w-3 h-3 sm:w-4 sm:h-4 hover:text-black" />
+              <Edit3 className="w-4 h-4" />
             </Button>
+            
             <Button
               variant="ghost"
               size="sm"
               onClick={handleDelete}
-              className="h-6 w-6 sm:h-8 sm:w-8 p-0 text-destructive hover:text-destructive hover:text-black"
+              className="h-8 w-8 p-0 text-chat-text-muted hover:text-destructive"
+              title="Delete chat"
             >
-              <Trash2 className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 hover:text-red-600" />
+              <Trash2 className="w-4 h-4" />
             </Button>
           </div>
         )}

@@ -118,5 +118,58 @@ export const useChatStore = create((set, get) => ({
       toast.error("Failed to delete chat");
       return false;
     }
+  },
+   pinChat: async (chatId, getToken) => {
+    try {
+      const token = await getToken();
+      await axiosInstance.get(`/chat/pin/${chatId}`,  {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      set((state) => ({
+        chats: state.chats.map((chat) =>
+          chat._id === chatId ? { ...chat, pinned: true } : chat
+        ),
+        currentChat: state.currentChat?._id === chatId 
+          ? { ...state.currentChat, pinned: true } 
+          : state.currentChat
+      }));
+      
+      toast.success("Chat pinned successfully");
+      return true;
+    } catch (error) {
+      console.error("Error pinning chat:", error);
+      toast.error("Failed to pin chat");
+      return false;
+    }
+  },
+
+  unpinChat: async (chatId, getToken) => {
+    try {
+      const token = await getToken();
+      await axiosInstance.get(`/chat/pin/${chatId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      set((state) => ({
+        chats: state.chats.map((chat) =>
+          chat._id === chatId ? { ...chat, pinned: false } : chat
+        ),
+        currentChat: state.currentChat?._id === chatId 
+          ? { ...state.currentChat, pinned: false } 
+          : state.currentChat
+      }));
+      
+      toast.success("Chat unpinned successfully");
+      return true;
+    } catch (error) {
+      console.error("Error unpinning chat:", error);
+      toast.error("Failed to unpin chat");
+      return false;
+    }
   }
 }));

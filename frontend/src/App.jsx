@@ -14,6 +14,7 @@ import TermsConditions from "./pages/TermsConditions";
 import Shipping from "./pages/Shipping";
 import Privacy from "./pages/Privacy";
 import { Contact } from "lucide-react";
+import Transactions from "./pages/Transactions";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/pricing" element={<Pricing />} />
+                <Route path="/transactions" element={<Transactions />} />
               </>
             ) : (
               <>
