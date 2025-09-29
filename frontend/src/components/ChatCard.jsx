@@ -5,12 +5,14 @@ import { Input } from './ui/input';
 import { Sparkles, Edit3, Trash2, Check, X, Pin, PinOff, Bookmark } from 'lucide-react';
 import { useChatStore } from '../stores/chatStore';
 import { useAuth } from '@clerk/clerk-react';
+import { useThumbnailStore } from '@/stores/thumbnailStore';
 
-export default function ChatCard({ chat, isSelected, onSelect }) {
+export default function ChatCard({ chat, isSelected,setSelectedChatId, onSelect }) {
   const { getToken } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(chat.title || 'Untitled Chat');
   const { renameChat, deleteChat, pinChat, unpinChat } = useChatStore();
+  const { clearMessages} = useThumbnailStore();
 
   const handleRename = async () => {
     if (editTitle.trim() && editTitle !== chat.title) {
@@ -26,7 +28,12 @@ export default function ChatCard({ chat, isSelected, onSelect }) {
   const handleDelete = async (e) => {
     e.stopPropagation();
     if (window.confirm('Are you sure you want to delete this chat?')) {
+     
       await deleteChat(chat._id, getToken);
+       if(isSelected){
+         clearMessages();
+         setSelectedChatId(null);
+      }
     }
   };
 
@@ -47,7 +54,7 @@ export default function ChatCard({ chat, isSelected, onSelect }) {
 
   return (
     <Card
-      className={`p-3 cursor-pointer text-white w-[60%] transition-all duration-200 group relative ${
+      className={`p-3 cursor-pointer text-white w-full transition-all duration-200 group relative ${
         isSelected 
           ? 'bg-[#0B0B0F]  shadow-xl shadow-primary/40' 
           : ' bg-[#151015] border-none  hover:bg-chat-surface-hover '
@@ -97,7 +104,7 @@ export default function ChatCard({ chat, isSelected, onSelect }) {
           ) : (
             <>
               <h3 className="font-medium flex items-center truncate text-chat-text text-sm mb-1">
-                {chat.title || 'Untitled Chat'}
+                { chat.title && (chat.title.length > 17 ? chat.title.slice(0, 17) + '...' : chat.title) || 'Untitled Chat'}
               </h3>
              
             </>

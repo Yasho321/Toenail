@@ -396,6 +396,49 @@ export default function Pricing() {
             </div>
           </div>
         </section>
+        <footer className="border-t border-gray-800 py-8 sm:py-12">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+              {/* Company Info */}
+              <div>
+                <div className="flex items-center space-x-2 mb-4">
+                  <div className="w-6 h-6 rounded-lg flex items-center justify-center">
+                    <img src="./logo.png" alt="Toenail AI Logo" />
+                  </div>
+                  <span className="text-lg font-bold text-white">Toenail <span className="text-red-600">AI</span></span>
+                </div>
+                <p className="text-gray-400 text-sm">
+                  Create viral YouTube thumbnails with AI in just 2 minutes. Professional results at fraction of the cost.
+                </p>
+              </div>
+
+              {/* Quick Links */}
+              <div>
+                <h3 className="text-white font-semibold mb-4">Quick Links</h3>
+                <ul className="space-y-2 text-sm">
+                  <li><a href="/privacy" className="text-gray-400 hover:text-red-400 transition-colors">Privacy Policy</a></li>
+                  <li><a href="/terms-conditions" className="text-gray-400 hover:text-red-400 transition-colors">Terms & Conditions</a></li>
+                  <li><a href="/cancellation-refunds" className="text-gray-400 hover:text-red-400 transition-colors">Cancellation & Refunds</a></li>
+                  <li><a href="/shipping" className="text-gray-400 hover:text-red-400 transition-colors">Delivery Information</a></li>
+                </ul>
+              </div>
+
+              {/* Support */}
+              <div>
+                <h3 className="text-white font-semibold mb-4">Support</h3>
+                <ul className="space-y-2 text-sm">
+                  <li><a href="/contact" className="text-gray-400 hover:text-red-400 transition-colors">Contact Us</a></li>
+                  <li><a href="mailto:support@toenailai.com" className="text-gray-400 hover:text-red-400 transition-colors">support@toenailai.com</a></li>
+                  <li><span className="text-gray-400">Response within 2 hours</span></li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="border-t border-gray-800 pt-6 text-center text-gray-400">
+              <p className="text-sm sm:text-base">&copy; 2025 Toenail AI. All rights reserved.</p>
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   );

@@ -39,9 +39,9 @@ export default function FileInput({
         type="button"
         variant="outline"
         onClick={handleClick}
-        className="w-full h-24 border-2 border-dashed border-chat-border hover:border-primary/50 bg-chat-bg hover:bg-chat-surface-hover flex flex-col gap-2"
+        className="w-full h-24 border-2 border-dashed border-chat-border hover:border-gray-400 bg-chat-bg hover:bg-chat-surface-hover hover:text-gray-400 flex flex-col gap-2"
       >
-        <Image className="w-6 h-6 text-chat-text-muted" />
+        <Image className="w-6 h-6 text-chat-text-muted " />
         <div className="text-center">
           <div className="text-sm font-medium text-chat-text">Upload Image</div>
           <div className="text-xs text-chat-text-muted">Click to select file</div>

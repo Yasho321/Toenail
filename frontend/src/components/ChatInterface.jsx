@@ -453,7 +453,7 @@ export default function ChatInterface({ chatId }) {
                   <FileInput 
                     allowMultiple={false} 
                     onFileChange={handleFileChange}
-                    className="w-full"
+                    className="w-full bg-[#0B0B0F]  text-white"
                   />
                 </div>
 
@@ -529,7 +529,7 @@ export default function ChatInterface({ chatId }) {
                 {/* Video Title Button */}
                 <Button
                   variant="ghost"
-                  className="w-full justify-start bg-[#0B0B0F] text-white hover:bg-chat-bg"
+                  className="w-full justify-start bg-[#0B0B0F] text-white hover:text-white hover:bg-[#1E1A1F]"
                   onClick={() => {
                     setShowVideoTitleDialog(true);
                     if(isFormComplete()) setShowOptionsPopover(false);
@@ -553,6 +553,7 @@ export default function ChatInterface({ chatId }) {
                 }
               }}
               onKeyPress={handleKeyPress}
+              maxLength={10000}
               placeholder={
                 (messages.length === 0 && !selectedImageForChat)
                   ? "Describe your thumbnail..." 
@@ -600,16 +601,17 @@ export default function ChatInterface({ chatId }) {
 
       {/* Video Title Dialog */}
       <Dialog open={showVideoTitleDialog} onOpenChange={setShowVideoTitleDialog}>
-        <DialogContent className="bg-chat-surface border-chat-border text-white">
+        <DialogContent className="bg-black border-chat-border text-white">
           <DialogHeader>
             <DialogTitle className="text-white">Enter Video Title</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-4  text-white">
             <Input
               placeholder="Enter your video title..."
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="bg-chat-bg border-chat-border text-white"
+              className="border-chat-border text-white"
+              maxLength={100}
               onKeyPress={(e) => {
                 if (e.key === 'Enter') {
                   handleVideoTitleSubmit(formData.title);
@@ -620,14 +622,14 @@ export default function ChatInterface({ chatId }) {
               <Button
                 variant="outline"
                 onClick={() => setShowVideoTitleDialog(false)}
-                className="flex-1 border-chat-border hover:bg-chat-surface-hover"
+                className="flex-1 bg-black "
               >
                 Cancel
               </Button>
               <Button
                 onClick={() => handleVideoTitleSubmit(formData.title)}
                 disabled={!formData.title.trim()}
-                className="flex-1 bg-primary hover:bg-primary/90"
+                className="flex-1  hover:bg-primary/90"
               >
                 Save
               </Button>

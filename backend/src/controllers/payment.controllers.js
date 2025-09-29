@@ -235,7 +235,7 @@ export const downloadReciept = async(req , res)=>{
     .moveDown(1);
 
   // ===== RECEIPT INFO =====
-  doc.fontSize(12).fillColor("black").text(`Receipt No: ${payment.receiptNumber}`, { continued: true }).text(`   Date: ${payment.invoiceDate.toLocaleDateString()}`, { align: "right" });
+  doc.fontSize(12).fillColor("black").text(`Receipt No: ${payment.receiptNumber}`, { continued: true }).text(`   Date: ${payment.createdAt.toLocaleDateString()}`, { align: "right" });
   doc.text(`Payment ID: ${payment.razorpayId}`);
   doc.text(`Order ID: ${payment.razorpayOrderId}`);
   doc.text(`Status: ${payment.status}`);
@@ -251,7 +251,7 @@ export const downloadReciept = async(req , res)=>{
   doc
     .fontSize(12)
     .fillColor("black")
-    .text(`Amount Paid: ₹${payment.amount}`, { continued: true })
+    .text(`Amount Paid: ${payment.amount} INR`, { continued: true })
     .text(`   Tokens Credited: ${payment.tokens}`, { align: "right" })
     .moveDown(1);
 

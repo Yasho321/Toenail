@@ -161,6 +161,7 @@ export default function Dashboard() {
                         key={chat._id}
                         chat={chat}
                         isSelected={selectedChatId === chat._id}
+                        setSelectedChatId={setSelectedChatId}
                         onSelect={handleSelectChat}
                       />
                     ))}
@@ -180,6 +181,7 @@ export default function Dashboard() {
                         key={chat._id}
                         chat={chat}
                         isSelected={selectedChatId === chat._id}
+                        setSelectedChatId={setSelectedChatId}
                         onSelect={handleSelectChat}
                       />
                     ))}
