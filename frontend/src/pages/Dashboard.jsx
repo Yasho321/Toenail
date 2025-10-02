@@ -11,12 +11,14 @@ import ChatCard from '../components/ChatCard';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from "@clerk/clerk-react";
 import toast from 'react-hot-toast';
-import Joyride from 'react-joyride';
+import { driver } from 'driver.js';
+import "driver.js/dist/driver.css";
+
 
 export default function Dashboard() {
   const { getToken } = useAuth();
   const { user } = useUser();
-  const [onboard,setOnboard]=useState(false);
+
   const { chats, currentChat, fetchChats, createChat, setCurrentChat, isCreatingChat } = useChatStore();
   const { token, checkAuth, isCheckingAuth } = useAuthStore();
   const [selectedChatId, setSelectedChatId] = useState(null);
@@ -25,31 +27,34 @@ export default function Dashboard() {
   useEffect(()=>{
     const tour1complete=localStorage.getItem('tour1complete');
     if(!tour1complete){
-      setOnboard(true);
+      tour.drive();
+      localStorage.setItem('tour1complete',true);
+      
     }
   },[])
 
+  const tour= driver({
+    showProgress: true,
+    steps: [
+      {
+        element: '#my-first-step',
+        popover: {
+          title: 'Create a Chat',
+          description: 'Click here to create a new chat.',
+          
+        },
+      }]
+
+  })
+ 
   useEffect(() => {
     if (user) {
       checkAuth(getToken);
       fetchChats(getToken);
     }
   }, [user]);
- const steps=[
-  {
-    target: '#my-first-step',
-    content: 'Welcome to ToenailAI! Click on the "Create New Chat" button to get started.',
-  },
- ]
 
- const onboardCallback=(data)=>{
-  const {status,action}=data;
-  if(status==='finished'||status==='skipped'||action==='close'){
-    localStorage.setItem('tour1complete',true);
-    setOnboard(false);
-  }
-  
- }
+ 
 
  
   const handleCreateChat = async () => {
@@ -268,9 +273,7 @@ export default function Dashboard() {
           </div>
         )}
       </div>
-      {onboard && (
-        <Joyride steps={steps} callback={onboardCallback}   continuous={true} scrollToFirstStep={true} showProgress={true}  />
-      )}
+      
     </div>
   );
 }

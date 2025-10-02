@@ -14,7 +14,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { useChatStore } from '../stores/chatStore';
 import FileInput from './ui/file-input';
 import toast from 'react-hot-toast';
-import Joyride from 'react-joyride';
+import { driver } from 'driver.js';
+import "driver.js/dist/driver.css";
+
 
 export default function ChatInterface({ chatId }) {
   const { getToken } = useAuth();
@@ -22,8 +24,7 @@ export default function ChatInterface({ chatId }) {
   const { fetchChats } = useChatStore();
   const { updateTokens, token } = useAuthStore();
   const messagesEndRef = useRef(null);
-  const [onboard2,setOnboard2]=useState(false);
-  const [onboard3,setOnboard3]=useState(false);
+ 
   const [prompt, setPrompt] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
   const [selectedImageForChat, setSelectedImageForChat] = useState(null);
@@ -40,15 +41,71 @@ export default function ChatInterface({ chatId }) {
     prompt: ''
   });
   const [previewUrl, setPreviewUrl] = useState(null);
+  const tour= driver({
+    showProgress: true,
+    steps: [
+      {
+        element: '#add-image-and-metadata-button',
+        popover: {
+          title: 'Upload image and Video Details',
+          description: 'Add image and video details to generate a thumbnail.(Cumpolsary to generate the thumbnail)',
+          
+        },
+      },{
+        element: '#add-prompt',
+        popover: {
+          title: 'Add prompt',
+          description: 'Add Prompt to describe your vision of the thumbnail.(Cumpolsary to generate the thumbnail)',
+          
+        },
+      },{
+        element: '#generate-button',
+        popover: {
+          title: 'Generate Thumbnail',
+          description: 'Generate the thumbnail for your video.(Activated either for generating thumbnail or continuing the chat)',
+          
+        },
+      }]
 
+  })
+
+  const tour2= driver({
+    showProgress: true,
+    steps: [
+      {
+        element: '#select-image',
+        popover: {
+          title: 'Select Image',
+          description: 'Select the Image you want to edit.(Cumpolsary to continue the chat)',
+          
+        },
+      },{
+        element: '#add-prompt',
+        popover: {
+          title: 'Add prompt',
+          description: 'Add Prompt to describe what you want to be changed.(Cumpolsary to continue the chat)',
+          
+        },
+      },{
+        element: '#generate-button',
+        popover: {
+          title: 'Generate edited Thumbnail',
+          description: 'Generate the updated thumbnail for your video.(Activated either for generating thumbnail or continuing the chat)',
+          
+        },
+      }]
+
+  })
   useEffect(()=>{
       const tour2complete=localStorage.getItem('tour2complete');
       const tour3complete=localStorage.getItem('tour3complete');
       if(!tour2complete){
-        setOnboard2(true);
+       tour.drive();
+        localStorage.setItem('tour2complete',true);
       }
       if(!tour3complete){
-        setOnboard3(true);
+        tour2.drive();
+        localStorage.setItem('tour3complete',true);
       }
     },[])
 
@@ -56,7 +113,7 @@ export default function ChatInterface({ chatId }) {
       const {status,action}=data;
       if(status==='finished'||status==='skipped'||action==='close'){
         localStorage.setItem('tour2complete',true);
-        setOnboard2(false);
+        
       }
       
     }
@@ -64,7 +121,7 @@ export default function ChatInterface({ chatId }) {
         const {status,action}=data;
         if(status==='finished'||status==='skipped'||action==='close'){
           localStorage.setItem('tour3complete',true);
-          setOnboard3(false);
+         
         }
         
       }
@@ -209,16 +266,7 @@ export default function ChatInterface({ chatId }) {
   const handleSelectImage = () => {
     setSelectedImageForChat(null);
   };
-  const steps = [{
-    target : '#add-image-and-metadata-button',
-    content: 'Add your image and metadata about the video here(Compulsary to enable the generate thumbnail button)',
-  },{
-    target : '#add-prompt',
-    content: 'Add your prompt here(Compulsary to enable the generate thumbnail button)',
-  },{
-    target : '#generate-button',
-    content: 'Click here to generate the thumbnail',
-  }]
+  
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -251,16 +299,7 @@ export default function ChatInterface({ chatId }) {
     setSelectedImageForChat(null);
   };
 
-  const steps2=[{
-    target:"#select-image",
-    content:"Select the image you want to edit using follow-up messages(Compulsary to enable the generate thumbnail button)",
-  },{
-    target:"#add-prompt",
-    content:"Add your prompt here to edit the image(Compulsary to enable the generate thumbnail button)",
-  },{
-    target:"#generate-button",
-    content:"Click here to generate the edited thumbnail",
-  }]
+
 
   const renderMessage = (message, index) => {
     const isUser = message.role === 'user';
@@ -369,7 +408,7 @@ export default function ChatInterface({ chatId }) {
           </div>
         )}
 
-        {onboard3 && <Joyride steps={steps2} callback={onboardCallback3}  continuous={true} showProgress={true} />}
+        
       </div>
     );
   };
@@ -695,7 +734,7 @@ export default function ChatInterface({ chatId }) {
           </div>
         </DialogContent>
       </Dialog>
-      {onboard2 && <Joyride steps={steps} callback={onboardCallback2}  continuous={true} scrollToFirstStep={true} showProgress={true}  />}
+      
     </div>
   );
 }
