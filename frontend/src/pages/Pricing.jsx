@@ -212,11 +212,10 @@ export default function Pricing() {
                       {selectedPlan === 'standard' ? 'Processing...' : 'Choose Standard'}
                     </Button>
                   ) : (
-                    <SignInButton>
-                      <Button className="w-full bg-white/10 text-white border border-white/20 hover:bg-white/20">
+                     <div className="w-full bg-white/10 text-white rounded-md hover:bg-white/20">
+                    <Link to="/signin" className="px-5 py-1.5 rounded-lg flex items-center justify-center" >
                         Sign In to Purchase
-                      </Button>
-                    </SignInButton>
+                      </Link></div>
                   )}
                 </div>
               </Card>
@@ -279,11 +278,11 @@ export default function Pricing() {
                       {selectedPlan === 'premium' ? 'Processing...' : 'Choose Premium'}
                     </Button>
                   ) : (
-                    <SignInButton>
-                      <Button className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800">
+                   
+                     <div className="w-full rounded-md bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800">
+                    <Link to="/signin" className="px-5 py-1.5 rounded-lg flex items-center justify-center" >
                         Sign In to Purchase
-                      </Button>
-                    </SignInButton>
+                      </Link></div>
                   )}
                 </div>
               </Card>
@@ -341,11 +340,10 @@ export default function Pricing() {
                       {selectedPlan === 'pro' ? 'Processing...' : 'Choose Pro'}
                     </Button>
                   ) : (
-                    <SignInButton>
-                      <Button className="w-full bg-white/10 text-white border border-white/20 hover:bg-white/20">
+                     <div className="w-full bg-white/10 text-white rounded-md hover:bg-white/20">
+                    <Link to="/signin" className="px-5 py-1.5 rounded-lg flex items-center justify-center" >
                         Sign In to Purchase
-                      </Button>
-                    </SignInButton>
+                      </Link></div>
                   )}
                 </div>
               </Card>

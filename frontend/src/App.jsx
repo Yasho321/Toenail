@@ -15,6 +15,8 @@ import Shipping from "./pages/Shipping";
 import Privacy from "./pages/Privacy";
 import { Contact } from "lucide-react";
 import Transactions from "./pages/Transactions";
+import SignUpPage from "./components/SignUpPage";
+import SignInPage from "./components/SignInPage";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +55,8 @@ const App = () => {
                 <Route path="/pricing" element={<Pricing />} />
               </>
             )}
+            <Route path="/Signup" element={<SignUpPage />} />
+            <Route path="/Signin" element={<SignInPage />} />
              <Route path="/cancellation-refunds" element={<CancellationRefunds />} />
               <Route path="/terms-conditions" element={<TermsConditions />} />
               <Route path="/shipping" element={<Shipping />} />

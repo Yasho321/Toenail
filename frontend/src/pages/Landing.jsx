@@ -3,6 +3,10 @@ import { Card } from "../components/ui/card";
 import { Check, Play, Star, Users, Zap, ArrowRight, ImageIcon, Download, Upload, MessageSquare, X, ArrowDown, Crown, Sparkles, Shield, Clock } from "lucide-react";
 import { SignInButton, SignUpButton } from "@clerk/clerk-react";
 
+import SignInPage from "@/components/SignInPage";
+import SignUpPage from "@/components/SignUpPage";
+import { Link } from "react-router-dom";
+
 export default function Landing() {
   return (
     <div className="min-h-screen w-full bg-black relative">
@@ -37,12 +41,12 @@ export default function Landing() {
                 <span className="text-lg sm:text-xl font-bold text-white">Toenail <span className="text-red-600">AI</span></span>
               </div>
               <div className="flex items-center space-x-2 sm:space-x-4">
-                <SignInButton>
-                  <Button variant="ghost" className="text-white hover:bg-red-600 hover:text-white text-sm sm:text-base px-2 sm:px-4">Sign In</Button>
-                </SignInButton>
-                <SignUpButton>
-                  <Button className="bg-red-600 hover:bg-red-700 text-white text-sm sm:text-base px-2 sm:px-4">Get Started</Button>
-                </SignUpButton>
+                
+                  <Link to="/signin" variant="ghost" className="text-white hover:bg-red-600 hover:text-white rounded-sm text-sm sm:text-base px-2 py-1 pb-1.5 sm:px-4">Sign In</Link>
+                
+                
+                  <Link to="/signup" className="bg-red-600 hover:bg-red-700 text-white text-sm sm:text-base px-2 py-1 pb-1.5 rounded-sm sm:px-4">Get Started</Link>
+                
               </div>
             </div>
           </div>
@@ -82,12 +86,10 @@ export default function Landing() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-6 sm:mb-8 px-2">
-                <SignUpButton>
-                  <Button className="bg-red-500 hover:bg-red-600 text-white px-6 sm:px-8 py-3 text-base sm:text-lg group w-full sm:w-auto" size="lg">
+                <Link to="/signup"  className="bg-red-500 flex items-center justify-center hover:bg-red-600 text-white px-3 rounded-sm sm:px-5 py-1 text-base sm:text-lg group w-full sm:w-auto" size="lg">
                     Start Creating Now
-                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1 ml-2" />
-                  </Button>
-                </SignUpButton>
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1 " />
+                  </Link>
                 <Button variant="outline" className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white px-6 sm:px-8 py-3 text-base sm:text-lg group w-full sm:w-auto" size="lg" onClick={() => {
                   document.getElementById("demo-video")?.scrollIntoView({ behavior: "smooth" });
                 }}>
@@ -347,12 +349,11 @@ export default function Landing() {
                     </div>
                   </div>
                 </div>
-                <SignUpButton>
-                <Button className="w-full bg-red-600 hover:bg-red-700 text-white py-3 text-lg font-semibold">
-                  Start Creating Now
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-                </SignUpButton>
+                <div className="w-full bg-red-600 hover:bg-red-700 text-white py-3 text-md rounded-md font-bold">
+                  <Link to="/signup" className="px-3  rounded-lg flex items-center justify-center" >
+                        Start Creating New
+                      </Link>
+                </div>
               </Card>
 
               {/* Traditional Tools Card */}
@@ -414,7 +415,7 @@ export default function Landing() {
                   </div>
                 </div>
 
-                <Button variant="outline" className="w-full border-gray-600 text-gray-400 py-3 text-lg font-semibold cursor-not-allowed" disabled>
+                <Button variant="outline" className="w-full border-gray-600 text-gray-400 py-5.5 text-lg font-bold cursor-not-allowed" disabled>
                   Outdated Method
                   <X className="w-5 h-5 ml-2" />
                 </Button>
@@ -526,12 +527,10 @@ export default function Landing() {
                     </li>
                   </ul>
 
-                  
-                    <SignInButton>
-                      <Button className="w-full bg-white/10 text-white border border-white/20 hover:bg-white/20">
+                  <div className="w-full bg-white/10 text-white rounded-md hover:bg-white/20">
+                    <Link to="/signin" className="px-5 py-1.5 rounded-lg flex items-center justify-center" >
                         Sign In to Purchase
-                      </Button>
-                    </SignInButton>
+                      </Link></div>
                  
                 </div>
               </Card>
@@ -586,11 +585,11 @@ export default function Landing() {
                   </ul>
 
                   
-                    <SignInButton>
-                      <Button className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800">
+                   
+                     <div className="w-full rounded-md bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800">
+                    <Link to="/signin" className="px-5 py-1.5 rounded-lg flex items-center justify-center" >
                         Sign In to Purchase
-                      </Button>
-                    </SignInButton>
+                      </Link></div>
                   
                 </div>
               </Card>
@@ -640,11 +639,10 @@ export default function Landing() {
                   </ul>
 
                   
-                    <SignInButton>
-                      <Button className="w-full bg-white/10 text-white border border-white/20 hover:bg-white/20">
+                    <div className="w-full bg-white/10 text-white rounded-md hover:bg-white/20">
+                    <Link to="/signin" className="px-5 py-1.5 rounded-lg flex items-center justify-center" >
                         Sign In to Purchase
-                      </Button>
-                    </SignInButton>
+                      </Link></div>
                  
                 </div>
               </Card>
@@ -705,12 +703,14 @@ export default function Landing() {
             <p className="text-lg sm:text-xl text-gray-300 mb-6 sm:mb-8">
               Join thousands of creators who trust ThumbnailAI for their YouTube success
             </p>
-            <SignUpButton>
-              <Button className="bg-red-600 hover:bg-red-700 text-white px-6 sm:px-8 py-3 text-base sm:text-lg group w-full sm:w-auto" size="lg">
-                Sign Up and Get 3 Free Tokens
+            <div className="w-full flex items-center justify-center">
+            <div className="bg-red-600 hover:bg-red-700 text-white px-6 sm:px-8 py-3 rounded-md text-base sm:text-lg group w-full sm:w-100 " >
+                  <Link to="/signup" className="px-3  rounded-lg flex items-center justify-center" >
+                       Sign Up and Get 3 Free Tokens
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1 ml-2" />
-              </Button>
-            </SignUpButton>
+                      </Link>
+                </div>
+                </div>
           </div>
         </section>
 
