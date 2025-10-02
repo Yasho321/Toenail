@@ -111,7 +111,7 @@ export default function ChatInterface({ chatId }) {
         tour2.drive();
         localStorage.setItem('tour3complete',true);
       }
-    },[])
+    },[messages])
 
     const onboardCallback2=(data)=>{
       const {status,action}=data;
