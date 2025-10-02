@@ -100,10 +100,15 @@ export default function ChatInterface({ chatId }) {
       const tour2complete=localStorage.getItem('tour2complete');
       const tour3complete=localStorage.getItem('tour3complete');
       if(!tour2complete){
+        console.log('tour2',tour2complete);
+        
        tour.drive();
         localStorage.setItem('tour2complete',true);
       }
+      console.log('length',messages.length);
       if(!tour3complete && messages.length>0){
+        console.log('tour3',tour3complete);
+        console.log('length',messages.length);
         tour2.drive();
         localStorage.setItem('tour3complete',true);
       }
