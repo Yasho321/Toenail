@@ -103,7 +103,7 @@ export default function ChatInterface({ chatId }) {
        tour.drive();
         localStorage.setItem('tour2complete',true);
       }
-      if(!tour3complete){
+      if(!tour3complete && messages.length>0){
         tour2.drive();
         localStorage.setItem('tour3complete',true);
       }
