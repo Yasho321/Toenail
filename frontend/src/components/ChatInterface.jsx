@@ -14,6 +14,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { useChatStore } from '../stores/chatStore';
 import FileInput from './ui/file-input';
 import toast from 'react-hot-toast';
+import Joyride from 'react-joyride';
 
 export default function ChatInterface({ chatId }) {
   const { getToken } = useAuth();
@@ -21,7 +22,8 @@ export default function ChatInterface({ chatId }) {
   const { fetchChats } = useChatStore();
   const { updateTokens, token } = useAuthStore();
   const messagesEndRef = useRef(null);
-  
+  const [onboard2,setOnboard2]=useState(false);
+  const [onboard3,setOnboard3]=useState(false);
   const [prompt, setPrompt] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
   const [selectedImageForChat, setSelectedImageForChat] = useState(null);
@@ -38,6 +40,36 @@ export default function ChatInterface({ chatId }) {
     prompt: ''
   });
   const [previewUrl, setPreviewUrl] = useState(null);
+
+  useEffect(()=>{
+      const tour2complete=localStorage.getItem('tour2complete');
+      const tour3complete=localStorage.getItem('tour3complete');
+      if(!tour2complete){
+        setOnboard2(true);
+      }
+      if(!tour3complete){
+        setOnboard3(true);
+      }
+    },[])
+
+    const onboardCallback2=(data)=>{
+      const {status,action}=data;
+      if(status==='finished'||status==='skipped'||action==='close'){
+        localStorage.setItem('tour2complete',true);
+        setOnboard2(false);
+      }
+      
+    }
+    const onboardCallback3=(data)=>{
+        const {status,action}=data;
+        if(status==='finished'||status==='skipped'||action==='close'){
+          localStorage.setItem('tour3complete',true);
+          setOnboard3(false);
+        }
+        
+      }
+
+
 
   useEffect(() => {
     if (chatId) {
@@ -177,6 +209,16 @@ export default function ChatInterface({ chatId }) {
   const handleSelectImage = () => {
     setSelectedImageForChat(null);
   };
+  const steps = [{
+    target : '#add-image-and-metadata-button',
+    content: 'Add your image and metadata about the video here(Compulsary to enable the generate thumbnail button)',
+  },{
+    target : '#add-prompt',
+    content: 'Add your prompt here(Compulsary to enable the generate thumbnail button)',
+  },{
+    target : '#generate-button',
+    content: 'Click here to generate the thumbnail',
+  }]
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -209,11 +251,22 @@ export default function ChatInterface({ chatId }) {
     setSelectedImageForChat(null);
   };
 
+  const steps2=[{
+    target:"#select-image",
+    content:"Select the image you want to edit using follow-up messages(Compulsary to enable the generate thumbnail button)",
+  },{
+    target:"#add-prompt",
+    content:"Add your prompt here to edit the image(Compulsary to enable the generate thumbnail button)",
+  },{
+    target:"#generate-button",
+    content:"Click here to generate the edited thumbnail",
+  }]
+
   const renderMessage = (message, index) => {
     const isUser = message.role === 'user';
     
     return (
-      <div key={index} className={`flex gap-4 ${isUser ? 'justify-end' : 'justify-start'} mb-6`}>
+      <div key={index} className={`flex gap-4 ${isUser ? 'justify-end' : 'justify-start'} mt-6 `}>
         {!isUser && (
           <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
             <Bot className="w-4 h-4 text-white" />
@@ -260,6 +313,7 @@ export default function ChatInterface({ chatId }) {
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button
+                                id={imgIndex===1?"select-image":""}
                                 variant="secondary"
                                 size="sm"
                                 onClick={(e) => {
@@ -314,6 +368,8 @@ export default function ChatInterface({ chatId }) {
             <User className="w-4 h-4 text-white" />
           </div>
         )}
+
+        {onboard3 && <Joyride steps={steps2} callback={onboardCallback3}  continuous={true} showProgress={true} />}
       </div>
     );
   };
@@ -346,7 +402,7 @@ export default function ChatInterface({ chatId }) {
       ) : (
         /* Messages */
         <ScrollArea className="flex-1 overflow-y-auto">
-          <div className="p-6 space-y-0">
+          <div className="px-6 space-y-0">
             {messages[0]?.messages?.map((message, index) => renderMessage(message, index))}
             <div ref={messagesEndRef} />
           </div>
@@ -435,7 +491,7 @@ export default function ChatInterface({ chatId }) {
           {/* Plus Button with Options */}
           <Popover open={showOptionsPopover} onOpenChange={setShowOptionsPopover}>
             <PopoverTrigger asChild>
-              <Button
+              <Button id="add-image-and-metadata-button"
                 variant="outline"
                 size="icon"
                 className="border-none bg-[#0B0B0F] hover:bg-[#1E1A1F] hover:text-white"
@@ -544,6 +600,7 @@ export default function ChatInterface({ chatId }) {
 
           <div className="flex-1">
             <Input
+             id="add-prompt"
               value={!selectedImageForChat ? formData.prompt : prompt}
               onChange={(e) => {
                 if (!selectedImageForChat) {
@@ -567,7 +624,8 @@ export default function ChatInterface({ chatId }) {
           </div>
           
           <Button
-            onClick={ selectedImageForChat ? handleGenerateThumbnail : handleSendMessage}
+            id="generate-button"
+            onClick={ selectedImageForChat ? handleSendMessage : handleGenerateThumbnail  }
             disabled={
               selectedImageForChat 
                 ?  !prompt.trim()|| isGenerating
@@ -637,6 +695,7 @@ export default function ChatInterface({ chatId }) {
           </div>
         </DialogContent>
       </Dialog>
+      {onboard2 && <Joyride steps={steps} callback={onboardCallback2}  continuous={true} scrollToFirstStep={true} showProgress={true}  />}
     </div>
   );
 }

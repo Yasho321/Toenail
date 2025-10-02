@@ -11,14 +11,23 @@ import ChatCard from '../components/ChatCard';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from "@clerk/clerk-react";
 import toast from 'react-hot-toast';
+import Joyride from 'react-joyride';
 
 export default function Dashboard() {
   const { getToken } = useAuth();
   const { user } = useUser();
+  const [onboard,setOnboard]=useState(false);
   const { chats, currentChat, fetchChats, createChat, setCurrentChat, isCreatingChat } = useChatStore();
   const { token, checkAuth, isCheckingAuth } = useAuthStore();
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  useEffect(()=>{
+    const tour1complete=localStorage.getItem('tour1complete');
+    if(!tour1complete){
+      setOnboard(true);
+    }
+  },[])
 
   useEffect(() => {
     if (user) {
@@ -26,7 +35,23 @@ export default function Dashboard() {
       fetchChats(getToken);
     }
   }, [user]);
+ const steps=[
+  {
+    target: '#my-first-step',
+    content: 'Welcome to ToenailAI! Click on the "Create New Chat" button to get started.',
+  },
+ ]
 
+ const onboardCallback=(data)=>{
+  const {status,action}=data;
+  if(status==='finished'||status==='skipped'||action==='close'){
+    localStorage.setItem('tour1complete',true);
+    setOnboard(false);
+  }
+  
+ }
+
+ 
   const handleCreateChat = async () => {
     if (token <= 0) {
       toast.error("Not enough tokens to continue")
@@ -63,7 +88,7 @@ export default function Dashboard() {
   const regularChats = sortedChats.filter(chat => !chat.pinned);
 
   return (
-    <div className="h-screen w-full bg-[#1E1A1F] text-white relative flex">
+    <div className="h-screen w-full bg-[#1E1A1F] text-white relative flex overflow-hidden">
       {/* Sidebar */}
       <div className={`${sidebarCollapsed ? 'w-16' : 'w-80'} bg-[#151015] shadow-lg bg-[#1E1A1F] flex flex-col h-full transition-all duration-300 relative z-10`}>
         {/* Header */}
@@ -116,7 +141,7 @@ export default function Dashboard() {
                     </div>
                   </Card>
                 </Link>
-                <div className="flex items-center gap-2">
+                <div id="my-first-step" className="flex items-center gap-2">
                     <Button
                       onClick={handleCreateChat}
                       disabled={isCreatingChat}
@@ -243,6 +268,9 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+      {onboard && (
+        <Joyride steps={steps} callback={onboardCallback}   continuous={true} scrollToFirstStep={true} showProgress={true}  />
+      )}
     </div>
   );
 }
