@@ -325,7 +325,7 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col w-full md:w-auto">
         {/* Mobile Header - Only visible on mobile */}
-        <div className="md:hidden bg-[#151015] p-4 flex items-center justify-between border-b border-[#0B0B0F]">
+        <div className="md:hidden bg-[#151015] p-4 z-100 flex items-center justify-between border-b border-[#0B0B0F]">
           <Button
             variant="ghost"
             size="icon"
