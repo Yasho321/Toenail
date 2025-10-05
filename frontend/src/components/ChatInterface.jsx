@@ -311,7 +311,7 @@ export default function ChatInterface({ chatId }) {
     return (
       <div key={index} className={`flex gap-4 ${isUser ? 'justify-end' : 'justify-start'} mt-6 `}>
         {!isUser && (
-          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 bg-primary/10 rounded-full hidden  md:flex md:items-center md:justify-center md:flex-shrink-0">
             <Bot className="w-4 h-4 text-white" />
           </div>
         )}
@@ -407,7 +407,7 @@ export default function ChatInterface({ chatId }) {
         </div>
         
         {isUser && (
-          <div className="w-8 h-8 bg-chat-user-bg rounded-full flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 bg-chat-user-bg rounded-full hidden md:flex md:items-center md:justify-center md:flex-shrink-0">
             <User className="w-4 h-4 text-white" />
           </div>
         )}
