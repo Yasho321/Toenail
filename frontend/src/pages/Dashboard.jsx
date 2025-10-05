@@ -23,6 +23,7 @@ export default function Dashboard() {
   const { token, checkAuth, isCheckingAuth } = useAuthStore();
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
   useEffect(()=>{
     const tour1complete=localStorage.getItem('tour1complete');
@@ -94,10 +95,23 @@ export default function Dashboard() {
 
   return (
     <div className="h-screen w-full bg-[#1E1A1F] text-white relative flex overflow-hidden">
+      {/* Mobile backdrop overlay */}
+      {mobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-40 md:hidden"
+          onClick={() => setMobileSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <div className={`${sidebarCollapsed ? 'w-16' : 'w-80'} bg-[#151015] shadow-lg bg-[#1E1A1F] flex flex-col h-full transition-all duration-300 relative z-10`}>
+      <div className={`
+        ${sidebarCollapsed ? 'w-16' : 'w-80'} 
+        bg-[#151015] shadow-lg flex flex-col h-full transition-all duration-300 z-50
+        ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
+        md:translate-x-0 fixed md:relative
+      `}>
         {/* Header */}
-        <div className={`p-4  flex-shrink-0 ${sidebarCollapsed ? 'px-2' : ''}`}>
+        <div className={`p-4 flex-shrink-0 ${sidebarCollapsed ? 'px-2' : ''}`}>
           {!sidebarCollapsed && (
             <>
               <div className="flex items-center justify-between mb-4">
@@ -207,14 +221,24 @@ export default function Dashboard() {
             </>
           )}
           
-          {/* Collapse Toggle */}
+          {/* Collapse Toggle - Desktop only */}
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className={`text-white hover:bg-[#151015] hover:text-white  ${sidebarCollapsed ? 'w-full' : 'absolute top-4 right-4'}`}
+            className={`text-white hover:bg-[#151015] hover:text-white hidden md:flex ${sidebarCollapsed ? 'w-full' : 'absolute top-4 right-4'}`}
           >
             {sidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          </Button>
+
+          {/* Close button - Mobile only */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setMobileSidebarOpen(false)}
+            className="text-white hover:bg-[#151015] hover:text-white md:hidden absolute top-4 right-4"
+          >
+            <X className="w-4 h-4" />
           </Button>
         </div>
 
@@ -299,7 +323,24 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col w-full md:w-auto">
+        {/* Mobile Header - Only visible on mobile */}
+        <div className="md:hidden bg-[#151015] p-4 flex items-center justify-between border-b border-[#0B0B0F]">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setMobileSidebarOpen(true)}
+            className="text-white hover:bg-[#0B0B0F]"
+          >
+            <Menu className="w-5 h-5" />
+          </Button>
+          <h1 className="text-lg flex items-center font-bold">
+            <img className='w-6 h-6 rounded-lg mr-2' src="./logo.png" alt="Logo" /> 
+            Toenail <span className="text-red-500">AI</span>
+          </h1>
+          <div className="w-10" /> {/* Spacer for centering title */}
+        </div>
+
         {selectedChatId ? (
           <ChatInterface chatId={selectedChatId} />
         ) : (
