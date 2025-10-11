@@ -3,7 +3,7 @@ import axios from 'axios';
 
 
 export const axiosInstance = axios.create({
-  baseURL: 'https://toenail-6zcz.onrender.com/api/v1',
+  baseURL: 'https://toenail.onrender.com/api/v1',
   withCredentials: true,
 });
 
