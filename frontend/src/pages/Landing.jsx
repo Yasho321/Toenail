@@ -174,7 +174,7 @@ export default function Landing() {
                   poster="https://ik.imagekit.io/toenail/Reference-image/Untitled%20video%20-%20Made%20with%20Clipchamp%20(31).mp4/ik-thumbnail.jpg?updatedAt=1758797924875"
                 >
                   <source 
-                    src="https://ik.imagekit.io/toenail/Reference-image/Untitled%20video%20-%20Made%20with%20Clipchamp%20(31).mp4?updatedAt=1758797924875" 
+                    src="https://video.twimg.com/amplify_video/1975108589325811712/vid/avc1/1920x1080/u9NdhTtKgkblH8aO.mp4?tag=21" 
                     type="video/mp4" 
                   />
                   Your browser does not support the video tag.
