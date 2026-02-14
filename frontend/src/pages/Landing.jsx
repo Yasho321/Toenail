@@ -93,7 +93,7 @@ export default function Landing() {
               </Link>
               <Button 
                 variant="outline" 
-                className="w-full sm:w-auto border-white/10 bg-white/5 hover:bg-white/10 text-white px-8 py-7 rounded-lg text-lg h-auto backdrop-blur-sm"
+                className="w-full sm:w-auto border-white/10 bg-white/5 hover:bg-white/10 text-white hover:text-gray-200 px-8 py-7 rounded-lg text-lg h-auto backdrop-blur-sm"
                 onClick={() => document.getElementById("demo-video")?.scrollIntoView({ behavior: "smooth" })}
               >
                 <Play className="w-5 h-5 mr-2 fill-current" />
