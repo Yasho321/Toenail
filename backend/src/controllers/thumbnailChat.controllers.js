@@ -463,7 +463,7 @@ export const createChat = async (req , res)=>{
         };
         let images2=[]
         const response4 = await ai.models.generateContent({
-            model: "gemini-2.5-flash-image-preview",
+            model: "gemini-2.5-flash-image",
             contents: promptForBanana,
         });
         for (const part of response4.candidates[0].content.parts) {
@@ -510,7 +510,7 @@ export const createChat = async (req , res)=>{
         ];
         
         const response5 = await ai.models.generateContent({
-            model: "gemini-2.5-flash-image-preview",
+            model: "gemini-2.5-flash-image",
             contents: promptForBanana2,
         });
         for (const part of response5.candidates[0].content.parts) {
@@ -637,7 +637,7 @@ export const continueChat = async(req,res)=>{
         let images = [];
 
         const response2 = await ai.models.generateContent({
-            model: "gemini-2.5-flash-image-preview",
+            model: "gemini-2.5-flash-image",
             contents: promptForBanana,
         });
         for (const part of response2.candidates[0].content.parts) {
