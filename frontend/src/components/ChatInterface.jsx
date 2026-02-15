@@ -30,6 +30,7 @@ export default function ChatInterface({ chatId }) {
   const [showOptionsPopover, setShowOptionsPopover] = useState(false);
   const [showVideoTitleDialog, setShowVideoTitleDialog] = useState(false);
 
+  // LOGIC PRESERVED
   const [formData, setFormData] = useState({
     genre: '',
     mood: '',
@@ -40,12 +41,13 @@ export default function ChatInterface({ chatId }) {
   });
   const [previewUrl, setPreviewUrl] = useState(null);
 
-  // Logic for counting completed fields for UX feedback
+  // UX Logic: Count how many fields are done (excluding prompt which is handled by the main input)
   const completedFieldsCount = [
     formData.genre, 
     formData.mood, 
     formData.title, 
-    formData.file
+    formData.file,
+    formData.resolution
   ].filter(Boolean).length;
 
   const tour = driver({
@@ -152,7 +154,7 @@ export default function ChatInterface({ chatId }) {
 
   const handleGenerateThumbnail = async () => {
     if (!isFormComplete()) {
-      toast.error('Please fill all fields including the description');
+      toast.error('Please fill all fields');
       return;
     }
     await fetchChats(getToken);
@@ -327,24 +329,24 @@ export default function ChatInterface({ chatId }) {
 
   return (
     <div className="flex-1 flex flex-col h-full">
-      {messages.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center p-8">
-          <div className="text-center max-w-2xl">
-            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <ImageIcon className="w-8 h-8 text-white" />
+      <ScrollArea className="flex-1 overflow-y-auto">
+        {messages.length === 0 ? (
+          <div className="flex-1 flex items-center justify-center p-8 h-[60vh]">
+            <div className="text-center max-w-2xl">
+              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <ImageIcon className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-2xl font-semibold text-white mb-4">Hello there!</h2>
+              <p className="text-white-muted mb-8 text-lg">How can I help you create amazing thumbnails today?</p>
             </div>
-            <h2 className="text-2xl font-semibold text-white mb-4">Hello there!</h2>
-            <p className="text-white-muted mb-8 text-lg">How can I help you create amazing thumbnails today?</p>
           </div>
-        </div>
-      ) : (
-        <ScrollArea className="flex-1 overflow-y-auto">
-          <div className="px-6 space-y-0">
+        ) : (
+          <div className="px-6 space-y-0 pb-4">
             {messages[0]?.messages?.map((message, index) => renderMessage(message, index))}
             <div ref={messagesEndRef} />
           </div>
-        </ScrollArea>
-      )}
+        )}
+      </ScrollArea>
 
       <div className="bg-chat-surface p-4 border-t border-white/5">
         {!selectedImageForChat && (formData.genre || formData.mood || formData.resolution || formData.file || formData.prompt  || formData.title || previewUrl) && (
@@ -404,29 +406,27 @@ export default function ChatInterface({ chatId }) {
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                  <h4 className="text-sm font-semibold text-white/80">Thumbnail Setup</h4>
+                  <h4 className="text-sm font-semibold text-white/80">Setup Thumbnail</h4>
                   <span className="text-[10px] text-primary font-mono uppercase tracking-wider">All Fields Required</span>
                 </div>
 
-                {/* Add Photo Option */}
-                <div className="relative group">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[11px] font-medium text-white-muted flex items-center gap-1">
-                      Target Photo {formData.file ? <CheckCircle2 className="w-3 h-3 text-green-500" /> : <AlertCircle className="w-3 h-3 text-red-500" />}
-                    </span>
-                  </div>
+                {/* File Upload Row */}
+                <div className="space-y-1">
+                  <span className="text-[11px] font-medium text-white-muted flex items-center gap-1">
+                    1. Target Photo {formData.file ? <CheckCircle2 className="w-3 h-3 text-green-500" /> : <AlertCircle className="w-3 h-3 text-red-500/50" />}
+                  </span>
                   <FileInput 
                     allowMultiple={false} 
                     onFileChange={handleFileChange}
-                    className={`w-full bg-[#151015] border-dashed border-white/10 text-white hover:border-primary/50 transition-colors ${formData.file ? 'border-green-500/50' : ''}`}
+                    className={`w-full bg-[#151015] border-dashed border-white/10 text-white hover:border-primary/50 transition-colors ${formData.file ? 'border-green-500/30' : ''}`}
                   />
                 </div>
 
+                {/* Genre and Mood Row */}
                 <div className="grid grid-cols-2 gap-2">
-                  {/* Genre Select */}
                   <div className="space-y-1">
                     <span className="text-[11px] font-medium text-white-muted flex items-center gap-1">
-                      Genre {formData.genre ? <CheckCircle2 className="w-3 h-3 text-green-500" /> : <AlertCircle className="w-3 h-3 text-red-500" />}
+                      2. Genre {formData.genre ? <CheckCircle2 className="w-3 h-3 text-green-500" /> : <AlertCircle className="w-3 h-3 text-red-500/50" />}
                     </span>
                     <Select value={formData.genre} onValueChange={(value) => setFormData({ ...formData, genre: value })}>
                       <SelectTrigger className="w-full bg-[#151015] border-white/5 text-white h-9">
@@ -447,10 +447,9 @@ export default function ChatInterface({ chatId }) {
                     </Select>
                   </div>
 
-                  {/* Mood Select */}
                   <div className="space-y-1">
                     <span className="text-[11px] font-medium text-white-muted flex items-center gap-1">
-                      Mood {formData.mood ? <CheckCircle2 className="w-3 h-3 text-green-500" /> : <AlertCircle className="w-3 h-3 text-red-500" />}
+                      3. Mood {formData.mood ? <CheckCircle2 className="w-3 h-3 text-green-500" /> : <AlertCircle className="w-3 h-3 text-red-500/50" />}
                     </span>
                     <Select value={formData.mood} onValueChange={(value) => setFormData({ ...formData, mood: value })}>
                       <SelectTrigger className="w-full bg-[#151015] border-white/5 text-white h-9">
@@ -468,24 +467,41 @@ export default function ChatInterface({ chatId }) {
                   </div>
                 </div>
 
-                {/* Video Title Button */}
-                <div className="space-y-1">
-                   <span className="text-[11px] font-medium text-white-muted flex items-center gap-1">
-                      Video Context {formData.title ? <CheckCircle2 className="w-3 h-3 text-green-500" /> : <AlertCircle className="w-3 h-3 text-red-500" />}
-                   </span>
-                  <Button
-                    variant="outline"
-                    className={`w-full justify-between bg-[#151015] border-white/5 text-white hover:text-white hover:bg-[#1E1A1F] h-9 px-3 font-normal ${formData.title ? 'border-green-500/20' : ''}`}
-                    onClick={() => setShowVideoTitleDialog(true)}
-                  >
-                    <span className="truncate">{formData.title || "Set Video Title"}</span>
-                    <Camera className="w-3.5 h-3.5 opacity-50" />
-                  </Button>
+                {/* RESTORED: Resolution and Title Row */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <span className="text-[11px] font-medium text-white-muted flex items-center gap-1">
+                      4. Resolution <CheckCircle2 className="w-3 h-3 text-green-500" />
+                    </span>
+                    <Select value={formData.resolution} onValueChange={(value) => setFormData({ ...formData, resolution: value })}>
+                      <SelectTrigger className="w-full bg-[#151015] border-white/5 text-white h-9">
+                        <SelectValue placeholder="Resolution" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-[#0B0B0F] text-white border-chat-border">
+                        <SelectItem value="1280 x 720">1280 x 720 (HD)</SelectItem>
+                        <SelectItem value="1920 x 1080">1920 x 1080 (Full HD)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <span className="text-[11px] font-medium text-white-muted flex items-center gap-1">
+                      5. Video Title {formData.title ? <CheckCircle2 className="w-3 h-3 text-green-500" /> : <AlertCircle className="w-3 h-3 text-red-500/50" />}
+                    </span>
+                    <Button
+                      variant="outline"
+                      className={`w-full justify-between bg-[#151015] border-white/5 text-white hover:text-white hover:bg-[#1E1A1F] h-9 px-2 font-normal truncate ${formData.title ? 'border-green-500/20' : ''}`}
+                      onClick={() => setShowVideoTitleDialog(true)}
+                    >
+                      <span className="truncate">{formData.title || "Set Title"}</span>
+                      <Camera className="w-3 h-3 opacity-50 shrink-0" />
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="pt-2 border-t border-white/5 flex items-center justify-between">
-                  <span className="text-[10px] text-white-muted">{completedFieldsCount}/4 requirements met</span>
-                  <Button variant="ghost" size="sm" className="h-7 text-[10px] text-primary" onClick={() => setShowOptionsPopover(false)}>Done</Button>
+                  <span className="text-[10px] text-white-muted font-medium">{completedFieldsCount}/5 steps complete</span>
+                  <Button variant="ghost" size="sm" className="h-7 text-[10px] text-primary hover:bg-primary/10" onClick={() => setShowOptionsPopover(false)}>Close Setup</Button>
                 </div>
               </div>
             </PopoverContent>
@@ -506,9 +522,9 @@ export default function ChatInterface({ chatId }) {
               maxLength={10000}
               placeholder={
                 (messages.length === 0 && !selectedImageForChat)
-                  ? "Describe your thumbnail vision..." 
+                  ? "Finally, describe your vision..." 
                   : selectedImageForChat 
-                    ? "Tell me what to change..." 
+                    ? "Tell me what to edit..." 
                     : "Describe the next thumbnail..."
               }
               disabled={isGenerating}
@@ -545,9 +561,9 @@ export default function ChatInterface({ chatId }) {
             <DialogTitle className="text-white text-lg">Video Title</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-2">
-            <p className="text-xs text-white-muted">The title helps the AI understand the context and text placement of your thumbnail.</p>
+            <p className="text-xs text-white-muted">The title helps the AI understand the context of your video.</p>
             <Input
-              placeholder="e.g. My First Minecraft Stream"
+              placeholder="e.g. How to grow on YouTube"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               className="bg-[#151015] border-white/5 text-white"
