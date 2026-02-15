@@ -89,7 +89,7 @@ export default function Transactions() {
                 </Link>
               </div>
               <Link to="/dashboard">
-                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white transition-colors">
+                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-gray-800 transition-colors">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back to Dashboard
                 </Button>
