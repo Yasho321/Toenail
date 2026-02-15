@@ -3,16 +3,24 @@ import { useAuth } from '@clerk/clerk-react';
 import { usePaymentStore } from '../stores/paymentStore';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { ScrollArea } from '../components/ui/scroll-area';
-import { ArrowLeft, Download, Receipt, CreditCard, Calendar, DollarSign, Loader2 } from 'lucide-react';
+import { 
+  ArrowLeft, 
+  Download, 
+  Receipt, 
+  CreditCard, 
+  Calendar, 
+  Loader2, 
+  ChevronRight,
+  ShieldCheck,
+  Zap
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import toast from 'react-hot-toast';
 
 export default function Transactions() {
   const { getToken } = useAuth();
   const { payments, isLoadingPayments, fetchPayments, downloadReceipt } = usePaymentStore();
-  const [downloadingId, setDownloadingId] = useState(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchPayments(getToken);
@@ -20,132 +28,187 @@ export default function Transactions() {
 
   const handleDownloadReceipt = async (paymentId) => {
     setDownloadingId(paymentId);
-    const success = await downloadReceipt(paymentId, getToken);
+    await downloadReceipt(paymentId, getToken);
     setDownloadingId(null);
   };
 
-  const getStatusColor = (status) => {
+  const getStatusStyles = (status) => {
     switch (status?.toLowerCase()) {
       case 'completed':
       case 'success':
-        return 'text-green-400';
+        return 'bg-green-500/10 text-green-400 border-green-500/20';
       case 'pending':
-        return 'text-yellow-400';
+        return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20';
       case 'failed':
-        return 'text-red-400';
+        return 'bg-red-500/10 text-red-400 border-red-500/20';
       default:
-        return 'text-chat-text-muted';
+        return 'bg-white/5 text-gray-400 border-white/10';
     }
   };
 
   if (isLoadingPayments) {
     return (
-      <div className="min-h-screen bg-[#1E1A1F] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-red-500" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#1E1A1F] text-white">
-      {/* Header */}
-      <div className="border-b border-chat-border bg-chat-surface">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <Link to="/">
-                <Button variant="ghost" size="sm" className="text-chat-text hover:text-white hover:bg-[#151015]">
+    <div className="min-h-screen w-full bg-[#050505] text-white overflow-x-hidden selection:bg-red-500/30">
+      
+      {/* --- Background Effects (Matching Landing) --- */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(circle at 50% 0%, rgba(220, 38, 38, 0.1) 0%, rgba(0, 0, 0, 0) 50%)",
+          }}
+        />
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
+            backgroundSize: '40px 40px'
+          }}
+        />
+      </div>
+
+      <div className="relative z-10">
+        {/* Navigation */}
+        <nav className="sticky top-0 z-50 border-b border-white/5 bg-[#050505]/80 backdrop-blur-md">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <div className="flex items-center gap-2">
+                <Link to="/" className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center">
+                    <img src="./logo.png" alt="Logo" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xl font-bold tracking-tight">Toenail <span className="text-red-500">AI</span></span>
+                </Link>
+              </div>
+              <Link to="/dashboard">
+                <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white transition-colors">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back to Dashboard
                 </Button>
               </Link>
-              <h1 className="text-xl font-semibold text-chat-text">Transaction History</h1>
             </div>
           </div>
-        </div>
-      </div>
+        </nav>
 
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {payments.length === 0 ? (
-          <div className="text-center py-12">
-            <Receipt className="w-16 h-16 text-white mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-white mb-2">No transactions yet</h3>
-            <p className="text-white-muted mb-6">Your payment history will appear here once you make a purchase.</p>
-            <Link to="/pricing">
-              <Button variant="default" className="bg-[#1E1A1F] hover:bg-[#1E1A1F]/90">
-                <CreditCard className="w-4 h-4 mr-2" />
-                Purchase Tokens
-              </Button>
-            </Link>
+        <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+          {/* Header Section */}
+          <div className="mb-12">
+            <h1 className="text-3xl sm:text-4xl font-bold mb-4">Transaction <span className="text-red-500">History</span></h1>
+            <p className="text-gray-400">View and download your invoices for all token purchases.</p>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {payments.map((payment) => (
-              <Card key={payment._id} className="bg-[#0B0B0F] border-none shadow-xl p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-[#1E1A1F]/10 rounded-lg flex items-center justify-center">
-                      <Receipt className="w-6 h-6 text-white" />
+
+          {payments.length === 0 ? (
+            <div className="text-center py-20 rounded-2xl border border-white/5 bg-[#0A0A0A]/50 backdrop-blur-sm">
+              <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Receipt className="w-10 h-10 text-gray-600" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">No transactions yet</h3>
+              <p className="text-gray-500 mb-8 max-w-xs mx-auto">Your payment history will appear here once you purchase credits.</p>
+              <Link to="/pricing">
+                <Button className="bg-red-600 hover:bg-red-500 text-white px-8 py-6 rounded-lg font-bold transition-all hover:scale-105">
+                  <CreditCard className="w-5 h-5 mr-2" />
+                  Buy Tokens Now
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {payments.map((payment) => (
+                <Card 
+                  key={payment._id} 
+                  className="bg-[#0A0A0A] border border-white/5 hover:border-red-500/20 transition-all duration-300 overflow-hidden group"
+                >
+                  <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                    <div className="flex items-start gap-5">
+                      {/* Icon with Landing Page Style */}
+                      <div className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center flex-shrink-0 group-hover:bg-red-500/20 transition-colors">
+                        <Zap className="w-6 h-6 text-red-500" />
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <h3 className="text-lg font-bold text-white font-mono">
+                            #{payment.receiptNumber || payment._id.slice(-8).toUpperCase()}
+                          </h3>
+                          <span className={`text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-full border ${getStatusStyles(payment.status)}`}>
+                            {payment.status}
+                          </span>
+                        </div>
+                        
+                        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-400">
+                          <div className="flex items-center gap-1.5">
+                            <Calendar className="w-4 h-4 text-gray-500" />
+                            {format(new Date(payment.createdAt), 'MMM dd, yyyy')}
+                          </div>
+                          
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-green-400 font-bold">₹{payment.amount}</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                            <span className="text-white font-medium">{payment.tokens} Tokens</span>
+                          </div>
+                        </div>
+                        
+                        {payment.razorpayId && (
+                          <p className="text-[10px] text-gray-600 font-mono mt-2">
+                            REF: {payment.razorpayId}
+                          </p>
+                        )}
+                      </div>
                     </div>
                     
-                    <div className="space-y-1">
-                      <div className="flex items-center text-white gap-3">
-                        <h3 className="font-medium text-white">
-                          Payment #{payment.receiptNumber || payment._id.slice(-8)}
-                        </h3>
-                        <span className={`text-sm font-medium ${getStatusColor(payment.status)}`}>
-                          {payment.status}
-                        </span>
-                      </div>
-                      
-                      <div className="flex items-center gap-6 text-sm text-white-muted">
-                        <div className="flex items-center text-white gap-1">
-                          <Calendar className="w-4 h-4" />
-                          {format(new Date(payment.createdAt), 'MMM dd, yyyy')}
-                        </div>
-                        
-                        <div className="flex text-white items-center gap-1">
-                          
-                          ₹{payment.amount}
-                        </div>
-                        
-                        <div className="flex text-white items-center gap-1">
-                          <span className="w-4 h-4 flex items-center justify-center bg-yellow-500/20 rounded text-yellow-500 text-xs font-bold">
-                            T
-                          </span>
-                          {payment.tokens} tokens
-                        </div>
-                      </div>
-                      
-                      {payment.razorpayId && (
-                        <p className="text-xs text-white">
-                          Payment ID: {payment.razorpayId}
-                        </p>
-                      )}
+                    <div className="flex items-center gap-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDownloadReceipt(payment._id)}
+                        disabled={downloadingId === payment._id}
+                        className="border-white/10 bg-white/5 text-gray-300 hover:bg-white/10 hover:text-white transition-all h-10 px-4"
+                      >
+                        {downloadingId === payment._id ? (
+                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                        ) : (
+                          <Download className="w-4 h-4 mr-2" />
+                        )}
+                        Receipt
+                      </Button>
                     </div>
                   </div>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDownloadReceipt(payment._id)}
-                    disabled={downloadingId === payment._id}
-                    className="border-chat-border bg-[#1E1A1F] text-white hover:bg-[#151015] hover:text-white"
-                  >
-                    {downloadingId === payment._id ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Download className="w-4 h-4" />
-                    )}
-                    <span className="ml-2 hidden sm:inline">Download Receipt</span>
-                  </Button>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {/* Trust Badge Footer */}
+          <div className="mt-12 flex items-center justify-center gap-8 py-8 border-t border-white/5">
+             <div className="flex items-center gap-2 text-gray-500 text-xs">
+                <ShieldCheck className="w-4 h-4 text-red-500/50" />
+                <span>Secure Payments</span>
+             </div>
+             <div className="flex items-center gap-2 text-gray-500 text-xs">
+                <Receipt className="w-4 h-4 text-red-500/50" />
+                <span>GST Compliant Invoices</span>
+             </div>
           </div>
-        )}
+        </main>
       </div>
+
+      {/* Footer (Simplified from Landing) */}
+      <footer className="border-t border-white/5 py-8 bg-[#020202] relative z-10">
+        <div className="max-w-7xl mx-auto px-4 text-center text-xs text-gray-600">
+          <p>&copy; 2026 Toenail AI. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 }
