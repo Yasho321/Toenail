@@ -201,7 +201,7 @@ export default function ChatInterface({ chatId }) {
   const handleDownloadAll = async (images) => {
     try {
       const token = await getToken();
-      const response = await fetch('https://toenail-brhg.onrender.com/api/v1/download/download-zip', {
+      const response = await fetch('https://toenail-6zcz.onrender.com/api/v1/download/download-zip', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ imageUrls: images }),
