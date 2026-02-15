@@ -294,7 +294,7 @@ export default function Pricing() {
               {[
                 { icon: Zap, title: "Personalized AI", text: "Learns your brand colors and face to keep thumbnails consistent with your channel." },
                 { icon: MessageSquare, title: "Chat to Edit", text: "Not happy with the result? Just chat with the AI to change text, colors, or elements." },
-                { icon: Crown, title: "CTR Optimized", text: "Trained on millions of high-performing videos to ensure your content gets the clicks it deserves." }
+                { icon: Crown, title: "CTR Optimized", text: "Trained on multiple high-performing videos to ensure your content gets the clicks it deserves." }
               ].map((feature, i) => (
                 <div key={i} className="p-8 rounded-2xl bg-[#0A0A0A] border border-white/5 hover:border-red-500/30 transition-colors group">
                   <div className="w-12 h-12 rounded-lg bg-red-500/10 flex items-center justify-center mb-6 text-red-500 group-hover:scale-110 transition-transform">
