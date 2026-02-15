@@ -118,7 +118,7 @@ export default function Pricing() {
                 </Link>
               </div>
               <div className="flex items-center gap-4">
-                <Link to="/dashboard" className="text-sm font-medium text-gray-400 hover:text-gray-800 transition-colors flex items-center gap-1">
+                <Link to="/dashboard" className="text-sm font-medium text-gray-400 hover:text-gray-100 transition-colors flex items-center gap-1">
                   <ArrowLeft className="w-4 h-4" /> Back to Dashboard
                 </Link>
               </div>
