@@ -20,7 +20,7 @@ import { format } from 'date-fns';
 export default function Transactions() {
   const { getToken } = useAuth();
   const { payments, isLoadingPayments, fetchPayments, downloadReceipt } = usePaymentStore();
-  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [downloadingId, setDownloadingId] = useState(null);
 
   useEffect(() => {
     fetchPayments(getToken);
