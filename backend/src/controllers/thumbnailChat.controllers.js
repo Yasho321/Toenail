@@ -1,34 +1,31 @@
 import ThumbnailChat from "../models/thumbnailChat.model.js";
 // SDK initialization
-import 'dotenv/config'
-import ImageKit from 'imagekit';
-import fs from 'fs'
-import OpenAI from 'openai';
-import axios from 'axios'
-import { Memory } from 'mem0ai/oss';
-import {   getAuth } from '@clerk/express'
+import "dotenv/config";
+import ImageKit from "imagekit";
+import fs from "fs";
+import OpenAI from "openai";
+import axios from "axios";
+import { Memory } from "mem0ai/oss";
+import { getAuth } from "@clerk/express";
 import { GoogleGenAI, Modality } from "@google/genai";
 import Chat from "../models/chat.model.js";
 import sharp from "sharp";
 import User from "../models/user.model.js";
-import 'dotenv/config'
+import "dotenv/config";
 const client = new OpenAI();
- const ai = new GoogleGenAI({});
-
- 
-
+const ai = new GoogleGenAI({});
 
 const imagekit = new ImageKit({
-    publicKey : process.env.IMAGEKIT_PUBLICKEY,
-    privateKey : process.env.IMAGEKIT_PRIVATEKEY,
-    urlEndpoint : process.env.IMAGEKIT_URL
+  publicKey: process.env.IMAGEKIT_PUBLICKEY,
+  privateKey: process.env.IMAGEKIT_PRIVATEKEY,
+  urlEndpoint: process.env.IMAGEKIT_URL,
 });
 
 const mem = new Memory({
-  version: 'v1.1',
+  version: "v1.1",
   enableGraph: true,
   graphStore: {
-    provider: 'neo4j',
+    provider: "neo4j",
     config: {
       url: process.env.NEO4J_URI,
       username: process.env.NEO4J_USERNAME,
@@ -37,17 +34,16 @@ const mem = new Memory({
     },
   },
   vectorStore: {
-    provider: 'qdrant',
+    provider: "qdrant",
     config: {
-      collectionName: 'memories',
+      collectionName: "memories",
       embeddingModelDims: 1536,
       url: process.env.QDRANT_URL,
-      apiKey: process.env.QDRANT_API_KEY, 
+      apiKey: process.env.QDRANT_API_KEY,
       https: true,
     },
   },
 });
-
 
 async function resizeBase64(base64Image, width, height) {
   const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, "");
@@ -55,116 +51,109 @@ async function resizeBase64(base64Image, width, height) {
 
   const resizedBuffer = await sharp(imgBuffer)
     .resize(width, height, {
-      fit: "contain",      
-      background: { r: 0, g: 0, b: 0, alpha: 0 } 
+      fit: "contain",
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
     })
     .toBuffer();
 
   return `${resizedBuffer.toString("base64")}`;
 }
-export const createChat = async (req , res)=>{
-    try {
-        
-        let { userId } = getAuth(req, { acceptsToken: 'any' })
-        const user = await User.findOne({clerkId : userId});
-        if(user.tokenBalance<=0){
-            return res.status(400).json({
-                success : false , 
-                message : "Not enough tokens to continue"
-            })
-        }
-        userId = user._id
+export const createChat = async (req, res) => {
+  try {
+    let { userId } = getAuth(req, { acceptsToken: "any" });
+    const user = await User.findOne({ clerkId: userId });
+    if (user.tokenBalance <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Not enough tokens to continue",
+      });
+    }
+    userId = user._id;
 
-        
+    const { chatId } = req.params;
 
-        const {chatId} = req.params; 
-       
-        const token = user.tokenBalance;
-        const {genre , title , mood ,resolution, prompt} = req.body;
-        const file = req.file;
-        const imgpath = file.path;
-        const imageData = fs.readFileSync(imgpath);
-        const base64Image = imageData.toString("base64");
-        const uploadedImage=await imagekit.upload({
-            file: base64Image,
-            fileName: file.originalname,
-            folder: "/user-img",
-        });
-        const imagekitFileId= uploadedImage.fileId
-        const moderation = await client.moderations.create({
-            model: "omni-moderation-latest",
-            input: [
-                { type: "text", text: prompt },
-                {
-                    type: "image_url",
-                    image_url: {
-                        url: uploadedImage.url
-                        
-                    }
-                }
-            ],
-        });
-        const moderationRes = moderation.results[0];
-        const flag = moderationRes.flagged ; 
-        if(flag){
-            const response = await imagekit.deleteFile(imagekitFileId);
-            return res.status(400).json({
-                success:false , 
-                messages : "Improper Content Can't process"
-            })
-        }
-        
-        const memories = await mem.search(prompt, { userId: String(userId) });
-        const memStr = memories.results.map((e) => e.memory).join('\n');
-        const CONTEXT = `
+    const token = user.tokenBalance;
+    const { genre, title, mood, resolution, prompt } = req.body;
+    const file = req.file;
+    const imgpath = file.path;
+    const imageData = fs.readFileSync(imgpath);
+    const base64Image = imageData.toString("base64");
+    const uploadedImage = await imagekit.upload({
+      file: base64Image,
+      fileName: file.originalname,
+      folder: "/user-img",
+    });
+    const imagekitFileId = uploadedImage.fileId;
+    const moderation = await client.moderations.create({
+      model: "omni-moderation-latest",
+      input: [
+        { type: "text", text: prompt },
+        {
+          type: "image_url",
+          image_url: {
+            url: uploadedImage.url,
+          },
+        },
+      ],
+    });
+    const moderationRes = moderation.results[0];
+    const flag = moderationRes.flagged;
+    if (flag) {
+      const response = await imagekit.deleteFile(imagekitFileId);
+      return res.status(400).json({
+        success: false,
+        messages: "Improper Content Can't process",
+      });
+    }
+
+    const memories = await mem.search(prompt, { userId: String(userId) });
+    const memStr = memories.results.map((e) => e.memory).join("\n");
+    const CONTEXT = `
             Important Context About User according to the previous conversations:
              ${memStr}
-        `
-        
-        let width ; 
-        let height; 
-        
-        
-        if(resolution.includes('1280 x 720')){
-            width = 1280
-            height = 720
-        }else if('1920 x 1080'){
-            width=1920
-            height=1080
-        }else{
-            width = 1080 
-            height = 1920
+        `;
 
-        }
+    let width;
+    let height;
 
-        const resizedInput = await resizeBase64(base64Image,width,height)
-        let images=[];
-        let chatTitle ;
-       if(token <= 0){
-        return res.status(400).json({
-            success : false , 
-            message : "not enough tokens to continue"
-        })
-       }
-           
-        
-        
-        images.push(uploadedImage.url);     
-        let chatMessages= await ThumbnailChat.findOne({
-            userId,
-            chatId
-        }) 
-        if(!chatMessages){
-            chatMessages= await ThumbnailChat.create({
-                userId,
-                chatId
-            })
+    if (resolution.includes("1280 x 720")) {
+      width = 1280;
+      height = 720;
+    } else if ("1920 x 1080") {
+      width = 1920;
+      height = 1080;
+    } else {
+      width = 1080;
+      height = 1920;
+    }
 
-             const response = await client.chat.completions.create({
-                model: 'gpt-4.1-mini',
-                messages: [{
-                    role : 'user',
-                    content : `Give a title for this chat 
+    const resizedInput = await resizeBase64(base64Image, width, height);
+    let images = [];
+    let chatTitle;
+    if (token <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "not enough tokens to continue",
+      });
+    }
+
+    images.push(uploadedImage.url);
+    let chatMessages = await ThumbnailChat.findOne({
+      userId,
+      chatId,
+    });
+    if (!chatMessages) {
+      chatMessages = await ThumbnailChat.create({
+        userId,
+        chatId,
+      });
+
+      const response = await client.chat.completions.create({
+        model: "gpt-4.1-mini",
+        messages: [
+          {
+            role: "user",
+            content: `Give a title for this chat 
                         prompt :- 
                         ${prompt}
 
@@ -173,42 +162,35 @@ export const createChat = async (req , res)=>{
 
                         IMPORTANT :- 
                         Output should be single string with only title no filler prefix
-                    `
-                }],
-            }); 
-             chatTitle = response.choices[0].message.content ;
-             const chat = await Chat.findByIdAndUpdate(
-                chatId,{
-                    title :  chatTitle
-                },
-                 {
-                    new: true,         
-                }
-             )
+                    `,
+          },
+        ],
+      });
+      chatTitle = response.choices[0].message.content;
+      const chat = await Chat.findByIdAndUpdate(
+        chatId,
+        {
+          title: chatTitle,
+        },
+        {
+          new: true,
+        },
+      );
+    }
+    let messages = chatMessages?.messages || [];
+    let previousChats;
+    if (messages.length > 50) {
+      previousChats = messages.splice(-50);
+    }
+    previousChats = messages;
 
+    messages.push({
+      role: "user",
+      text: prompt,
+      images: images,
+    });
 
-        }
-        let messages = chatMessages?.messages || [];
-        let previousChats ;
-        if (messages.length >50){
-            previousChats  = messages.splice(-50);
-        }
-        previousChats = messages ;
-
-        messages.push({
-            role: 'user',
-            text:prompt,
-            images:images
-        })
-
-        
-
-
-
-
-    
-
-        const SYSTEM_PROMPT = `
+    const SYSTEM_PROMPT = `
             You are an expert query rewritting assistant . You work is to refine the prompt along with other data given to make a prompt such 
             that it makes the best thumbnail for youtube . 
             You have to make the prompt such that it describe the thumbnail in more elaborate way so that accuracy of thumbnail should be max 
@@ -271,9 +253,9 @@ export const createChat = async (req , res)=>{
             Large, bold, white text with a black outline is overlaid on the sky or a dark part of the image. The text reads: "[INTRODUCTORY PHRASE: e.g., SECRETS OF, I CAN'T BELIEVE, EXPLORING]" followed by "[LOCATION NAME IN CAPS]". The style is epic, aspirational, and makes the viewer want to click to experience the journey.
                     
                         
-        `
+        `;
 
-        const USER_PROMPT =`
+    const USER_PROMPT = `
             User Prompt :- 
             ${prompt}
             Resolution:-
@@ -285,21 +267,24 @@ export const createChat = async (req , res)=>{
             Title of the video:-
             ${title}
 
-        `
+        `;
 
-        const response = await client.chat.completions.create({
-            model: 'gpt-4.1-mini',
-            messages: [{
-                role : 'system',
-                content : SYSTEM_PROMPT
-            },{
-                role: 'user',
-                content: USER_PROMPT
-            }],
-        }); 
+    const response = await client.chat.completions.create({
+      model: "gpt-4.1-mini",
+      messages: [
+        {
+          role: "system",
+          content: SYSTEM_PROMPT,
+        },
+        {
+          role: "user",
+          content: USER_PROMPT,
+        },
+      ],
+    });
 
-         const refinedPrompt = response.choices[0].message.content ;
-         const SYSTEM_PROMPT2 = `
+    const refinedPrompt = response.choices[0].message.content;
+    const SYSTEM_PROMPT2 = `
             You are an expert query rewritting assistant . You work is to refine the prompt along with other data given to make a prompt such 
             that it makes the best thumbnail for youtube . 
             You have to make the prompt such that it describe the thumbnail in more elaborate way so that accuracy of thumbnail should be max 
@@ -416,9 +401,9 @@ export const createChat = async (req , res)=>{
             be comforting to the eyes , with phrases such as "exploring " , "secrets of" , "My dream came true" , etc .. followed my location name , 
             The style of the thumbnail should be epic , aspirational , reflecting on life , cinematic , philosophical and makes the viewer want to 
             click to experience the journey
-        `
+        `;
 
-        const USER_PROMPT2 =`
+    const USER_PROMPT2 = `
             User Prompt :- 
             ${prompt}
             Resolution:-
@@ -430,301 +415,288 @@ export const createChat = async (req , res)=>{
             Title of the video:-
             ${title}
 
-        `
-         const response2 = await client.chat.completions.create({
-            model: 'gpt-4.1-mini',
-            messages: [{
-                role : 'system',
-                content : SYSTEM_PROMPT2
-            },{
-                role:'user',
-                content:USER_PROMPT2
-            }],
-        }); 
-         const refinedPrompt2=response2.choices[0].message.content ;
+        `;
+    const response2 = await client.chat.completions.create({
+      model: "gpt-4.1-mini",
+      messages: [
+        {
+          role: "system",
+          content: SYSTEM_PROMPT2,
+        },
+        {
+          role: "user",
+          content: USER_PROMPT2,
+        },
+      ],
+    });
+    const refinedPrompt2 = response2.choices[0].message.content;
 
-        
-         const promptForBanana = [
-            { text: `
+    const promptForBanana = [
+      {
+        text: `
                 Thumbnail description :${refinedPrompt} , 
                 previous messages: ${previousChats}  ,
                 user original query : ${prompt} ,
-                Important context about user : ${CONTEXT}` },
-            {
-            inlineData: {
-                mimeType: "image/png",
-                data: resizedInput,
-            },
-            },
-        ];
-        let messageResponse={
-            role:"assistant",
-            text:"Thumbnails",
-        };
-        let images2=[]
-        const response4 = await ai.models.generateContent({
-            model: "gemini-2.5-flash-image",
-            contents: promptForBanana,
+                Important context about user : ${CONTEXT}`,
+      },
+      {
+        inlineData: {
+          mimeType: "image/png",
+          data: resizedInput,
+        },
+      },
+    ];
+    let messageResponse = {
+      role: "assistant",
+      text: "Thumbnails",
+    };
+    let images2 = [];
+    const response4 = await ai.models.generateContent({
+      model: "gemini-2.5-flash-image",
+      contents: promptForBanana,
+    });
+    for (const part of response4.candidates[0].content.parts) {
+      if (part.text) {
+        messageResponse.text = part.text;
+      } else if (part.inlineData) {
+        const imageData = part.inlineData.data;
+        const imageBuffer = Buffer.from(imageData, "base64");
+        const resizedBuffer = await sharp(imageBuffer)
+          .resize(width, height, {
+            fit: "inside",
+            withoutEnlargement: true,
+          })
+          .toFormat("png") // Keep PNG format
+          .toBuffer();
+
+        const resizedBase64 = resizedBuffer.toString("base64");
+
+        const uploadedImage = await imagekit.upload({
+          file: `data:image/png;base64,${resizedBase64}`,
+          fileName: `${chatTitle}-thumbnail1.png`,
+          folder: "/thumbnail-img",
         });
-        for (const part of response4.candidates[0].content.parts) {
-            if (part.text) {
-                messageResponse.text = part.text;         
-            } else if (part.inlineData) {
-                
-                const imageData = part.inlineData.data;
-                const imageBuffer = Buffer.from(imageData, "base64");
-                const resizedBuffer = await sharp(imageBuffer)
-                .resize(width, height, {
-                    fit: "inside",
-                    withoutEnlargement: true 
-                })
-                .toFormat("png") // Keep PNG format
-                .toBuffer();
 
-                const resizedBase64 = resizedBuffer.toString("base64");
-
-                const uploadedImage= await imagekit.upload({
-                    file: `data:image/png;base64,${resizedBase64}`,
-                    fileName: `${chatTitle}-thumbnail1.png`,
-                    folder: "/thumbnail-img",
-                    
-                });
-               
-                images2.push(uploadedImage.url)
-                
-            }
-        }
-        const promptForBanana2 = [
-            { text: `
+        images2.push(uploadedImage.url);
+      }
+    }
+    const promptForBanana2 = [
+      {
+        text: `
                 refined description :${refinedPrompt2} , 
                 previous messages: ${previousChats}  ,
                 user original query : ${prompt} ,
                 Important context about user : ${CONTEXT}
-            ` },
-            {
-            inlineData: {
-                mimeType: "image/png",
-                data: resizedInput,
-            },
-            },
-        ];
-        
-        const response5 = await ai.models.generateContent({
-            model: "gemini-2.5-flash-image",
-            contents: promptForBanana2,
+            `,
+      },
+      {
+        inlineData: {
+          mimeType: "image/png",
+          data: resizedInput,
+        },
+      },
+    ];
+
+    const response5 = await ai.models.generateContent({
+      model: "gemini-2.5-flash-image",
+      contents: promptForBanana2,
+    });
+    for (const part of response5.candidates[0].content.parts) {
+      if (part.inlineData) {
+        const imageData = part.inlineData.data;
+        const imageBuffer = Buffer.from(imageData, "base64");
+        const resizedBuffer = await sharp(imageBuffer)
+          .resize(width, height, {
+            fit: "inside",
+            withoutEnlargement: true,
+          })
+          .toFormat("png") // Keep PNG format
+          .toBuffer();
+
+        const resizedBase64 = resizedBuffer.toString("base64");
+
+        const uploadedImage = await imagekit.upload({
+          file: `data:image/png;base64,${resizedBase64}`,
+          fileName: `${chatTitle}-thumbnail1.png`,
+          folder: "/thumbnail-img",
         });
-        for (const part of response5.candidates[0].content.parts) {
-           if (part.inlineData) {
-                const imageData = part.inlineData.data;
-                const imageBuffer = Buffer.from(imageData, "base64");
-                const resizedBuffer = await sharp(imageBuffer)
-                .resize(width, height, {
-                    fit: "inside",
-                    withoutEnlargement: true 
-                })
-                .toFormat("png") // Keep PNG format
-                .toBuffer();
 
-                const resizedBase64 = resizedBuffer.toString("base64");
-
-                const uploadedImage= await imagekit.upload({
-                    file: `data:image/png;base64,${resizedBase64}`,
-                    fileName: `${chatTitle}-thumbnail1.png`,
-                    folder: "/thumbnail-img",
-                    
-                });
-               
-                images2.push(uploadedImage.url)
-            }
-        }
-       
-        messageResponse.images=images2;
-        messages.push(messageResponse);
-        chatMessages.messages=messages;
-        fs.unlinkSync(imgpath);
-       
-
-        // Save safe data to mem0
-        await mem.add(
-        [
-            { role: "user", content: prompt },
-            { role: "assistant", content: messageResponse.text },
-        ],
-        { userId : String(userId) }
-        );
-        
-
-        await chatMessages.save();
-        await User.findByIdAndUpdate(
-            userId,
-            { $inc: { tokenBalance: -1 } },  
-            { new: true }              
-        );
-
-
-        return res.status(200).json({
-            success : true , 
-            message : "Thumbnail created successfully",
-            chatMessages, 
-            response : messageResponse
-        })
-
-
-
-        
-    } catch (error) {
-         console.log(error)
-         return res.status(500).json({
-                success: false , 
-                message : "Unable to create thumbnails"
-            })
+        images2.push(uploadedImage.url);
+      }
     }
 
-}
+    messageResponse.images = images2;
+    messages.push(messageResponse);
+    chatMessages.messages = messages;
+    fs.unlinkSync(imgpath);
 
-export const continueChat = async(req,res)=>{
-    try {
-        const { userId } = getAuth(req, {acceptsToken :'any'})
-        const user= await User.findOne({clerkId : userId})
-        if(user.tokenBalance<=0){
-            return res.status(400).json({
-                success : false , 
-                message : "Not enough tokens to continue"
-            })
-        }
-        const {chatId} =req.params 
-        const {url , prompt} = req.body ; 
-        const response = await axios.get(url, { responseType: "arraybuffer" });
-        const base64 = Buffer.from(response.data, "binary").toString("base64");
-         const memories = await mem.search(prompt, { userId: String(user._id) });
-        const memStr = memories.results.map((e) => e.memory).join('\n');
-        const CONTEXT = `
+    // Save safe data to mem0
+    await mem.add(
+      [
+        { role: "user", content: prompt },
+        { role: "assistant", content: messageResponse.text },
+      ],
+      { userId: String(userId) },
+    );
+
+    await chatMessages.save();
+    await User.findByIdAndUpdate(
+      userId,
+      { $inc: { tokenBalance: -1 } },
+      { new: true },
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Thumbnail created successfully",
+      chatMessages,
+      response: messageResponse,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to create thumbnails",
+    });
+  }
+};
+
+export const continueChat = async (req, res) => {
+  try {
+    const { userId } = getAuth(req, { acceptsToken: "any" });
+    const user = await User.findOne({ clerkId: userId });
+    if (user.tokenBalance <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Not enough tokens to continue",
+      });
+    }
+    const { chatId } = req.params;
+    const { url, prompt } = req.body;
+    const response = await axios.get(url, { responseType: "arraybuffer" });
+    const base64 = Buffer.from(response.data, "binary").toString("base64");
+    const memories = await mem.search(prompt, { userId: String(user._id) });
+    const memStr = memories.results.map((e) => e.memory).join("\n");
+    const CONTEXT = `
             Important Context About User according to the previous conversations:
              ${memStr}
-        `
+        `;
 
-        const chat = await ThumbnailChat.findOne({chatId});
-        if(!chat){
-            return res.status(400).json({
-                success:false , 
-                message : "No such chat exists"
-            })
-        }
-        let chatMessages = chat.messages ; 
-        chatMessages.push({
-            role: 'user',
-            text: prompt,
-            images : [url]
-        })
+    const chat = await ThumbnailChat.findOne({ chatId });
+    if (!chat) {
+      return res.status(400).json({
+        success: false,
+        message: "No such chat exists",
+      });
+    }
+    let chatMessages = chat.messages;
+    chatMessages.push({
+      role: "user",
+      text: prompt,
+      images: [url],
+    });
 
-        const chat2 = await Chat.findById(chatId)
-        const chatTitle = chat2.title
-        const promptForBanana = [
-            { text: `
+    const chat2 = await Chat.findById(chatId);
+    const chatTitle = chat2.title;
+    const promptForBanana = [
+      {
+        text: `
                 Prompt :- ${prompt}
                 Context about user :- ${CONTEXT}
-                ` },
-            {
-            inlineData: {
-                mimeType: "image/png",
-                data: base64,
-            },
-            },
-        ];
-        const date = Date.now()
+                `,
+      },
+      {
+        inlineData: {
+          mimeType: "image/png",
+          data: base64,
+        },
+      },
+    ];
+    const date = Date.now();
 
-        let messageResponse = {role : "assistant" , text : "Edited Thumbnail"} ; 
-        let images = [];
+    let messageResponse = { role: "assistant", text: "Edited Thumbnail" };
+    let images = [];
 
-        const response2 = await ai.models.generateContent({
-            model: "gemini-2.5-flash-image",
-            contents: promptForBanana,
+    const response2 = await ai.models.generateContent({
+      model: "gemini-2.5-flash-image",
+      contents: promptForBanana,
+    });
+    for (const part of response2.candidates[0].content.parts) {
+      if (part.text) {
+        messageResponse.text = part.text;
+      } else if (part.inlineData) {
+        const imageData = part.inlineData.data;
+        const uploadedImage = await imagekit.upload({
+          file: `data:image/png;base64,${imageData}`,
+          fileName: `${chatTitle}-thumbnail${date}.png`,
+          folder: "/thumbnail-img",
         });
-        for (const part of response2.candidates[0].content.parts) {
-            if (part.text) {
-                messageResponse.text = part.text;         
-            } else if (part.inlineData) {
-                
-                const imageData = part.inlineData.data;
-                const uploadedImage= await imagekit.upload({
-                    file: `data:image/png;base64,${imageData}`,
-                    fileName: `${chatTitle}-thumbnail${date}.png`,
-                    folder: "/thumbnail-img",
-                    
-                });
-               
-                images.push(uploadedImage.url)
-                
-            }
-        }
-       messageResponse.images = images;
-        chatMessages.push(messageResponse) ; 
-        chat.messages = chatMessages ; 
-        await chat.save(); 
-        user.tokenBalance -= 1 ; 
-        await user.save(); 
 
-         await mem.add(
-        [
-            { role: "user", content: prompt },
-            { role: "assistant", content: messageResponse.text },
-        ],
-        { userId : String(user._id) }
-        );
-
-        return res.status(200).json({
-            success : true , 
-            message : "Thumbnail chat continued successfully",
-            chat, 
-            updatedTokens : user.tokenBalance ,
-            response : messageResponse
-        })
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            success:false , 
-            message : "Internal server while continuing Chat"
-        })
-        
-        
+        images.push(uploadedImage.url);
+      }
     }
-        
-}
+    messageResponse.images = images;
+    chatMessages.push(messageResponse);
+    chat.messages = chatMessages;
+    await chat.save();
+    user.tokenBalance -= 1;
+    await user.save();
 
-export const getChat = async (req , res)=>{
-    try {
-       const { userId } = getAuth(req, { acceptsToken: 'any' })
-       const user = await User.findOne({clerkId : userId});
-        const {chatId} = req.params;
-        if(!userId || ! chatId || !user){
-            return res.status(400).json({
-                success : false , 
-                message : "Unautharized or chat does not exist"
-            })
-        }
-        const messages = await ThumbnailChat.find({
-            userId : user._id ,
-            chatId
-        })
-        if (!messages){
-            return res.status(400).json({
-                success : false , 
-                message : "Unable to fetch messages"
-            })
-        }
-        return res.status(200).json({
-            success:true , 
-            message : "Messages Fetched",
-            chatMessages : messages
-        })
-        
-    } catch (error) {
-         console.log(error)
-         return res.status(500).json({
-                success: false , 
-                message : "Unable to fetch messages of chats"
-            })
+    await mem.add(
+      [
+        { role: "user", content: prompt },
+        { role: "assistant", content: messageResponse.text },
+      ],
+      { userId: String(user._id) },
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Thumbnail chat continued successfully",
+      chat,
+      updatedTokens: user.tokenBalance,
+      response: messageResponse,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server while continuing Chat",
+    });
+  }
+};
+
+export const getChat = async (req, res) => {
+  try {
+    const { userId } = getAuth(req, { acceptsToken: "any" });
+    const user = await User.findOne({ clerkId: userId });
+    const { chatId } = req.params;
+    if (!userId || !chatId || !user) {
+      return res.status(400).json({
+        success: false,
+        message: "Unautharized or chat does not exist",
+      });
     }
-    
-}
+    const messages = await ThumbnailChat.find({
+      userId: user._id,
+      chatId,
+    });
+    if (!messages) {
+      return res.status(400).json({
+        success: false,
+        message: "Unable to fetch messages",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Messages Fetched",
+      chatMessages: messages,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to fetch messages of chats",
+    });
+  }
+};
