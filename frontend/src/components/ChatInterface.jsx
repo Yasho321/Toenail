@@ -349,7 +349,7 @@ export default function ChatInterface({ chatId }) {
       </ScrollArea>
 
       <div className="bg-chat-surface p-4 border-t border-white/5">
-        {(formData.genre || formData.mood || formData.resolution || formData.file || formData.prompt  || formData.title || previewUrl) && (
+        {!selectedImageForChat && (formData.genre || formData.mood || formData.resolution || formData.file || formData.prompt  || formData.title || previewUrl) && (
           <div className="mb-4 flex flex-wrap gap-2">
             {formData.genre && (
               <div className="bg-primary/10 text-white px-2 py-1 rounded-md text-xs flex items-center gap-1">
@@ -545,14 +545,6 @@ export default function ChatInterface({ chatId }) {
             {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowUp className="w-4 h-4" />}
           </Button>
         </div>
-        
-        {selectedImageForChat && (
-          <div className="mt-3 flex items-center gap-2 text-sm text-primary">
-            <MessageCircle className="w-4 h-4" />
-            <span>Editing selected image</span>
-            <Button variant="ghost" size="sm" onClick={handleSelectImage} className="h-6 px-2 text-xs text-white-muted hover:text-white">Cancel</Button>
-          </div>
-        )}
       </div>
 
       <Dialog open={showVideoTitleDialog} onOpenChange={setShowVideoTitleDialog}>
