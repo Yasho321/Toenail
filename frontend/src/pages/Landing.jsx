@@ -120,7 +120,7 @@ export default function Landing() {
                   className="w-full aspect-video object-cover pt-8"
                 >
                   <source 
-                    src="https://video.twimg.com/amplify_video/1975108589325811712/vid/avc1/1920x1080/u9NdhTtKgkblH8aO.mp4?tag=21" 
+                    src="/demo.mp4"
                     type="video/mp4" 
                   />
                   Your browser does not support the video tag.
