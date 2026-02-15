@@ -47,7 +47,7 @@ export default function ChatInterface({ chatId }) {
     formData.mood, 
     formData.title, 
     formData.file,
-    formData.resolution
+    formData.resolution != '1280 x 720'
   ].filter(Boolean).length;
 
   const tour = driver({
@@ -349,7 +349,7 @@ export default function ChatInterface({ chatId }) {
       </ScrollArea>
 
       <div className="bg-chat-surface p-4 border-t border-white/5">
-        {!selectedImageForChat && (formData.genre || formData.mood || formData.resolution || formData.file || formData.prompt  || formData.title || previewUrl) && (
+        {(formData.genre || formData.mood || formData.resolution || formData.file || formData.prompt  || formData.title || previewUrl) && (
           <div className="mb-4 flex flex-wrap gap-2">
             {formData.genre && (
               <div className="bg-primary/10 text-white px-2 py-1 rounded-md text-xs flex items-center gap-1">
