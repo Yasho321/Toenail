@@ -23,7 +23,25 @@ const imagekit = new ImageKit({
 
 const mem = new Memory({
   version: "v1.1",
+
+  llm: {
+    provider: "openai",
+    config: {
+      apiKey: process.env.OPENAI_API_KEY,
+      model: "gpt-4.1-mini",
+    },
+  },
+
+  embedder: {
+    provider: "openai",
+    config: {
+      apiKey: process.env.OPENAI_API_KEY,
+      model: "text-embedding-3-small",
+    },
+  },
+
   enableGraph: true,
+
   graphStore: {
     provider: "neo4j",
     config: {
@@ -33,6 +51,7 @@ const mem = new Memory({
       storeEmbeddings: false,
     },
   },
+
   vectorStore: {
     provider: "qdrant",
     config: {
